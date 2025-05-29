@@ -8,14 +8,12 @@
 .venv/
 
 # Python cache
-__pycache__/
+**/__pycache__/
 *.py[cod]
 
-# Test cache
-.pytest_cache/
-
-# Type checker cache
-.mypy_cache/
+# General cache directories
+**/*cache/
+**/cache/
 
 # OS-specific
 .DS_Store

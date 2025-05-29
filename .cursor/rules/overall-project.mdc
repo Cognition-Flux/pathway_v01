@@ -1,0 +1,34 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+When coding consider that the current repository is a fullstack app.
+
+1. **Project Context**
+   - **Framework**: The front-end and back-end are built with **Reflex**, an open-source Python framework for building interactive web UIs. Reflex compiles your Python-defined components into a JavaScript (React) application that runs in the user's browser.
+   - **Environment Management**: All Python dependencies and project management tasks are handled by **UV**, a high-performance, Rust-based package and project manager.
+   - **Architecture**: The application is a **multi-agent** Large Language Model platform, built on top of **LangChain** and **LangGraph**. Agents collaborate, communicate, and execute workflows to fulfill complex user requests.
+   - **OS**: Ubuntu 24.04.2 LTS x86_64
+   - **Running Scripts**: When running Python scripts that use environment dependencies, start with `uv run`, consistent with the project setup.
+   - **Project Structure**: The current project structure can be viewed using: `tree -L 5 -a`
+
+2. **Architecture Guidelines**
+   - **Component Structure**: Follow a modular approach with clear separation between agent definitions, workflows, and UI components.
+   - **Agent Communication**: Use LangGraph for defining agent workflows and communication patterns.
+   - **State Management**: Leverage Reflex's built-in state management for UI components and application state.
+   - **API Integration**: Use LangChain for integrating with various LLM providers and tools.
+
+3. **Development Workflow**
+   - **Local Development**: Run `uv run reflex run` for local development with hot-reload.
+
+4. **Performance Considerations**
+   - Optimize agent interactions to minimize token usage and latency.
+   - Use caching for expensive LLM operations where appropriate.
+   - Consider streaming responses for better user experience during long-running operations.
+
+5. **Security Best Practices**
+   - Never hardcode API keys or sensitive information in the codebase.
+   - Implement proper user authentication and authorization.
+   - Sanitize user inputs before passing to LLM agents.
+   - Implement rate limiting for API endpoints and LLM requests.

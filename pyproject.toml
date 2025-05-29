@@ -1,0 +1,143 @@
+[project]
+name = "example"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "azure-ai-documentintelligence>=1.0.2",
+    "cairosvg>=2.8.2",
+    "dotenv>=0.9.9",
+    "gunicorn>=23.0.0",
+    "ipykernel>=6.29.5",
+    "kaleido>=1.0.0a1",
+    "langchain>=0.3.25",
+    "langchain-anthropic>=0.3.12",
+    "langchain-azure-ai>=0.1.0",
+    "langchain-community>=0.3.23",
+    "langchain-experimental>=0.3.4",
+    "langchain-google-genai>=2.1.4",
+    "langchain-groq>=0.3.2",
+    "langchain-openai>=0.3.16",
+    "langchain-pinecone>=0.2.5",
+    "langgraph-checkpoint>=2.0.25",
+    "langgraph-checkpoint-sqlite>=2.0.7",
+    "langgraph-supervisor>=0.0.20",
+    "loadenv>=0.1.1",
+    "matplotlib>=3.10.3",
+    "nbformat>=5.10.4",
+    "optuna>=4.3.0",
+    "optuna-dashboard>=0.18.0",
+    "optuna-fast-fanova>=0.0.4",
+    "pandas>=2.2.3",
+    "pinecone>=6.0.2",
+    "plotly>=6.0.1",
+    "pyentrp>=1.0.0",
+    "python-docx>=1.1.2",
+    "rank-bm25>=0.2.2",
+    "reflex>=0.7.10",
+    "ruff>=0.11.11",
+    "scikit-learn>=1.6.1",
+    "tavily-python>=0.7.2",
+    "torch>=2.7.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pre-commit>=3.0.0", # Ajusta la versión según sea necesario
+]
+
+[tool.ruff]
+# Exclude a variety of commonly ignored directories
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+
+# Set line length to 88 (PEP 8 recommendation)
+line-length = 88
+
+# Target Python 3.12
+target-version = "py312"
+
+[tool.ruff.lint]
+# Enable all Pycodestyle (`E`), Pyflakes (`F`), isort (`I`) codes
+# Add more PEP 8 related rules
+select = [
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "I",   # isort
+    "W",   # pycodestyle warnings
+    "C90", # mccabe complexity
+    "N",   # pep8-naming
+    "D",   # pydocstyle
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "A",   # flake8-builtins
+    "COM", # flake8-commas (except COM812)
+    "C4",  # flake8-comprehensions
+    "Q",   # flake8-quotes
+    "SIM", # flake8-simplify
+    "TID", # flake8-tidy-imports
+    "ARG", # flake8-unused-arguments
+    "PTH", # flake8-use-pathlib
+    "ERA", # eradicate
+    "RUF", # ruff-specific rules
+]
+
+# Ignore rules that conflict with the formatter
+ignore = ["COM812", "RUF001", "RUF003", "RUF012"]
+
+# Allow autofix for all enabled and fixable rules
+fixable = ["ALL"]
+unfixable = []
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"] # Allow unused imports in __init__.py files
+
+[tool.ruff.lint.isort]
+# Configure isort rules for import organization
+known-first-party = ["agentic_workflow"]
+section-order = [
+    "future",
+    "standard-library",
+    "third-party",
+    "first-party",
+    "local-folder",
+]
+combine-as-imports = true
+split-on-trailing-comma = true
+lines-after-imports = 2
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.format]
+# Use double quotes for strings
+quote-style = "double"
+# Indent with 4 spaces
+indent-style = "space"
+line-ending = "auto"
+# Enable formatting long strings
+docstring-code-format = true
+# Always add trailing commas in multi-line comma-separated structures
+skip-magic-trailing-comma = false

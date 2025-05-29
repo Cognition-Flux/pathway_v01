@@ -1,0 +1,7 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+Every code script (python, bash, docker, etc) must start with a brief description of what it does.
+Include short and concise docstrings, also, add explanatory comments when considering complex logic or complicated code. It a script is long you have to group the functions or classes in sections and add comments as headlines.

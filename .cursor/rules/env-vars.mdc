@@ -1,0 +1,27 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+## Environment Variables Management
+
+1. **Storage Location**
+   - All environment variables (such as API keys, endpoints, or configuration settings) must be stored in the `.env` file at the project root
+   - Never commit the `.env` file to version control - ensure it's included in `.gitignore`
+   - Provide a `.env.example` file with placeholder values to document required variables
+
+2. **Usage Guidelines**
+   - Use descriptive names in UPPER_SNAKE_CASE format
+   - Group related variables with comments
+   - Include type hints in variable names when appropriate (e.g., `API_KEY`, `URL`, `ENABLED`)
+   - Document the purpose and format of each variable in the `.env.example` file
+
+3. **Access Pattern**
+   - Use the `os.getenv()` function with a default value as a fallback
+   - Validate environment variables at application startup
+   - Consider using a dedicated environment variable management library for complex configurations
+
+4. **Security Considerations**
+   - Never log environment variable values
+   - Treat all environment variables as sensitive information
+   - Implement proper error handling for missing required variables

@@ -1,0 +1,82 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+## Code Guidelines
+
+1. **Code Style Automation**
+   - Ruff is used for all code linting and formatting
+   - All code should pass Ruff checks before being committed
+   - Run `./run_ruff.sh` to check and format code
+
+2. **Implementation Approach**
+   - Prioritize simple, straightforward implementations over complex ones
+   - Choose clarity over cleverness
+   - Use standard library solutions when available
+   - Document complex logic with inline comments
+
+3. **Function Design**
+   - Keep functions focused on a single responsibility
+   - Limit function length to improve readability (aim for <50 lines)
+   - Use type hints for all function parameters and return values
+   - Document function behavior with docstrings
+
+4. **Component Structure**
+   - Maintain clear separation between UI, business logic, and agent definitions
+   - Use descriptive, consistent naming for components and files
+
+5. **Error Handling**
+   - Implement proper error handling with specific exception types
+   - Provide meaningful error messages
+   - Log errors with appropriate context information
+
+6. **Modularity Guidelines**
+   - Break down large features into smaller, cohesive modules
+   - Define clear interfaces between modules with minimal dependencies
+   - Organize related functionality into packages with a logical structure
+   - Keep modules at a similar level of abstraction within the same layer
+   - Implement feature flags for conditionally enabling functionality
+   - Use dependency injection to decouple module implementations
+
+7. **Code Maintainability**
+   - Write self-documenting code with descriptive variable and function names
+   - Use consistent patterns and idioms throughout the codebase
+   - Avoid premature optimization that complicates code
+   - Include appropriate comments for non-obvious logic
+   - Keep configuration separate from implementation
+   - Write comprehensive tests for each module
+
+8. **Object-Oriented Programming (OOP) Practices**
+   - **Class Design Simplicity**
+     - Design classes with a clear, single responsibility (Single Responsibility Principle)
+     - Keep class hierarchies shallow (preferably ≤ 2 levels of inheritance)
+     - Favor composition over inheritance when possible
+     - Implement small, focused interfaces rather than large, monolithic ones
+
+   - **Encapsulation and Information Hiding**
+     - Make attributes private and expose them through properties when necessary
+     - Provide clear, well-named public methods that hide implementation details
+
+   - **Method Design**
+     - Keep methods focused on a single task with descriptive names
+     - Avoid method overloading that complicates understanding
+     - Implement reasonable defaults for method parameters
+     - Minimize side effects in methods
+
+   - **Inheritance and Polymorphism**
+     - Use inheritance only when there is a true "is-a" relationship
+     - Override methods consistently and maintain the Liskov Substitution Principle
+     - Document expected behavior in both parent and child classes
+
+   - **OOP for Maintainability**
+     - Create self-contained objects that can be understood in isolation
+     - Reduce coupling between classes by using dependency injection
+     - Use design patterns judiciously and only when they simplify the solution
+
+9. **Code Organization**
+   - Follow a consistent directory structure that reflects the application architecture
+   - Group related files by feature or domain rather than by technical type
+   - Use meaningful file names that indicate their purpose
+   - Keep file sizes manageable (aim for <300 lines per file)
+   - Establish clear import patterns and avoid circular dependencies

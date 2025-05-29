@@ -1,0 +1,939 @@
+examples:
+  - human: "¿Qué es el envejecimiento?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="1. Buscar información sobre el envejecimiento y sus definiciones",
+                  agent="rag",
+                  reasoning="El agente RAG es el adecuado ya que la consulta está DIRECTAMENTE relacionada con el ENVEJECIMIENTO, que es precisamente la temática central de los documentos científicos en nuestra vectorstore especializada"
+              )
+          ],
+          response="",
+          reasoning="Esta es una pregunta directa sobre un concepto fundamental del envejecimiento que puede ser respondida adecuadamente consultando nuestra base de papers especializada"
+      )
+  - human: "¿Qué es el envejecimiento celular y qué factores lo aceleran?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="1. Buscar información científica sobre la definición y mecanismos del envejecimiento celular",
+                  agent="rag",
+                  reasoning="El agente RAG es el indicado ya que la consulta sobre ENVEJECIMIENTO CELULAR está explícitamente relacionada con procesos de envejecimiento a nivel biológico, tema principal de nuestra vectorstore especializada"
+              ),
+              OneStep(
+                  step="2. Buscar información sobre los factores que aceleran el envejecimiento celular",
+                  agent="rag",
+                  reasoning="El agente RAG debe usarse porque los FACTORES QUE ACELERAN EL ENVEJECIMIENTO son un tema central en la investigación sobre envejecimiento presente en nuestra base de conocimiento científico"
+              )
+          ],
+          response="",
+          reasoning="Esta pregunta tiene dos componentes distintos que requieren búsquedas específicas: primero entender qué es el envejecimiento celular y luego identificar los factores que lo aceleran"
+      )
+  - human: "¿Cuáles son tus capacidades y cómo puedes ayudarme con investigaciones sobre longevidad? ¿qué preguntas puedes responder? ¿qué puedes hacer? ¿qué puedes hacer para ayudarme?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="respond",
+          steps=[],
+          response: |
+            Puedo ayudarte con investigaciones sobre longevidad de varias maneras: buscar información en documentos científicos sobre envejecimiento, realizar búsquedas web para encontrar estudios recientes y analizar datos para identificar patrones relevantes.
+
+            | Capacidad | Descripción | Tipo de consultas |
+            |-----------|-------------|-------------------|
+            | **Búsqueda en documentos científicos** | Acceso a papers y estudios especializados sobre envejecimiento | Mecanismos biológicos, teorías del envejecimiento, factores de longevidad |
+            | **Búsqueda web** | Obtención de información actualizada de internet | Investigaciones recientes, noticias, avances científicos no incluidos en la base de datos |
+            | **Análisis de datos** | Procesamiento de datos estructurados en tablas | Correlaciones, tendencias, comparativas entre variables relacionadas con edad y longevidad |
+            | **Visualizaciones** | Creación de gráficos y representaciones visuales | Tendencias temporales, comparativas, distribuciones estadísticas |
+            | **Reportes** | Generación de informes detallados y estructurados | Resúmenes de investigación, análisis comparativos, revisiones bibliográficas |
+          reasoning: "Esta pregunta solicita directamente información sobre mis capacidades relacionadas con la investigación en longevidad, puedo responder sin necesidad de generar un plan de investigación ya que tengo esta información disponible"
+      )
+  - human: "Necesito analizar la relación entre dieta (comida) y longevidad. Examina los datos disponibles, busca en la literatura científica y complementa con investigaciones recientes."
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="1. Analizar los datos disponibles sobre dieta y longevidad (o edad) para identificar asociaciones",
+                  agent="tables",
+                  reasoning="El agente de tablas es especialista en analizar datos estructurados y puede identificar patrones relevantes entre dieta, edad y longevidad"
+              ),
+              OneStep(
+                  step="2. Buscar en la base de conocimiento estudios científicos sobre los mecanismos biológicos de la dieta y su impacto en la longevidad",
+                  agent="rag",
+                  reasoning="El agente RAG es el adecuado porque esta consulta busca la RELACIÓN ENTRE DIETA Y LONGEVIDAD, siendo la longevidad un aspecto intrínsecamente relacionado con el ENVEJECIMIENTO y sus procesos biológicos. La vectorstore contiene estudios específicos sobre cómo factores nutricionales afectan los mecanismos de envejecimiento"
+              ),
+              OneStep(
+                  step="3. Buscar investigaciones recientes y metaanálisis sobre dieta y su relación con la longevidad en diferentes poblaciones y especies",
+                  agent="websearch",
+                  reasoning="El agente de búsqueda web debe usarse para complementar la información de la vectorstore con INVESTIGACIONES RECIENTES que NO ESTÁN INCLUIDAS en nuestra base de conocimiento sobre envejecimiento por ser publicaciones nuevas o por abarcar poblaciones y especies no cubiertas en detalle en nuestra vectorstore especializada"
+              )
+          ],
+          response="",
+          reasoning="Esta consulta requiere un análisis multidimensional que combine datos estadísticos, conocimiento científico establecido e investigaciones recientes, necesitando la coordinación de múltiples agentes especializados"
+      )
+  - human: "Investiga qué son la rapamicina y la metformina (se consideran fármacos, medicamentos, drogas, etc). Prepara un informe detallado."
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="1. Buscar información científica actualizada sobre la rapamicina, su mecanismo de acción y su potencial relación con el envejecimiento y la longevidad",
+                  agent="websearch",
+                  reasoning="El agente de búsqueda web es el adecuado porque la consulta sobre RAPAMICINA como fármaco general NO ESTÁ PRIMARIAMENTE ENFOCADA EN SU RELACIÓN CON EL ENVEJECIMIENTO, sino en información farmacológica general que no es el foco principal de nuestra vectorstore especializada en envejecimiento"
+              ),
+              OneStep(
+                  step="2. Buscar información científica actualizada sobre la metformina, su mecanismo de acción y sus posibles efectos en el envejecimiento",
+                  agent="websearch",
+                  reasoning="El agente de búsqueda web debe usarse porque la consulta sobre METFORMINA como fármaco general NO ESTÁ DIRECTAMENTE RELACIONADA CON EL ENVEJECIMIENTO como tema central, sino que busca información farmacológica amplia que está fuera del alcance principal de nuestra vectorstore especializada"
+              ),
+              OneStep(
+                  step="3. Analizar los datos encontrados sobre ambos compuestos para identificar patrones y comparar sus efectos",
+                  agent="tables",
+                  reasoning="El agente de tablas puede organizar y analizar comparativamente la información sobre los mecanismos de acción, efectos y evidencia científica de ambos compuestos"
+              )
+          ],
+          response="",
+          reasoning="Esta solicitud requiere investigación especializada (NO RELACIONADA CON ENVEJECIMIENTO) sobre dos compuestos farmacológicos específicos y el análisis comparativo de la información recopilada"
+      )
+  - human: "¿Cómo puedo vivir más? ¿qué puedo hacer para extender mi vida? no quiero morir (quiero ser inmortal), no quiero envejecer, quiero envejecer bien, saludable y con calidad"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="1. Buscar información científica sobre estrategias e intervenciones para extender la longevidad humana",
+                  agent="rag",
+                  reasoning="El agente RAG es el más apropiado porque la consulta sobre EXTENDER LA VIDA y ENVEJECER SALUDABLEMENTE está directamente relacionada con los procesos de ENVEJECIMIENTO y LONGEVIDAD, temas centrales de nuestra vectorstore que contiene investigación científica especializada sobre intervenciones que pueden modular estos procesos"
+              )
+          ],
+          response="",
+          reasoning="Esta pregunta está directamente relacionada con el campo del envejecimiento y la longevidad, por lo que puede ser respondida consultando la base de conocimiento especializada en papers sobre envejecimiento"
+      )
+  - human: "¿Qué es la dieta con restricción calórica y qué es el ayuno?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="1. Buscar información general sobre la dieta con restricción calórica, sus definiciones, métodos de implementación y su relación con la longevidad y el envejecimiento",
+                  agent="websearch",
+                  reasoning="El agente de búsqueda web es necesario porque la consulta solicita información GENERAL sobre la RESTRICCIÓN CALÓRICA como práctica nutricional, NO ENFOCADA ESPECÍFICAMENTE en su relación con el envejecimiento. La vectorstore especializada contendría información limitada sobre los aspectos generales, definiciones y métodos de implementación de esta dieta"
+              ),
+              OneStep(
+                  step="2. Buscar información general sobre el ayuno, sus diferentes tipos, prácticas recomendadas y sus posibles efectos en el proceso de envejecimiento",
+                  agent="websearch",
+                  reasoning="El agente de búsqueda web debe usarse porque la consulta busca información GENERAL sobre el AYUNO como práctica nutricional, NO CENTRADA en sus efectos sobre el envejecimiento. Nuestra vectorstore especializada en envejecimiento no contiene información completa sobre los diferentes tipos de ayuno y sus implementaciones desde una perspectiva nutricional general"
+              )
+          ],
+          response="",
+          reasoning="Esta pregunta solicita información general sobre dos prácticas nutricionales específicas. Aunque tienen relación con la salud, la pregunta no está enfocada en su relación con el envejecimiento, sino en qué son estas prácticas desde un punto de vista nutricional, por lo que es mejor buscar información general en la web"
+      )
+  - human: "hola"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="respond",
+          steps=[],
+          response: "¡Hola! ¿En qué puedo ayudarte hoy con información sobre longevidad o envejecimiento?",
+          reasoning: "El usuario está saludando, por lo que debo responder directamente con un saludo breve y ofrecer ayuda relacionada con el tema de la aplicación"
+      )
+  - human: "gracias, chao."
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="respond",
+          steps=[],
+          response: "¡De nada! Hasta pronto. Si necesitas más información sobre longevidad o envejecimiento en el futuro, estaré aquí para ayudarte.",
+          reasoning: "El usuario se está despidiendo y agradeciendo, por lo que debo responder directamente con una despedida cordial sin necesidad de elaborar un plan"
+      )
+  - human: "Busca información en internet sobre qué es el cerebro y sus funciones, y prepara un informe detallado sobre cómo cambia con el envejecimiento."
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="1. Buscar información actualizada sobre el cerebro, su estructura, funciones y los cambios que experimenta durante el proceso de envejecimiento",
+                  agent="websearch",
+                  reasoning="El agente de búsqueda web es el adecuado porque la consulta requiere información general sobre EL CEREBRO y sus FUNCIONES que va más allá del enfoque específico de nuestra vectorstore especializada en envejecimiento. Se necesita información amplia y actualizada sobre neuroanatomía y fisiología cerebral para establecer la base del informe"
+              ),
+              OneStep(
+                  step="2. Complementar con búsqueda en estudios específicos sobre envejecimiento cerebral y sus implicaciones",
+                  agent="rag",
+                  reasoning="El agente RAG puede proporcionar información especializada de la vectorstore sobre los cambios cerebrales relacionados específicamente con el ENVEJECIMIENTO, complementando la información general obtenida anteriormente"
+              ),
+              OneStep(
+                  step="3. Analizar los datos recopilados para identificar patrones en los cambios cerebrales asociados con el envejecimiento",
+                  agent="tables",
+                  reasoning="El agente de tablas puede organizar y analizar sistemáticamente la información sobre las distintas regiones cerebrales y cómo se ven afectadas por el envejecimiento"
+              )
+          ],
+          response="",
+          reasoning="Esta solicitud requiere primero una búsqueda de información actualizada sobre el cerebro, luego complementarla con estudios especializados sobre envejecimiento y finalmente analizar los datos de forma estructurada"
+      )
+  - human: "En base a las tablas, dame un resumen de la dieta de los pacientes, luego en base a los papers concluye cómo va a envejecer la cohorte de pacientes"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="1. Analizar las tablas de datos sobre la dieta de los pacientes para identificar patrones alimenticios predominantes",
+                  agent="tables",
+                  reasoning="El agente de tablas es el más adecuado para analizar DATOS ESTRUCTURADOS sobre la DIETA de los pacientes, ya que puede procesar información tabular, identificar tendencias y resumir hábitos alimenticios de manera eficiente"
+              ),
+              OneStep(
+                  step="2. Buscar en la literatura científica estudios sobre cómo los patrones dietéticos identificados influyen en el proceso de envejecimiento",
+                  agent="rag",
+                  reasoning="El agente RAG es el apropiado para buscar información científica sobre la RELACIÓN ENTRE DIETA Y ENVEJECIMIENTO, tema directamente relacionado con los procesos de envejecimiento que están documentados en nuestra vectorstore especializada"
+              )
+          ],
+          response="",
+          reasoning="Esta consulta requiere primero analizar datos estructurados sobre la dieta de los pacientes y luego correlacionar estos patrones alimenticios con información científica sobre cómo afectan al proceso de envejecimiento"
+      )
+  - human: "Analizar los datos en las tablas"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="1. Obtener estadísticas generales de todas las tablas disponibles en la base de datos",
+                  agent="tables",
+                  reasoning="El agente de tablas es el indicado para analizar DATOS ESTRUCTURADOS en TODAS LAS TABLAS disponibles, ya que puede procesar eficientemente información tabular y generar estadísticas descriptivas generales que permitan entender la distribución y características de los datos"
+              )
+          ],
+          response="",
+          reasoning="Esta consulta solicita un análisis general de los datos en las tablas, sin especificar ninguna variable o aspecto particular, por lo que se requiere obtener estadísticas generales de todas las tablas para proporcionar una visión global de los datos disponibles"
+      )
+  - human: "¿Es posible generar gráficos, visualizaciones o representaciones visuales de datos para entender mejor los patrones de envejecimiento? Me gustaría poder ver diagramas, plots o imágenes que ilustren la información."
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="respond",
+          steps=[],
+          response: |
+            ¡Sí, es posible generar gráficos, visualizaciones y representaciones visuales de datos! Para crear estas visualizaciones necesitamos primero obtener la información relevante sobre la cual construir los gráficos. Esta información puede provenir de diferentes fuentes: documentos científicos en nuestra base de conocimiento sobre envejecimiento, análisis de datos estructurados en tablas, o mediante búsquedas web para obtener datos actualizados.
+
+            | Tipo de visualización | Aplicación | Fuente de datos requerida |
+            |------------------------|------------|---------------------------|
+            | **Gráficos de barras** | Comparación de factores de envejecimiento entre grupos | Análisis de tablas, documentos científicos |
+            | **Gráficos de líneas** | Tendencias temporales en procesos de envejecimiento | Series temporales de datos estructurados |
+            | **Diagramas de dispersión** | Correlaciones entre variables (ej: dieta y longevidad) | Datos numéricos de múltiples variables |
+            | **Mapas de calor** | Distribución de factores por regiones o grupos | Datos categóricos y numéricos |
+            | **Diagramas de flujo** | Procesos biológicos del envejecimiento | Documentos científicos, búsqueda web |
+
+            Una vez recopilada la información necesaria, podemos crear estos diversos tipos de visualizaciones que te ayudarán a comprender mejor los patrones de envejecimiento que te interesen.
+
+            Para obtener información actualizada desde la web, mi búsqueda está restringida a estos dominios científicos y académicos:
+
+            - wikipedia.org
+            - arxiv.org
+            - pubmed.ncbi.nlm.nih.gov
+            - link.springer.com
+            - tandfonline.com
+            - onlinelibrary.wiley.com
+            - sciencedirect.com
+            - journals.plos.org
+            - nature.com
+            - frontiersin.org/journals
+            - mdpi.com
+          reasoning: "El usuario pregunta directamente sobre la capacidad de generar visualizaciones, por lo que puedo responder inmediatamente sin necesidad de elaborar un plan, explicando que sí es posible pero que primero debemos obtener la información necesaria de nuestras fuentes disponibles"
+      )
+  - human: "Necesito crear representaciones gráficas para mi investigación sobre longevidad. ¿Puedes ayudarme a producir diagramas, charts, plots o cualquier tipo de visualización de datos para ilustrar tendencias sobre factores que afectan el envejecimiento? Estoy especialmente interesado en ver correlaciones visuales entre diferentes variables."
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="respond",
+          steps=[],
+          response: |
+            ¡Definitivamente puedo ayudarte a crear representaciones gráficas para tu investigación sobre longevidad! Para generar visualizaciones efectivas, primero necesitamos recopilar la información relevante sobre la cual construir estas representaciones visuales.
+
+            | Tipo de visualización | Mejor para visualizar | Ejemplos de aplicación en longevidad |
+            |------------------------|----------------------|--------------------------------------|
+            | **Gráficos de dispersión** | Correlaciones entre variables | Relación entre niveles de antioxidantes y edad biológica |
+            | **Gráficos de líneas** | Tendencias a lo largo del tiempo | Cambios en biomarcadores durante el envejecimiento |
+            | **Gráficos de barras** | Comparaciones entre grupos | Diferencias en longevidad según hábitos alimenticios |
+            | **Gráficos de caja** | Distribuciones y valores atípicos | Variabilidad en marcadores de envejecimiento por grupo etario |
+            | **Mapas de calor** | Patrones complejos multivariables | Interacciones entre genes, dieta y longevidad |
+            | **Gráficos circulares** | Composiciones proporcionales | Distribución de factores que contribuyen al envejecimiento |
+
+            Esta información puede obtenerse a través de: 1) análisis de documentos científicos en nuestra base de conocimiento especializada en envejecimiento, 2) procesamiento y análisis de datos estructurados en tablas que contengan variables relacionadas con la longevidad, o 3) búsquedas web (limitadas a los dominios listados abajo) para complementar con datos actualizados o estudios recientes.
+
+            - wikipedia.org
+            - arxiv.org
+            - pubmed.ncbi.nlm.nih.gov
+            - link.springer.com
+            - tandfonline.com
+            - onlinelibrary.wiley.com
+            - sciencedirect.com
+            - journals.plos.org
+            - nature.com
+            - frontiersin.org/journals
+            - mdpi.com
+
+            Una vez que tengamos estos datos, podemos crear visualizaciones que muestren claramente las correlaciones entre diferentes variables y factores que afectan el envejecimiento, lo que te permitirá identificar patrones y tendencias significativas para tu investigación.
+          reasoning: "El usuario solicita específicamente información sobre la capacidad de crear visualizaciones para su investigación, por lo que puedo responder directamente sin necesidad de elaborar un plan, explicando el proceso para generar visualizaciones a partir de diferentes fuentes de datos"
+      )
+  - human: "¿Puedes generar reportes, informes o documentos de análisis sobre temas de longevidad y envejecimiento? Me interesa saber si es posible obtener documentación detallada, resúmenes ejecutivos o papers que sinteticen información relevante."
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="respond",
+          steps=[],
+          response: |
+            ¡Sí, puedo generar reportes, informes y documentos de análisis sobre temas de longevidad y envejecimiento! Para crear documentación de alta calidad, primero necesitamos recopilar la información pertinente que servirá como base para el reporte.
+
+            | Tipo de documento | Características | Aplicaciones en investigación de longevidad |
+            |-------------------|-----------------|---------------------------------------------|
+            | **Informes técnicos** | Detallados, con análisis en profundidad | Revisión exhaustiva de mecanismos moleculares del envejecimiento |
+            | **Resúmenes ejecutivos** | Concisos, destacan puntos clave | Síntesis de hallazgos principales sobre intervenciones anti-envejecimiento |
+            | **White papers** | Informativos, enfoque en soluciones | Propuestas de enfoques innovadores para extender la vida saludable |
+            | **Revisiones bibliográficas** | Compilación de literatura científica | Estado actual del conocimiento sobre telómeros y longevidad |
+            | **Análisis comparativos** | Contraste entre estudios o enfoques | Comparación de diferentes dietas y su impacto en la longevidad |
+            | **Presentaciones estructuradas** | Formato visual con puntos clave | Material didáctico sobre hallazgos en investigación del envejecimiento |
+
+            Esta información puede obtenerse de tres fuentes principales: 1) documentos científicos y papers de nuestra base de conocimiento especializada en envejecimiento, 2) análisis de datos estructurados en tablas que contengan métricas y estadísticas relevantes, o 3) búsquedas web dentro de los siguientes dominios para incorporar investigaciones recientes y datos actualizados.
+
+            - wikipedia.org
+            - arxiv.org
+            - pubmed.ncbi.nlm.nih.gov
+            - link.springer.com
+            - tandfonline.com
+            - onlinelibrary.wiley.com
+            - sciencedirect.com
+            - journals.plos.org
+            - nature.com
+            - frontiersin.org/journals
+            - mdpi.com
+
+            Los reportes pueden incluir secciones como introducción, metodología, resultados, discusión y conclusiones, adaptados específicamente a tus requerimientos y nivel de detalle deseado.
+          reasoning: "El usuario pregunta directamente sobre la capacidad de generar reportes e informes, por lo que puedo responder inmediatamente sin necesidad de elaborar un plan, explicando que sí es posible pero que primero debemos obtener la información necesaria de nuestras fuentes disponibles"
+      )
+  - human: "Busca datos de biomarcadores en las tablas y genera un gráfico de serie temporal"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="1. Usar pandas para iterar cada dataframe y aplicar `df.select_dtypes(include=['datetime', 'datetimetz'])` o buscar columnas con nombres como 'fecha', 'timestamp', 'time' y convertirlas con `pd.to_datetime` para comprobar si son válidas",
+                  agent="tables",
+                  reasoning="El agente de tablas es necesario para explorar las tablas disponibles y encontrar aquella que incluya la columna relacionada con biomarcadores"
+              ),
+              OneStep(
+                  step="2. Extraer de la tabla identificada los datos en formato de serie temporal (fecha/tiempo vs biomarcador)",
+                  agent="tables",
+                  reasoning="Una vez localizada la tabla, el agente de tablas puede filtrar y organizar los datos temporales del biomarcador para su posterior visualización"
+              ),
+              OneStep(
+                  step="3. Generar un gráfico de serie temporal a partir de los datos extraídos del biomarcador",
+                  agent="plot_generator",
+                  reasoning="El agente plot_generator es el adecuado para crear la visualización que muestre la evolución temporal del biomarcador"
+              )
+          ],
+          response="",
+          reasoning="La solicitud requiere un flujo de tres pasos: primero localizar la tabla pertinente, luego procesar los datos temporales y finalmente generar la visualización solicitada"
+      )
+  - human: "Analiza los indicadores biológicos en las tablas y genera una gráfica de línea temporal"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="1. Buscar en las tablas la que contenga la variable 'indicador biológico', 'marcadores biológicos' o términos relacionados",
+                  agent="tables",
+                  reasoning="El agente de tablas debe identificar la tabla pertinente buscando sinónimos de biomarcadores como 'indicador biológico' o 'marcadores biológicos'"
+              ),
+              OneStep(
+                  step="2. Extraer de la tabla seleccionada los datos cronológicos del indicador biológico para construir la serie temporal",
+                  agent="tables",
+                  reasoning="Con la tabla localizada, el agente de tablas puede filtrar y ordenar los datos en función del tiempo para preparar la visualización"
+              ),
+              OneStep(
+                  step="3. Generar una gráfica de línea temporal a partir de los datos obtenidos del indicador biológico",
+                  agent="plot_generator",
+                  reasoning="El agente plot_generator creará la visualización de la evolución temporal del indicador biológico empleando una gráfica de líneas"
+              )
+          ],
+          response="",
+          reasoning="Se sigue la misma lógica que el ejemplo anterior, usando sinónimos para mejorar la búsqueda semántica: localizar la tabla, extraer la serie temporal y generar la gráfica"
+      )
+  - human: "Dame una descripción de los datos que tengo en las tablas."
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="1. Obtener una descripción general (resumen, inventario, vista panorámica, perfil) de todas las tablas, listando columnas, tipos de datos y conteos básicos",
+                  agent="tables",
+                  reasoning="El agente de tablas es el indicado para generar una DESCRIPCIÓN, RESUMEN, INVENTARIO o PERFIL de la información tabular disponible, proporcionando metadatos como nombres de columnas, tipos de datos y estadísticas descriptivas que faciliten la comprensión del contenido"
+              )
+          ],
+          response="",
+          reasoning="El usuario solicita una DESCRIPCIÓN global (resumen, panorama, caracterización) de los datos presentes en las tablas, lo que se resuelve con un único paso utilizando el agente de tablas"
+      )
+  - human: "Necesito un inventario global de las tablas disponibles: ¿qué contienen y cuántos registros hay por tabla?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="1. Generar un inventario/catálogo/listado completo de las tablas (dataset, conjunto de datos), indicando para cada una sus columnas, tipos, tamaño (conteo, número de filas) y descripción breve",
+                  agent="tables",
+                  reasoning="El agente de tablas puede elaborar un INVENTARIO, CATÁLOGO o LISTADO con información detallada sobre cada tabla, incluyendo columnas, tipos de datos y número de registros, proporcionando así una visión panorámica del dataset"
+              )
+          ],
+          response="",
+          reasoning="La petición requiere un único paso de análisis con el agente de tablas para obtener un INVENTARIO o RESUMEN global de todas las tablas y sus características principales"
+      )
+  - human: "¿Cuál es la temática de los papers?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="1. Obtener un panorama/visión general/clasificación temática de todos los papers (artículos, publicaciones, estudios) recopilados, identificando áreas de investigación, objetivos, conclusiones y líneas de trabajo principales",
+                  agent="rag",
+                  reasoning="El agente RAG es el apropiado para analizar el corpus de papers y extraer la TEMÁTICA, ASUNTO, ENFOQUE o CAMPO de estudio predominante, así como los objetivos y conclusiones generales"
+              )
+          ],
+          response="",
+          reasoning="El usuario desea conocer la TEMÁTICA global (asunto, orientación, disciplina) de los papers; se resuelve con un único paso mediante el agente RAG"
+      )
+  - human: "Necesito una visión global sobre el enfoque de investigación de los artículos académicos: ¿de qué tratan y qué hallazgos reportan?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="1. Analizar los artículos/papers/publicaciones para resumir su enfoque, campos temáticos, hipótesis, objetivos y hallazgos/resultados principales",
+                  agent="rag",
+                  reasoning="El agente RAG puede compilar un RESUMEN temático y de conclusiones, identificando ÁREAS DE ESTUDIO, OBJETIVOS, METAS, RESULTADOS y CONCLUSIONES de las publicaciones"
+              )
+          ],
+          response="",
+          reasoning="La petición requiere un único paso de análisis con el agente RAG para generar una VISIÓN global del enfoque temático y hallazgos de los artículos"
+      )
+  - human: "¿De qué tratan los documentos a los que tienes acceso?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="1. Revisar los documentos/archivos/textos/fuentes disponibles para generar un resumen temático (panorama, sinopsis, clasificación de tópicos), incluyendo objetivos y conclusiones generales",
+                  agent="rag",
+                  reasoning="El agente RAG es el más adecuado para examinar el corpus de DOCUMENTOS (archivos, textos, materiales, fuentes) y extraer su CONTENIDO, TEMÁTICA, PROPÓSITO y CONCLUSIONES principales en un único paso"
+              )
+          ],
+          response="",
+          reasoning="El usuario solicita conocer de qué TRATAN los DOCUMENTOS; basta un único paso usando el agente RAG para ofrecer un resumen temático"
+      )
+  - human: "Proporcióname una visión temática de los documentos disponibles: ¿qué temas abordan, qué objetivos persiguen y qué resultados presentan?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="1. Analizar el conjunto de documentos/fuentes/publicaciones para identificar temas/tópicos, objetivos/propósitos e insights/resultados clave, creando una clasificación o mapa temático",
+                  agent="rag",
+                  reasoning="El agente RAG puede sintetizar la INFORMACIÓN TEMÁTICA de los DOCUMENTOS (fuentes, publicaciones, archivos) y presentar los principales tópicos, objetivos y hallazgos en un solo paso"
+              )
+          ],
+          response="",
+          reasoning="Se requiere un único paso con el agente RAG para brindar una VISIÓN temático-conceptual de los documentos disponibles"
+      )
+  - human: "¿En qué sitios web, portales o páginas de internet puedes realizar tus búsquedas?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="respond",
+          steps=[],
+          response: |
+            Puedo buscar información en una selección de dominios científicos y académicos, incluyendo:
+
+            - wikipedia.org
+            - arxiv.org
+            - pubmed.ncbi.nlm.nih.gov
+            - link.springer.com
+            - tandfonline.com
+            - onlinelibrary.wiley.com
+            - sciencedirect.com
+            - journals.plos.org
+            - nature.com
+            - frontiersin.org/journals
+            - mdpi.com
+          reasoning: "El usuario pregunta directamente por los SITIOS WEB donde realizo búsquedas; puedo responder de forma inmediata listando los DOMINIOS configurados"
+      )
+  - human: "¿Qué páginas o dominios consultas en la web cuando necesitas literatura académica o papers?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="respond",
+          steps=[],
+          response: |
+            Para búsquedas académicas suelo consultar los siguientes dominios/plataformas:
+
+            - wikipedia.org
+            - arxiv.org
+            - pubmed.ncbi.nlm.nih.gov
+            - link.springer.com
+            - tandfonline.com
+            - onlinelibrary.wiley.com
+            - sciencedirect.com
+            - journals.plos.org
+            - nature.com
+            - frontiersin.org/journals
+            - mdpi.com
+          reasoning: "La consulta solicita saber QUÉ PÁGINAS uso para obtener literatura científica; respondo listando los DOMINIOS predefinidos"
+      )
+  - human: "Indícame los sitios, portales o websites que abarcas al explorar la información en línea (buscador web)."
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="respond",
+          steps=[],
+          response: |
+            Mi herramienta de búsqueda está configurada para filtrar resultados dentro de estos dominios especializados:
+
+            - wikipedia.org
+            - arxiv.org
+            - pubmed.ncbi.nlm.nih.gov
+            - link.springer.com
+            - tandfonline.com
+            - onlinelibrary.wiley.com
+            - sciencedirect.com
+            - journals.plos.org
+            - nature.com
+            - frontiersin.org/journals
+            - mdpi.com
+          reasoning: "El usuario requiere una VISIÓN de los DOMINIOS que manejo; puedo responder de inmediato enumerando la lista de portales"
+      )
+  - human: "¿Qué puedes hacer? ¿Qué haces? ¿Cómo puedes ayudar?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="respond",
+          steps=[],
+          response: |
+            ¡Puedo asistirte de muchas formas! A continuación encontrarás un desglose exhaustivo–y rico en sinónimos–de mis **competencias, facultades, funciones, habilidades y utilidades** dentro de la plataforma:
+
+            1. **Consulta de documentos científicos**
+               • Recuperación, búsqueda, extracción y revisión de *papers*, artículos, publicaciones y literatura académica almacenada en nuestra vectorstore especializada en envejecimiento.
+               • Síntesis, resumen y elaboración de respuestas basadas en evidencia.
+
+            2. **Exploración web**
+               • Localizo estudios recientes, noticias, metaanálisis y avances que aún no figuran en la base interna.
+               • Mis búsquedas están filtradas a dominios científicos confiables para maximizar la relevancia y la calidad de la información:
+
+               - wikipedia.org
+               - arxiv.org
+               - pubmed.ncbi.nlm.nih.gov
+               - link.springer.com
+               - tandfonline.com
+               - onlinelibrary.wiley.com
+               - sciencedirect.com
+               - journals.plos.org
+               - nature.com
+               - frontiersin.org/journals
+               - mdpi.com
+
+            3. **Análisis de datos tabulares (tablas, datasets, hojas de cálculo, dataframes)**
+               • Genero estadísticas descriptivas, correlaciones, comparativas y perfiles de datos.
+               • Identifico patrones, tendencias y anomalías relevantes.
+
+            4. **Visualización y representación gráfica (gráficos, diagramas, plots, charts, mapas de calor)**
+               • Transformo datos numéricos en imágenes claras para facilitar la interpretación.
+               • Admito gráficas de barras, líneas, dispersión, cajas, circulares y flujos.
+
+            5. **Generación de reportes, informes, resúmenes ejecutivos y white papers**
+               • Compilo hallazgos, metodologías y conclusiones en documentos estructurados y listos para compartir.
+               • Adapto el nivel de detalle según la audiencia (técnico, ejecutivo, divulgativo).
+
+            6. **Asistencia general y conceptual**
+               • Explico conceptos, defino términos, clarifico dudas y proporciono contexto histórico o científico.
+               • Sugiero estrategias, metodologías y próximos pasos de investigación.
+
+            En resumen, soy un **asistente integral** que combina capacidades de *information retrieval*, *web crawling*, análisis de datos y generación de conocimiento para apoyar tu investigación sobre longevidad y envejecimiento.
+          reasoning: "El usuario formula preguntas abiertas sobre mis capacidades; respondo directamente con una descripción VERBOSA y repleta de sinónimos para mejorar la búsqueda semántica, incluyendo la lista de dominios utilizados en la búsqueda web"
+      )
+  - human: "¿Puedes buscar en internet?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="respond",
+          steps=[],
+          response: |
+            Sí, dispongo de capacidad para *navegar y consultar* información en la web. No obstante, mi acceso está **restringido y optimizado** a un conjunto de dominios científicos de alta fiabilidad para garantizar rigor académico:
+
+            - wikipedia.org
+            - arxiv.org
+            - pubmed.ncbi.nlm.nih.gov
+            - link.springer.com
+            - tandfonline.com
+            - onlinelibrary.wiley.com
+            - sciencedirect.com
+            - journals.plos.org
+            - nature.com
+            - frontiersin.org/journals
+            - mdpi.com
+
+            De esta forma aseguro que los resultados provengan de fuentes reconocidas y pertinentes para temas de longevidad y envejecimiento.
+          reasoning: "El usuario pregunta si puedo buscar en internet; respondo afirmativamente pero aclaro la LIMITACIÓN a dominios científicos concretos"
+      )
+  - human: "¿Tienes conexión a internet o acceso online?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="respond",
+          steps=[],
+          response: |
+            Efectivamente, cuento con *conectividad en línea* para realizar búsquedas. Sin embargo, mi motor de búsqueda está **acotado a portales académicos y bases de datos científicas** para preservar la calidad de las referencias:
+
+            - wikipedia.org
+            - arxiv.org
+            - pubmed.ncbi.nlm.nih.gov
+            - link.springer.com
+            - tandfonline.com
+            - onlinelibrary.wiley.com
+            - sciencedirect.com
+            - journals.plos.org
+            - nature.com
+            - frontiersin.org/journals
+            - mdpi.com
+          reasoning: "Aclaro que sí hay conexión online, pero está circunscrita a los dominios listados para asegurar la pertinencia científica"
+      )
+  - human: "¿Puedes acceder a internet para obtener información externa?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="respond",
+          steps=[],
+          response: |
+            Sí, puedo *acceder, consultar y recuperar* información externa. No obstante, mi alcance está **deliberadamente limitado** a los siguientes sitios especializados, lo que me permite ofrecer resultados confiables y enfocados en investigación:
+
+            - wikipedia.org
+            - arxiv.org
+            - pubmed.ncbi.nlm.nih.gov
+            - link.springer.com
+            - tandfonline.com
+            - onlinelibrary.wiley.com
+            - sciencedirect.com
+            - journals.plos.org
+            - nature.com
+            - frontiersin.org/journals
+            - mdpi.com
+          reasoning: "Indico que el acceso a internet existe pero se restringe a la lista de dominios científicos por motivos de calidad y relevancia"
+      )
+  - human: "Necesito saber la relación, correlación o asociación entre la alimentación y el envejecimiento saludable."
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="1. Interrogar la base vectorial para recuperar artículos, papers y revisiones sobre DIETA, NUTRICIÓN, INGESTA ALIMENTARIA y su vínculo con ENVEJECIMIENTO SALUDABLE, SENESCENCIA POSITIVA y LARGA VIDA",
+                  agent="rag",
+                  reasoning="El agente RAG es idóneo para indagar en la vectorstore y extraer conocimiento consolidado acerca de cómo la alimentación (nutrición, dieta, patrones dietéticos) repercute en la longevidad y la calidad de vida en edades avanzadas"
+              ),
+              OneStep(
+                  step="2. Ejecutar una búsqueda web avanzada para localizar estudios contemporáneos, metaanálisis recientes y noticias científicas de última hora sobre NUTRICIÓN y AGING WELL",
+                  agent="websearch",
+                  reasoning="El agente websearch aportará información FRESCA y ACTUAL, capturando publicaciones emergentes (preprints, conferencias, notas de prensa) que aún no figuran en la vectorstore, completando la panorámica con evidencias recientes"
+              )
+          ],
+          response="",
+          reasoning="La consulta exige un abordaje en dos fases: primero extraer evidencia estable de la base interna mediante RAG y luego complementar con hallazgos novísimos a través de la búsqueda web"
+      )
+  - human: "Explícame si hay vínculo, nexo o conexión entre la dieta y un envejecimiento sano, robusto y longevo."
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="1. Consultar la vectorstore para rescatar información sobre PATRONES ALIMENTARIOS, MACRONUTRIENTES, MICROBIOTA y su efecto en LONGEVIDAD y AGING HEALTHY",
+                  agent="rag",
+                  reasoning="Mediante RAG se accede rápidamente a literatura indexada que describe la influencia de distintos regímenes nutricionales (restricción calórica, dietas mediterráneas, ayuno intermitente, etc.) en biomarcadores de envejecimiento sano"
+              ),
+              OneStep(
+                  step="2. Realizar una indagación en línea para detectar investigaciones punteras, ensayos clínicos actuales y reportes divulgativos sobre NUTRICIÓN y HEALTHSPAN",
+                  agent="websearch",
+                  reasoning="El agente de búsqueda web ampliará la base de evidencia con publicaciones recientes (último año) procedentes de los dominios científicos autorizados"
+              )
+          ],
+          response="",
+          reasoning="Se emplea una doble estrategia (RAG + websearch) para articular una respuesta completa que combine investigación consagrada y hallazgos de vanguardia"
+      )
+  - human: "Quiero conocer qué relación, interacción o impacto tiene la comida, la dieta o la nutrición sobre un envejecimiento próspero, saludable y de calidad."
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="1. Buscar en la vectorstore literatura sobre FACTORES DIETÉTICOS, SUPLEMENTOS NUTRICIONALES y su repercusión en la ESPERANZA DE VIDA SALUDABLE",
+                  agent="rag",
+                  reasoning="RAG permite recuperar rápidamente revisiones sistemáticas, estudios observacionales y ensayos que relacionan la ingesta alimentaria con procesos biológicos de senescencia y bienestar en la tercera edad"
+              ),
+              OneStep(
+                  step="2. Complementar con una exploración web para capturar artículos novedosos, recomendaciones de organismos de salud y tendencias actuales en NUTRIGERONTOLOGÍA",
+                  agent="websearch",
+                  reasoning="El agente websearch proporcionará la perspectiva más reciente, incluyendo publicaciones en servidores de preprints y revistas de alto impacto que aún no están incorporadas al corpus interno"
+              )
+          ],
+          response="",
+          reasoning="La pregunta requiere articular una visión holística: evidencia consolidada (RAG) + información emergente (websearch) sobre la interacción entre dieta y envejecimiento saludable"
+      )
+  - human: "¿El ejercicio físico puede ralentizar el envejecimiento?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="1. Explorar en la vectorstore papers y revisiones sobre EJERCICIO FÍSICO, ACTIVIDAD AERÓBICA y su efecto en ENVEJECIMIENTO, LONGEVIDAD y MARCADORES CELULARES",
+                  agent="rag",
+                  reasoning="El agente RAG recupera literatura consolidada que relaciona la actividad física con la modulación de los procesos de envejecimiento"
+              ),
+              OneStep(
+                  step="2. Realizar una búsqueda web avanzada para encontrar estudios recientes, ensayos clínicos y meta-análisis sobre EJERCICIO y AGING",
+                  agent="websearch",
+                  reasoning="El agente websearch complementa con evidencia actualizada publicada en los últimos meses"
+              )
+          ],
+          response="",
+          reasoning="Se requiere un plan de dos pasos: primero extraer evidencia de la base interna (RAG) y luego contrastar con hallazgos web actuales"
+      )
+  - human: "¿Dormir bien influye en el envejecimiento celular?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="1. Recuperar artículos sobre CALIDAD DEL SUEÑO, CICLOS CIRCADIANOS y sus efectos en ENVEJECIMIENTO CELULAR dentro de la vectorstore",
+                  agent="rag",
+                  reasoning="RAG extrae estudios que analizan cómo el sueño modula procesos celulares de senescencia"
+              ),
+              OneStep(
+                  step="2. Buscar en la web investigaciones recientes y revisiones sistemáticas sobre SLEEP QUALITY y CELLULAR AGING",
+                  agent="websearch",
+                  reasoning="websearch amplía con publicaciones de último año no incluidas en la base"
+              )
+          ],
+          response="",
+          reasoning="La pregunta requiere evidencia estable y actual, por lo que se emplean RAG y websearch en secuencia"
+      )
+  - human: "¿El estrés acelera el envejecimiento?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="1. Consultar la vectorstore sobre ESTRÉS CRÓNICO, CORTISOL y su relación con ACORTAMIENTO DE TELÓMEROS y SENESCENCIA",
+                  agent="rag",
+                  reasoning="RAG provee estudios mecanísticos que vinculan estrés y envejecimiento"
+              ),
+              OneStep(
+                  step="2. Buscar evidencia reciente en la web (meta-análisis, reviews) sobre STRESS y AGEING",
+                  agent="websearch",
+                  reasoning="websearch aporta la literatura más nueva y diversa"
+              )
+          ],
+          response="",
+          reasoning="Dos pasos garantizan una visión completa: corpus interno + literatura emergente"
+      )
+  - human: "¿Fumar envejece más rápido el cuerpo?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="1. Buscar en la vectorstore estudios sobre TABACO, TABAQUISMO y su impacto en MARCADORES DE ENVEJECIMIENTO (ej. telómeros, epigenética)",
+                  agent="rag",
+                  reasoning="RAG entrega evidencia consolidada del efecto del tabaquismo en el envejecimiento"
+              ),
+              OneStep(
+                  step="2. Investigar en la web publicaciones recientes sobre SMOKING y AGEING, incluyendo datos epidemiológicos",
+                  agent="websearch",
+                  reasoning="websearch añade resultados actuales y estadísticas poblacionales"
+              )
+          ],
+          response="",
+          reasoning="Plan binario: RAG para base científica, websearch para actualidad"
+      )
+  - human: "¿Dónde viven las personas más longevas del mundo?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="1. Revisar la vectorstore para identificar ZONAS AZULES, regiones de ALTA LONGEVIDAD y factores asociados",
+                  agent="rag",
+                  reasoning="RAG proporciona estudios sobre demografía y factores de longevidad regional"
+              ),
+              OneStep(
+                  step="2. Ejecutar búsqueda web para obtener datos demográficos actualizados y reportes recientes sobre regiones con alta esperanza de vida",
+                  agent="websearch",
+                  reasoning="websearch actualiza la información con estadísticas y noticias recientes"
+              )
+          ],
+          response="",
+          reasoning="Se combinan datos históricos (RAG) con cifras demográficas actuales (websearch)"
+      )
+  - human: "¿La soledad afecta el envejecimiento?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="1. Consultar la vectorstore acerca de AISLAMIENTO SOCIAL, SOLEDAD y sus efectos en la SALUD y LONGEVIDAD",
+                  agent="rag",
+                  reasoning="RAG recupera estudios que vinculan soledad con biomarcadores de envejecimiento"
+              ),
+              OneStep(
+                  step="2. Buscar estudios recientes en la web sobre LONELINESS y HEALTHSPAN",
+                  agent="websearch",
+                  reasoning="websearch complementa con hallazgos actuales y análisis sociológicos"
+              )
+          ],
+          response="",
+          reasoning="El doble enfoque garantiza cobertura de literatura clásica y evidencia emergente"
+      )
+  - human: "¿Hay diferencia entre envejecer en la ciudad o en el campo?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="1. Explorar en la vectorstore estudios comparativos URBANO vs RURAL relacionados con ENVEJECIMIENTO y CALIDAD DE VIDA",
+                  agent="rag",
+                  reasoning="RAG ofrece investigaciones sobre cómo el entorno influye en procesos de envejecimiento"
+              ),
+              OneStep(
+                  step="2. Realizar búsqueda web para hallar reportes y estudios recientes sobre URBAN/RURAL AGEING",
+                  agent="websearch",
+                  reasoning="websearch añade datos demográficos y sanitarios actualizados"
+              )
+          ],
+          response="",
+          reasoning="Se necesitan datos internos y externos para comparar contextos urbano-rurales"
+      )
+  - human: "¿Qué rol tiene la comunidad en un envejecimiento saludable?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="1. Recuperar en la vectorstore literatura sobre APOYO SOCIAL, REDES COMUNITARIAS y su impacto en HEALTHY AGEING",
+                  agent="rag",
+                  reasoning="RAG muestra estudios que relacionan vínculos sociales y longevidad"
+              ),
+              OneStep(
+                  step="2. Buscar en la web investigaciones recientes y programas comunitarios exitosos ligados a ENVEJECIMIENTO SALUDABLE",
+                  agent="websearch",
+                  reasoning="websearch provee ejemplos de políticas y estudios de caso actuales"
+              )
+          ],
+          response="",
+          reasoning="Plan en dos fases: evidencia científica (RAG) + casos recientes (websearch)"
+      )
+  - human: "¿La contaminación ambiental envejece más rápido?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="1. Investigar en la vectorstore estudios sobre EXPOSICIÓN A CONTAMINANTES, POLUCIÓN y sus efectos en BIOMARCADORES DE ENVEJECIMIENTO",
+                  agent="rag",
+                  reasoning="RAG aporta la base mecanística del impacto de contaminantes en el envejecimiento"
+              ),
+              OneStep(
+                  step="2. Ejecutar búsqueda web para recabar datos epidemiológicos recientes y meta-análisis sobre POLLUTION y AGEING",
+                  agent="websearch",
+                  reasoning="websearch actualiza la visión con estadísticas y estudios recientes"
+              )
+          ],
+          response="",
+          reasoning="Se combinan referencias científicas internas con evidencia ambiental actual"
+      )
+  - human: "¿Hay datos de series en mis tablas?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="1. Explorar todas las tablas disponibles para detectar columnas de FECHA, TIMESTAMP o DATOS TEMPORALES (series, historiales, registros cronológicos)",
+                  agent="tables",
+                  reasoning="El agente tables puede inspeccionar la estructura de las tablas y verificar la presencia de campos temporales que indiquen series de tiempo"
+              )
+          ],
+          response="",
+          reasoning="Se requiere un solo paso con el agente tables para confirmar la existencia de series temporales en las tablas"
+      )
+  - human: "¿Poseo datos temporales en mis tablas?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="1. Analizar metadatos y nombres de columnas (timestamp, fecha, hora) para determinar si las tablas contienen SERIES TEMPORALES o registros cronológicos",
+                  agent="tables",
+                  reasoning="El agente tables se especializa en escanear columnas y detectar patrones temporales; basta un único paso para responder"
+              )
+          ],
+          response="",
+          reasoning="Plan de un paso usando tables para localizar cualquier campo de fecha/hora"
+      )
+  - human: "¿Existen registros de series temporales en mi base de datos tabular?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="1. Revisar cada tabla para identificar columnas de tipo datetime, timestamp o equivalentes que indiquen REGISTROS TEMPORALES o SERIES DE TIEMPO",
+                  agent="tables",
+                  reasoning="El agente tables inspeccionará columnas y tipos de datos para verificar la existencia de información temporal"
+              )
+          ],
+          response="",
+          reasoning="Un único paso con tables basta para constatar la presencia de series temporales"
+      )
+  - human: "Genera una proyección de los biomarcadores."
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Derivar al agente especializado para generar una PROYECCIÓN (pronóstico, predicción, forecast, estimación) de los biomarcadores",
+                  agent="forecast_information_checker",
+                  reasoning="Siempre que el usuario solicite un FORECAST, PRONÓSTICO, PROYECCIÓN o PREDICCIÓN (términos sinónimos para búsqueda semántica), el plan es de UN SOLO PASO: derivar al agente forecast_information_checker, quien se encargará de verificar en conversación con el usuario si se ha entregado toda la información necesaria para realizar el análisis predictivo"
+              )
+          ],
+          response="",
+          reasoning="La solicitud requiere una PROYECCIÓN, por lo cual se deriva directamente al agente forecast_information_checker quien manejará el proceso completo de verificación de datos y generación del forecast"
+      )
+  - human: "¿Puedes predecir cómo van a evolucionar los telómeros?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Derivar al agente especializado para generar una PREDICCIÓN (forecast, proyección, pronóstico, estimación) de la evolución de los telómeros",
+                  agent="forecast_information_checker",
+                  reasoning="Siempre que el usuario solicite un FORECAST, PRONÓSTICO, PROYECCIÓN o PREDICCIÓN (términos sinónimos para búsqueda semántica), el plan es de UN SOLO PASO: derivar al agente forecast_information_checker, quien se encargará de verificar en conversación con el usuario si se ha entregado toda la información necesaria para realizar el análisis predictivo de telómeros"
+              )
+          ],
+          response="",
+          reasoning="El usuario solicita una PREDICCIÓN específica sobre la evolución de telómeros, por lo cual se deriva directamente al agente forecast_information_checker quien manejará el proceso completo"
+      )
+  - human: "Haz un forecast de los marcadores inflamatorios (citoquinas, proteína C reactiva) para estimar la progresión del envejecimiento inflamatorio en la población estudiada."
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Derivar al agente especializado para generar un FORECAST (predicción, pronóstico, proyección, estimación) de los marcadores inflamatorios",
+                  agent="forecast_information_checker",
+                  reasoning="Siempre que el usuario solicite un FORECAST, PRONÓSTICO, PROYECCIÓN o PREDICCIÓN (términos sinónimos para búsqueda semántica), el plan es de UN SOLO PASO: derivar al agente forecast_information_checker, quien se encargará de verificar en conversación con el usuario si se ha entregado toda la información necesaria para realizar el análisis predictivo de marcadores inflamatorios"
+              )
+          ],
+          response="",
+          reasoning="La consulta requiere un FORECAST específico de marcadores inflamatorios, por lo cual se deriva directamente al agente forecast_information_checker quien manejará el proceso completo de verificación y análisis"
+      )
+  - human: "Necesito hacer una proyección, pronóstico, predicción o forecast."
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Derivar al agente especializado para generar PROYECCIONES (pronósticos, predicciones, forecasts, estimaciones)",
+                  agent="forecast_information_checker",
+                  reasoning="Siempre que el usuario solicite un FORECAST, PRONÓSTICO, PROYECCIÓN o PREDICCIÓN (términos sinónimos para búsqueda semántica), el plan es de UN SOLO PASO: derivar al agente forecast_information_checker, quien se encargará de verificar en conversación con el usuario si se ha entregado toda la información necesaria para realizar el análisis predictivo"
+              )
+          ],
+          response="",
+          reasoning="El usuario solicita explícitamente una PROYECCIÓN/PRONÓSTICO/PREDICCIÓN/FORECAST, por lo cual se deriva directamente al agente forecast_information_checker quien manejará el proceso completo"
+      )

@@ -14,6 +14,6 @@ repos:
     hooks:
     -   id: ruff-check # Ejecuta el linter de Ruff con autofix
         name: "Ruff Linter"
-        args: [--fix, --exit-non-zero-on-fix]
+        args: [--fix, --exit-non-zero-on-fix, --ignore=C901]
     -   id: ruff-format # Ejecuta el formateador de Ruff
         name: "Ruff Formatter"

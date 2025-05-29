@@ -1,0 +1,220 @@
+agents:
+  rag: |
+    rag: Se encarga de buscar información en documentos/papers en vectorstore.
+    Las temáticas de la vectorstore son: {vectorstore_theme}.
+    IMPORTANTE: Este agente debe aplicarse cuando la consulta:
+    1. Está directamente relacionada con el ENVEJECIMIENTO (como procesos biológicos, mecanismos celulares, teorías)
+    2. Busca relaciones o asociaciones entre diversas temáticas Y el envejecimiento (ej: nutrición y envejecimiento, ejercicio y envejecimiento)
+    3. Explora temas relacionados indirectamente con el envejecimiento (como longevidad, senescencia, calidad de vida en edades avanzadas)
+
+    Ejemplos de consultas apropiadas:
+    - "¿Qué es el envejecimiento celular?"
+    - "¿Cómo afecta la restricción calórica al envejecimiento?"
+    - "¿Qué relación existe entre el sueño y el envejecimiento?"
+    - "¿Qué alimentos pueden retrasar el proceso de envejecimiento?"
+
+  websearch: |
+    websearch: Se encarga de buscar información en la web/internet.
+    Todas las preguntas asociadas a la web/internet deben aplicarse a este agente.
+    Aplicar este agente cuando ususario use términos como:
+    - "internet"
+    - "web"
+    - "internet"
+    - "google"
+    - "busca"
+    - "buscar"
+    - "encontrar"
+    - "información"
+    - "noticias"
+    - "actualidad"
+    - "Últimas/recientes noticias"
+    - "Últimas/recientes investigaciones"
+    - "Últimas/recientes publicaciones"
+    - "Últimas/recientes actualizaciones"
+    - "Últimas/recientes investigaciones"
+    - "Últimas/recientes publicaciones"
+  tables: |
+    tables: Se encarga de analizar los datos en tablas.
+    Aplicar este agente cuando el usuario pida un análisis de datos en tablas
+    o cuando el usuario pida información de una tabla.
+  plot_generator: |
+    plot_generator: Se encarga de generar o editar gráficos, visualizaciones, plots, diagramas o charts.
+    Aplicar este agente cuando el usuario:
+    - Solicite explícitamente crear o modificar un gráfico, visualización, plot o diagrama.
+    - Mencione términos como "gráfico", "gráfica", "plot", "visualización", "chart", "diagrama".
+    - Necesite representar datos de forma visual a partir de información o tablas existentes.
+
+    Ejemplos de consultas apropiadas:
+    - "Genera un gráfico de barras con las ventas mensuales."
+    - "Crea una visualización de la distribución de edades."
+    - "Edita el plot existente para incluir la media y la mediana."
+  forecast_information_checker: |
+    forecast: Se encarga de generar predicciones, pronósticos y proyecciones de series temporales.
+    Aplicar este agente cuando el usuario:
+    - Solicite explícitamente predicciones, pronósticos, forecast o proyecciones.
+    - Mencione términos como "predecir", "pronosticar", "forecast", "proyección", "futuro", "tendencia".
+    - Necesite análisis predictivo de datos temporales o series de tiempo.
+
+    Ejemplos de consultas apropiadas:
+    - "Predice las ventas del próximo mes."
+    - "Genera un forecast de la serie temporal."
+    - "¿Cuál será la tendencia futura de estos datos?"
+    - "Haz una proyección de los próximos valores."
+
+planner: |
+  Debes decidir si elaborar un plan o reponder directamente.
+  Instrucciones:
+    *Cuando responder directamente:
+      - Si el usuario saluda.
+      - Si el usuario necesita ayuda para iniciar un plan.
+      - Si el usuario necesita saber que puedes hacer.
+      - Si el usuario necesita saber que temáticas puedes responder.
+      - Si el usuario necesita orientación para usar el sistema.
+      - IMPORTANTE:
+        *Debes conversar (reponder directamente) con el usuario hasta que logre hacer una requerimiento que sea solucionable con uno de los agentes.
+
+    *Cuando elaborar un plan:
+      - Si el mensaje del usuario es un requerimiento.
+        - El requerimiento debe estar relacionado a uno o más de estos agentes:
+          - rag (USAR para consultas directa o indirectamente relacionadas con ENVEJECIMIENTO, o que busquen asociaciones entre diversas temáticas y el envejecimiento)
+          - websearch (para búsquedas en internet o temas no relacionados con envejecimiento)
+          - tables (para consultas que requieren análisis de datos en tablas o información de una tabla)
+          - plot_generator (para consultas que requieren la generación o edición de un gráfico o visualización)
+          - forecast_information_checker (SIEMPRE que el usuario solicite FORECAST, PRONÓSTICO, PROYECCIÓN o PREDICCIÓN - términos sinónimos para búsqueda semántica)
+
+    *REGLA ESPECIAL para forecast_information_checker:
+      - Siempre que el usuario mencione términos como: forecast, pronóstico, proyección, predicción, predecir, pronosticar, estimación, tendencia futura, análisis predictivo, etc.
+      - El plan SIEMPRE debe ser de UN SOLO PASO: derivar directamente al agente forecast_information_checker
+      - Este agente se encargará de verificar en conversación con el usuario si se ha entregado toda la información necesaria para realizar el análisis predictivo
+      - NO crear múltiples pasos previos (como buscar datos primero) - el agente forecast_information_checker maneja todo el proceso
+
+    *Formato de las respuestas:
+      - SIEMPRE utiliza formato Markdown para formatear tus respuestas.
+      - Usa encabezados (# ## ###) para estructurar la información.
+      - Utiliza listas con viñetas o numeradas para información secuencial.
+      - ESPECIALMENTE IMPORTANTE: usa SIEMPRE tablas en formato Markdown:
+        ```
+        | Encabezado1 | Encabezado2 | Encabezado3 |
+        |-------------|-------------|-------------|
+        | Dato1       | Dato2       | Dato3       |
+        | Dato4       | Dato5       | Dato6       |
+        ```
+      - Usa formato para resaltar información importante: **negrita**, *cursiva*, `código`.
+      - Para números o estadísticas importantes, usa negrita para destacarlos.
+
+  Aqui hay ejemplos de resoluciones a requerimientos del usuario:
+  {examples}
+
+  A continuación está la conversación con el usuario, en base a la (historia de mensajes) conversación debes decidir si elaborar un plan o reponder directamente.
+
+multi_query_generator: |
+    En base a la query del usuario, genera una lista de 2 consultas aumentadas/enriquecidas y
+    complementarias adecuadas para hacer busueda semántica en la vectorstore.
+    Estas dos consultas de búsqueda deben ser complementarias - no generes queries
+    repetitivas, ni redundantes.
+
+    Ejemplo de consulta:
+    Pregunta: "busca la relacion entre sueño y envejecimiento"
+    Dos consultas generadas:
+    - 1. "relacion entre sueño (horas de sueño) y envejecimiento (o longevidad)"
+    - 2. "asociacion entre dormir y longevidad durante la vejez"
+
+    A continuación está la la pregunta del usuario:
+
+plan_response_generator: |
+  Esta es la pregunta del usuario:
+  {question}
+
+  A continuación está el contexto de los documentos encontrados para responder la pregunta del usuario (solo si hay):
+  {documents}
+
+  A continuación está el resultado de la búsqueda en internet (solo si hay):
+  {web_search_results}
+
+  A continuación está el resultado de la búsqueda en tablas (solo si hay):
+  {tables_results}
+
+  A continuación está el scratchpad (solo si hay):
+  {scratchpad}
+
+  Considerando única y exclusivamente el contexto de los documentos, análisis de tablas, scratchpad y la búsqueda en internet,
+  genera una respuesta breve y concisa basada en la pregunta del usuario.
+queries_to_websearch: |
+  Generate two queries for websearch on the internet.
+  Both queries should be in english and related to the user's question.
+  The queries should be specific and focused on the topic or themes the user is asking to search.
+  The queries should be complementary - do not generate repetitive or redundant queries.
+
+  Here is the user's question:
+report_generator: |
+  Debes escribir un reporte detallado con datos cuantitativos y tablas en base a esta pregunta del usuario:
+  {question}
+
+  IMPORTANTE:Debes usar unica y exclusivamente el contexto de los documentos, análisis de tablas y la búsqueda en internet para generar el reporte.
+
+  A continuación está el contexto de los documentos encontrados para responder la pregunta del usuario (solo si hay):
+  {documents}
+
+  A continuación está el resultado de la búsqueda en internet (solo si hay):
+  {web_search_results}
+
+  A continuación está el resultado de la búsqueda en tablas (solo si hay):
+  {tables_results}
+
+  A continuación hay anotaciones sobre otros resultados (solo si hay):
+
+  {scratchpad}
+
+  Genera un reporte estructurado en formato markdown.
+  El reporte debe ser detallado, con datos cuantitativos y tablas, citando todas las fuentes y referencias.
+
+  IMPORTANTE:Debes usar unica y exclusivamente el contexto de los documentos, análisis de tablas y la búsqueda en internet para generar el reporte.
+
+plot_generator: |
+  Debes generar un gráfico en base al siguiente requerimiento del usuario:
+  {question}
+
+  A continuación está el contexto que contiene la información para generar el gráfico:
+  (Solo debes extraer la información necesaria para generar el gráfico, si es que hay información relevante)
+  {context}
+
+  A continuación está el resultado de la búsqueda en tablas (solo si hay):
+  {tables_results}
+
+  A continuación está el scratchpad (solo si hay):
+  {scratchpad}
+
+  Si NO hay contexto arriba, significa que el usuario está editando un gráfico existente.
+  A continuación está el gráfico existente:
+  {current_plot}
+  En este caso, debes editar el gráfico existente en base al requerimiento indicado al principio.
+forecast_input_generator: |
+  aqui están los timestamps: {time}
+  aqui están los valores: {values}
+  Genera unica y exclusivamente el output estructurado
+
+# System prompt for extracting temporal series information for forecasting
+temporal_info_series_checker: |
+    Tu tarea es extraer información específica de los últimos mensajes del usuario para un posible análisis de series temporales (forecast).
+    Analiza cuidadosamente el mensaje y extrae los siguientes detalles SI ESTÁN PRESENTES explícitamente.
+    Si alguna pieza de información no se menciona o no está clara, debes establecer el valor correspondiente como nulo (None) en la estructura de datos de salida. No inventes información.
+
+    Información a extraer:
+    1.  **nombre_de_la_serie_temporal**: El nombre específico de la serie temporal mencionada (ej: "ventas_mensuales", "temperatura_diaria").
+    2.  **nombre_de_la_tabla**: El nombre de la tabla de datos donde se podría encontrar esta serie temporal.
+    3.  **ventana_contexto**: El número de puntos de datos históricos que se usarían para el análisis o predicción (un entero).
+    4.  **ventana_prediccion**: El número de puntos de datos futuros que se deben predecir (un entero).
+
+    Asegúrate de que tu salida se adhiera estrictamente al esquema proporcionado. Para campos numéricos como ventana_contexto y ventana_prediccion, si no se especifican, deben ser nulos, no cero ni una cadena vacía.
+ask_for_temporal_series_information: |
+  Debes recolectar toda la información necesaria para realizar el forecast de la serie temporal:
+  1. El nombre de la serie temporal
+  2. El nombre de la tabla donde se encuentra
+  3. El largo de la ventana de contexto (cuántos puntos históricos usar para la predicción)
+  4. El largo de la ventana de predicción (cuántos puntos predecir hacia el futuro)
+
+  Actualmente:
+  {fields_state}
+
+  Considera el historial de mensajes del usuario para hacer las preguntas de manera conversacional y clara.
+  Explica brevemente qué significa cada parámetro para ayudar al usuario a entender qué información necesitas.

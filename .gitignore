@@ -1,3 +1,8 @@
+*.db
+.states
+assets/external/
+.web
+__pycache__/
 # Ignore environment variables file
 .env
 

@@ -1,0 +1,644 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="100%" height="100%" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <!-- Patrones y texturas con tonos azules oscuros -->
+    <pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="10" cy="10" r="1.2" fill="rgba(50, 90, 130, 0.3)" />
+    </pattern>
+
+    <pattern id="diagonals" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M0,0 L20,20 M-5,15 L5,25 M15,-5 L25,5" stroke="rgba(30, 60, 90, 0.25)" stroke-width="0.8" />
+    </pattern>
+
+    <pattern id="circuit" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M10,30 L30,30 L30,10 M50,30 L30,30 M30,50 L30,30" fill="none" stroke="rgba(70, 110, 150, 0.3)" stroke-width="0.8" stroke-linecap="round" />
+      <circle cx="10" cy="30" r="1.5" fill="rgba(70, 110, 150, 0.35)" />
+      <circle cx="50" cy="30" r="1.5" fill="rgba(70, 110, 150, 0.35)" />
+      <circle cx="30" cy="50" r="1.5" fill="rgba(70, 110, 150, 0.35)" />
+      <circle cx="30" cy="10" r="1.5" fill="rgba(70, 110, 150, 0.35)" />
+    </pattern>
+
+    <pattern id="hexGrid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M10,5 L20,0 L30,5 L30,15 L20,20 L10,15 Z" fill="none" stroke="rgba(40, 80, 120, 0.25)" stroke-width="0.6" />
+    </pattern>
+
+    <pattern id="attentionMatrix" width="30" height="30" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="10" height="10" fill="rgba(50, 80, 110, 0.2)" />
+      <rect x="10" y="0" width="10" height="10" fill="rgba(40, 60, 90, 0.18)" />
+      <rect x="20" y="0" width="10" height="10" fill="rgba(50, 80, 110, 0.2)" />
+      <rect x="0" y="10" width="10" height="10" fill="rgba(40, 60, 90, 0.18)" />
+      <rect x="10" y="10" width="10" height="10" fill="rgba(50, 80, 110, 0.22)" />
+      <rect x="20" y="10" width="10" height="10" fill="rgba(40, 60, 90, 0.18)" />
+      <rect x="0" y="20" width="10" height="10" fill="rgba(50, 80, 110, 0.2)" />
+      <rect x="10" y="20" width="10" height="10" fill="rgba(40, 60, 90, 0.18)" />
+      <rect x="20" y="20" width="10" height="10" fill="rgba(50, 80, 110, 0.2)" />
+    </pattern>
+
+    <pattern id="embedding" width="60" height="15" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="10" height="15" fill="rgba(40, 100, 140, 0.28)" rx="1" />
+      <rect x="12" y="0" width="10" height="15" fill="rgba(40, 100, 140, 0.25)" rx="1" />
+      <rect x="24" y="0" width="10" height="15" fill="rgba(40, 100, 140, 0.3)" rx="1" />
+      <rect x="36" y="0" width="10" height="15" fill="rgba(40, 100, 140, 0.27)" rx="1" />
+      <rect x="48" y="0" width="10" height="15" fill="rgba(40, 100, 140, 0.24)" rx="1" />
+    </pattern>
+
+    <!-- Degradados oscurecidos con variedad de azules -->
+    <radialGradient id="glow" cx="50%" cy="50%" r="70%" fx="50%" fy="50%">
+      <stop offset="0%" stop-color="rgba(10, 15, 25, 0.3)" />
+      <stop offset="50%" stop-color="rgba(20, 30, 50, 0.2)" />
+      <stop offset="100%" stop-color="rgba(5, 8, 15, 0.1)" />
+    </radialGradient>
+
+    <linearGradient id="text-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(40, 100, 180, 0.4)" />
+      <stop offset="25%" stop-color="rgba(20, 70, 150, 0.35)" />
+      <stop offset="50%" stop-color="rgba(10, 50, 120, 0.3)" />
+      <stop offset="75%" stop-color="rgba(20, 70, 150, 0.35)" />
+      <stop offset="100%" stop-color="rgba(40, 100, 180, 0.4)" />
+    </linearGradient>
+
+    <linearGradient id="accent-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(40, 60, 90, 0.35)" />
+      <stop offset="50%" stop-color="rgba(25, 40, 60, 0.3)" />
+      <stop offset="100%" stop-color="rgba(40, 60, 90, 0.35)" />
+    </linearGradient>
+
+    <linearGradient id="tech-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(50, 90, 130, 0.35)" />
+      <stop offset="50%" stop-color="rgba(30, 70, 100, 0.3)" />
+      <stop offset="100%" stop-color="rgba(50, 90, 130, 0.35)" />
+    </linearGradient>
+
+    <linearGradient id="neuron-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(60, 80, 110, 0.3)" />
+      <stop offset="50%" stop-color="rgba(40, 60, 90, 0.28)" />
+      <stop offset="100%" stop-color="rgba(60, 80, 110, 0.3)" />
+    </linearGradient>
+
+    <!-- Filtros ajustados -->
+    <filter id="blur-filter" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" />
+    </filter>
+
+    <filter id="noise" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="2" seed="1" result="noise" />
+      <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.08 0" result="coloredNoise" />
+      <feBlend in="SourceGraphic" in2="coloredNoise" mode="overlay" />
+    </filter>
+
+    <filter id="glow-effect" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 12 -4" result="glow" />
+      <feBlend in="SourceGraphic" in2="glow" mode="normal" />
+    </filter>
+
+    <!-- También añadimos un nuevo gradiente específico para el texto -->
+    <linearGradient id="dark-blue-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(20, 60, 120, 0.5)" />
+      <stop offset="50%" stop-color="rgba(30, 80, 150, 0.45)" />
+      <stop offset="100%" stop-color="rgba(15, 50, 100, 0.5)" />
+    </linearGradient>
+
+    <!-- Añado un nuevo gradiente con efecto de vidrio/glass -->
+    <linearGradient id="glass-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="rgba(90, 160, 220, 0.65)" />
+      <stop offset="15%" stop-color="rgba(50, 120, 200, 0.45)" />
+      <stop offset="48%" stop-color="rgba(20, 80, 160, 0.3)" />
+      <stop offset="52%" stop-color="rgba(30, 90, 180, 0.35)" />
+      <stop offset="85%" stop-color="rgba(70, 140, 210, 0.5)" />
+      <stop offset="100%" stop-color="rgba(100, 170, 230, 0.6)" />
+    </linearGradient>
+
+    <!-- Variación clara del gradiente con efecto de vidrio/glass -->
+    <linearGradient id="glass-gradient-light" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="rgba(190, 220, 250, 0.55)" />
+      <stop offset="20%" stop-color="rgba(160, 200, 240, 0.45)" />
+      <stop offset="50%" stop-color="rgba(140, 180, 220, 0.35)" />
+      <stop offset="80%" stop-color="rgba(170, 210, 240, 0.5)" />
+      <stop offset="100%" stop-color="rgba(195, 225, 255, 0.6)" />
+    </linearGradient>
+    <linearGradient id="glass-gradient-orange" x1="0%" y1="0%" x2="0%" y2="100%">
+      <!-- Darker orange tones with increased transparency for a subtle glass reflection -->
+      <stop offset="0%" stop-color="rgba(255, 180, 90, 0.35)" />
+      <stop offset="30%" stop-color="rgba(255, 140, 50, 0.25)" />
+      <stop offset="50%" stop-color="rgba(220, 100, 30, 0.18)" />
+      <stop offset="70%" stop-color="rgba(255, 140, 50, 0.25)" />
+      <stop offset="100%" stop-color="rgba(255, 180, 90, 0.35)" />
+    </linearGradient>
+  </defs>
+
+  <!-- Fondo negro sólido -->
+  <rect width="100%" height="100%" fill="#05080F" /> <!-- Azul muy oscuro casi negro -->
+
+  <!-- Fondo base con degradado sutil oscuro -->
+  <rect width="100%" height="100%" fill="url(#glow)" opacity="0.7" />
+
+  <!-- Patrones y texturas con opacidad ajustada -->
+  <rect width="100%" height="100%" fill="url(#dots)" opacity="0.4" />
+  <rect width="100%" height="100%" fill="url(#diagonals)" opacity="0.25" />
+  <rect width="100%" height="100%" fill="url(#circuit)" opacity="0.3" />
+  <rect width="100%" height="100%" fill="url(#hexGrid)" opacity="0.2" />
+  <rect width="100%" height="100%" fill="url(#attentionMatrix)" opacity="0.18" />
+
+  <!-- Elementos decorativos con colores azules oscuros y opacidad ajustada -->
+  <circle cx="40" cy="360" r="120" fill="rgba(20, 35, 60, 0.2)" />
+  <circle cx="360" cy="40" r="120" fill="rgba(30, 50, 80, 0.2)" />
+  <circle cx="200" cy="200" r="160" fill="rgba(15, 25, 45, 0.15)" />
+  <circle cx="300" cy="300" r="70" fill="rgba(45, 70, 100, 0.2)" />
+  <circle cx="100" cy="100" r="50" fill="rgba(35, 60, 90, 0.2)" />
+
+  <!-- Elementos de circuito con estilo oscuro -->
+  <path d="M50,120 L50,150 L80,150 L80,180 L110,180 L110,150 L140,150"
+        fill="none" stroke="rgba(80, 130, 180, 0.35)" stroke-width="1" />
+  <circle cx="50" cy="120" r="2" fill="rgba(80, 130, 180, 0.4)" />
+  <circle cx="80" cy="150" r="2" fill="rgba(80, 130, 180, 0.4)" />
+  <circle cx="110" cy="180" r="2" fill="rgba(80, 130, 180, 0.4)" />
+  <circle cx="140" cy="150" r="2" fill="rgba(80, 130, 180, 0.4)" />
+
+  <!-- Estructura molecular con estilo oscuro -->
+  <path d="M280,210 L300,240 L330,230 L320,200 L290,190 Z"
+        fill="none" stroke="rgba(70, 100, 140, 0.3)" stroke-width="0.8" />
+  <circle cx="280" cy="210" r="3" fill="rgba(70, 100, 140, 0.35)" />
+  <circle cx="300" cy="240" r="3" fill="rgba(70, 100, 140, 0.35)" />
+  <circle cx="330" cy="230" r="3" fill="rgba(70, 100, 140, 0.35)" />
+  <circle cx="320" cy="200" r="3" fill="rgba(70, 100, 140, 0.35)" />
+  <circle cx="290" cy="190" r="3" fill="rgba(70, 100, 140, 0.35)" />
+
+  <!-- Red neuronal profunda con estilo oscuro -->
+  <g id="deepNeuralNetwork" transform="translate(320, 150)" opacity="0.8">
+    <!-- Capas -->
+    <circle cx="-105" cy="-35" r="2.5" fill="rgba(60, 90, 130, 0.4)" />
+    <circle cx="-105" cy="-21" r="2.5" fill="rgba(60, 90, 130, 0.4)" />
+    <circle cx="-105" cy="-7" r="2.5" fill="rgba(60, 90, 130, 0.4)" />
+    <circle cx="-105" cy="7" r="2.5" fill="rgba(60, 90, 130, 0.4)" />
+    <circle cx="-105" cy="21" r="2.5" fill="rgba(60, 90, 130, 0.4)" />
+    <circle cx="-105" cy="35" r="2.5" fill="rgba(60, 90, 130, 0.4)" />
+    <circle cx="-75" cy="-30" r="2.5" fill="rgba(70, 100, 140, 0.4)" />
+    <circle cx="-75" cy="-18" r="2.5" fill="rgba(70, 100, 140, 0.4)" />
+    <circle cx="-75" cy="-6" r="2.5" fill="rgba(70, 100, 140, 0.4)" />
+    <circle cx="-75" cy="6" r="2.5" fill="rgba(70, 100, 140, 0.4)" />
+    <circle cx="-75" cy="18" r="2.5" fill="rgba(70, 100, 140, 0.4)" />
+    <circle cx="-75" cy="30" r="2.5" fill="rgba(70, 100, 140, 0.4)" />
+    <circle cx="-45" cy="-25" r="2.5" fill="rgba(80, 110, 150, 0.4)" />
+    <circle cx="-45" cy="-12" r="2.5" fill="rgba(80, 110, 150, 0.4)" />
+    <circle cx="-45" cy="0" r="2.5" fill="rgba(80, 110, 150, 0.4)" />
+    <circle cx="-45" cy="12" r="2.5" fill="rgba(80, 110, 150, 0.4)" />
+    <circle cx="-45" cy="25" r="2.5" fill="rgba(80, 110, 150, 0.4)" />
+    <circle cx="-15" cy="-20" r="2.5" fill="rgba(90, 120, 160, 0.4)" />
+    <circle cx="-15" cy="-6" r="2.5" fill="rgba(90, 120, 160, 0.4)" />
+    <circle cx="-15" cy="6" r="2.5" fill="rgba(90, 120, 160, 0.4)" />
+    <circle cx="-15" cy="20" r="2.5" fill="rgba(90, 120, 160, 0.4)" />
+    <circle cx="15" cy="-15" r="2.5" fill="rgba(100, 130, 170, 0.4)" />
+    <circle cx="15" cy="0" r="2.5" fill="rgba(100, 130, 170, 0.4)" />
+    <circle cx="15" cy="15" r="2.5" fill="rgba(100, 130, 170, 0.4)" />
+    <circle cx="45" cy="-10" r="2.5" fill="rgba(110, 140, 180, 0.4)" />
+    <circle cx="45" cy="10" r="2.5" fill="rgba(110, 140, 180, 0.4)" />
+
+    <!-- Conexiones oscurecidas -->
+    <path d="M-105,-35 L-75,-30 M-105,-35 L-75,-18 M-105,-35 L-75,-6 M-105,-21 L-75,-30 M-105,-21 L-75,-18 M-105,-21 L-75,-6 M-105,-21 L-75,6 M-105,-7 L-75,-18 M-105,-7 L-75,-6 M-105,-7 L-75,6 M-105,-7 L-75,18 M-105,7 L-75,-6 M-105,7 L-75,6 M-105,7 L-75,18 M-105,7 L-75,30 M-105,21 L-75,6 M-105,21 L-75,18 M-105,21 L-75,30 M-105,35 L-75,18 M-105,35 L-75,30" stroke="rgba(60, 90, 130, 0.15)" stroke-width="0.35" />
+    <path d="M-75,-30 L-45,-25 M-75,-30 L-45,-12 M-75,-18 L-45,-25 M-75,-18 L-45,-12 M-75,-18 L-45,0 M-75,-6 L-45,-12 M-75,-6 L-45,0 M-75,-6 L-45,12 M-75,6 L-45,0 M-75,6 L-45,12 M-75,6 L-45,25 M-75,18 L-45,12 M-75,18 L-45,25 M-75,30 L-45,25" stroke="rgba(70, 100, 140, 0.15)" stroke-width="0.35" />
+    <path d="M-45,-25 L-15,-20 M-45,-25 L-15,-6 M-45,-12 L-15,-20 M-45,-12 L-15,-6 M-45,-12 L-15,6 M-45,0 L-15,-6 M-45,0 L-15,6 M-45,0 L-15,20 M-45,12 L-15,6 M-45,12 L-15,20 M-45,25 L-15,20" stroke="rgba(80, 110, 150, 0.15)" stroke-width="0.35" />
+    <path d="M-15,-20 L15,-15 M-15,-20 L15,0 M-15,-6 L15,-15 M-15,-6 L15,0 M-15,-6 L15,15 M-15,6 L15,0 M-15,6 L15,15 M-15,20 L15,15" stroke="rgba(90, 120, 160, 0.15)" stroke-width="0.35" />
+    <path d="M15,-15 L45,-10 M15,-15 L45,10 M15,0 L45,-10 M15,0 L45,10 M15,15 L45,-10 M15,15 L45,10" stroke="rgba(100, 130, 170, 0.15)" stroke-width="0.35" />
+  </g>
+
+  <!-- Arquitectura Transformer con estilo oscuro -->
+  <g id="transformer" transform="translate(80, 320)" opacity="0.75">
+    <rect x="-40" y="-60" width="15" height="40" rx="2" fill="rgba(30, 70, 100, 0.3)" />
+    <rect x="-40" y="-15" width="15" height="40" rx="2" fill="rgba(30, 70, 100, 0.3)" />
+    <rect x="25" y="-60" width="15" height="40" rx="2" fill="rgba(40, 80, 120, 0.3)" />
+    <rect x="25" y="-15" width="15" height="40" rx="2" fill="rgba(40, 80, 120, 0.3)" />
+
+    <path d="M-25,-50 C0,-50 0,-50 25,-50" stroke="rgba(70, 100, 140, 0.3)" stroke-width="0.6" stroke-dasharray="1.5,1.5" />
+    <path d="M-25,-30 C0,-30 0,-30 25,-30" stroke="rgba(70, 100, 140, 0.3)" stroke-width="0.6" stroke-dasharray="1.5,1.5" />
+    <path d="M-25,-5 C0,-5 0,-5 25,-5" stroke="rgba(70, 100, 140, 0.3)" stroke-width="0.6" stroke-dasharray="1.5,1.5" />
+    <path d="M-25,15 C0,15 0,15 25,15" stroke="rgba(70, 100, 140, 0.3)" stroke-width="0.6" stroke-dasharray="1.5,1.5" />
+
+    <circle cx="-32.5" cy="-45" r="1.5" fill="rgba(90, 120, 150, 0.35)" />
+    <circle cx="-32.5" cy="-35" r="1.5" fill="rgba(90, 120, 150, 0.35)" />
+    <circle cx="-32.5" cy="0" r="1.5" fill="rgba(90, 120, 150, 0.35)" />
+    <circle cx="-32.5" cy="10" r="1.5" fill="rgba(90, 120, 150, 0.35)" />
+    <circle cx="32.5" cy="-45" r="1.5" fill="rgba(90, 120, 150, 0.35)" />
+    <circle cx="32.5" cy="-35" r="1.5" fill="rgba(90, 120, 150, 0.35)" />
+    <circle cx="32.5" cy="0" r="1.5" fill="rgba(90, 120, 150, 0.35)" />
+    <circle cx="32.5" cy="10" r="1.5" fill="rgba(90, 120, 150, 0.35)" />
+
+    <text x="-7" y="35" font-family="monospace" font-size="7"
+          text-anchor="middle" fill="rgba(80, 120, 160, 0.5)">TRANSFORMER</text>
+  </g>
+
+  <!-- Large Language Model - Token Embeddings con estilo oscuro -->
+  <g id="llm" transform="translate(200, 100)" opacity="0.75">
+    <rect x="-60" y="-20" width="120" height="40" fill="url(#embedding)" opacity="0.5" rx="2" />
+
+    <rect x="-55" y="-25" width="20" height="10" rx="1" fill="rgba(40, 100, 140, 0.3)" />
+    <rect x="-30" y="-25" width="20" height="10" rx="1" fill="rgba(40, 100, 140, 0.3)" />
+    <rect x="-5" y="-25" width="20" height="10" rx="1" fill="rgba(40, 100, 140, 0.3)" />
+    <rect x="20" y="-25" width="20" height="10" rx="1" fill="rgba(40, 100, 140, 0.3)" />
+    <rect x="45" y="-25" width="20" height="10" rx="1" fill="rgba(40, 100, 140, 0.3)" />
+
+    <path d="M-45,-15 L-45,20 M-20,-15 L-20,30 M5,-15 L5,20 M30,-15 L30,25 M55,-15 L55,15"
+          stroke="rgba(40, 100, 140, 0.25)" stroke-width="1" />
+    <rect x="-40" y="20" width="80" height="15" rx="2" fill="url(#attentionMatrix)" opacity="0.6" />
+  </g>
+
+  <!-- Matemáticas de matrices de atención con estilo oscuro -->
+  <g id="mathFormulas" transform="translate(350, 350)" opacity="0.6">
+    <rect x="-30" y="-20" width="10" height="10" fill="rgba(90, 120, 160, 0.3)" />
+    <text x="-25" y="-13" font-family="monospace" font-size="5"
+          text-anchor="middle" fill="rgba(130, 160, 200, 0.6)">Q</text>
+    <rect x="-15" y="-20" width="10" height="10" fill="rgba(90, 120, 160, 0.3)" />
+    <text x="-10" y="-13" font-family="monospace" font-size="5"
+          text-anchor="middle" fill="rgba(130, 160, 200, 0.6)">K</text>
+    <text x="0" y="-13" font-family="monospace" font-size="5"
+          text-anchor="middle" fill="rgba(130, 160, 200, 0.6)">×</text>
+    <rect x="10" y="-20" width="15" height="15" fill="rgba(90, 120, 160, 0.25)" />
+    <path d="M12,-18 L22,-18 M12,-15 L22,-15 M12,-12 L22,-12 M12,-9 L22,-9"
+          stroke="rgba(90, 120, 160, 0.3)" stroke-width="0.4" />
+    <path d="M14,-18 L14,-8 M17,-18 L17,-8 M20,-18 L20,-8"
+          stroke="rgba(90, 120, 160, 0.3)" stroke-width="0.4" />
+  </g>
+
+  <!-- Hexágonos decorativos con estilo oscuro -->
+  <path d="M320,100 L340,130 L320,160 L280,160 L260,130 L280,100 Z"
+        fill="none" stroke="rgba(50, 80, 110, 0.25)" stroke-width="0.8" />
+  <path d="M100,260 L120,290 L100,320 L60,320 L40,290 L60,260 Z"
+        fill="none" stroke="rgba(30, 60, 90, 0.25)" stroke-width="0.8" />
+
+  <!-- Símbolos matemáticos con estilo oscuro -->
+  <path d="M330,270 L350,270 M340,260 L340,280" stroke="rgba(90, 120, 150, 0.4)" stroke-width="1.5" />
+  <path d="M60,60 L80,60 M60,70 L80,70" stroke="rgba(50, 90, 130, 0.4)" stroke-width="1.5" />
+  <path d="M270,60 C275,50 285,50 290,60 C295,70 305,70 310,60"
+        fill="none" stroke="rgba(70, 100, 140, 0.35)" stroke-width="1" />
+
+  <!-- Líneas decorativas con estilo oscuro -->
+  <path d="M 30,200 L 370,200" stroke="rgba(50, 80, 110, 0.2)" stroke-width="0.8" stroke-dasharray="4,4" />
+  <path d="M 200,30 L 200,370" stroke="rgba(30, 60, 90, 0.2)" stroke-width="0.8" stroke-dasharray="4,4" />
+  <path d="M 50,50 L 350,350" stroke="rgba(40, 60, 90, 0.2)" stroke-width="0.8" stroke-dasharray="2,5" />
+  <path d="M 350,50 L 50,350" stroke="rgba(40, 60, 90, 0.2)" stroke-width="0.8" stroke-dasharray="2,5" />
+
+  <!-- Nuevas líneas de cuadrícula técnica con estilo oscuro -->
+  <path d="M 30,100 L 370,100" stroke="rgba(70, 110, 150, 0.2)" stroke-width="0.6" stroke-dasharray="1,8" />
+  <path d="M 30,300 L 370,300" stroke="rgba(70, 110, 150, 0.2)" stroke-width="0.6" stroke-dasharray="1,8" />
+  <path d="M 100,30 L 100,370" stroke="rgba(70, 110, 150, 0.2)" stroke-width="0.6" stroke-dasharray="1,8" />
+  <path d="M 300,30 L 300,370" stroke="rgba(70, 110, 150, 0.2)" stroke-width="0.6" stroke-dasharray="1,8" />
+
+  <!-- Formas geométricas adicionales con estilo oscuro -->
+  <rect x="10" y="10" width="20" height="20" rx="2" fill="url(#accent-gradient)" opacity="0.3" />
+  <rect x="370" y="370" width="20" height="20" rx="2" fill="url(#accent-gradient)" opacity="0.3" />
+  <rect x="370" y="10" width="20" height="20" rx="2" fill="url(#accent-gradient)" opacity="0.3" />
+  <rect x="10" y="370" width="20" height="20" rx="2" fill="url(#accent-gradient)" opacity="0.3" />
+
+  <!-- Nuevas formas geométricas técnicas con estilo oscuro -->
+  <polygon points="150,125 170,135 170,155 150,165 130,155 130,135"
+           fill="url(#tech-gradient)" opacity="0.25" />
+  <polygon points="250,250 260,270 250,290 230,290 220,270 230,250"
+           fill="url(#tech-gradient)" opacity="0.25" />
+
+  <!-- Diagrama técnico con estilo oscuro -->
+  <path d="M50,200 Q65,220 80,200 Q95,180 110,200"
+        fill="none" stroke="rgba(70, 100, 140, 0.4)" stroke-width="0.8" />
+  <path d="M50,210 L110,210" stroke="rgba(70, 100, 140, 0.25)" stroke-width="0.6" stroke-dasharray="1.5,1.5" />
+  <circle cx="80" cy="200" r="1.5" fill="rgba(70, 100, 140, 0.5)" />
+
+  <!-- Texto Pathway como marca de agua en esquina superior derecha -->
+  <g transform="translate(320, 50)" opacity="0.8">
+    <text x="0" y="0" font-family="'Inter', sans-serif" font-size="18" font-weight="700"
+          text-anchor="middle" fill="url(#glass-gradient)">Pathway</text>
+    <text x="0" y="12" font-family="'Inter', sans-serif" font-size="6" font-weight="300"
+          text-anchor="middle" fill="url(#glass-gradient-light)">
+      <tspan fill="url(#glass-gradient-orange)" font-weight="600">Personalized</tspan>
+      <tspan> Multi-Agentic Workflows</tspan>
+    </text>
+  </g>
+
+  <!-- Símbolos técnicos alrededor del texto con estilo oscuro -->
+  <g transform="translate(200, 200)" opacity="0.7">
+    <path d="M-160,-30 L-145,-30 M-152.5,-37.5 L-152.5,-22.5"
+          stroke="rgba(50, 90, 130, 0.4)" stroke-width="0.8" />
+    <path d="M150,40 L165,40 M157.5,32.5 L157.5,47.5"
+          stroke="rgba(50, 90, 130, 0.4)" stroke-width="0.8" />
+    <path d="M-80,-70 C-70,-80 -60,-80 -50,-70"
+          fill="none" stroke="rgba(90, 120, 150, 0.3)" stroke-width="0.8" />
+    <path d="M70,80 C80,70 90,70 100,80"
+          fill="none" stroke="rgba(90, 120, 150, 0.3)" stroke-width="0.8" />
+  </g>
+
+  <!-- Símbolos específicos de IA con estilo oscuro -->
+  <g transform="translate(200, 300)" opacity="0.7">
+    <!-- Tensor -->
+    <path d="M-80,-10 L-60,0 L-80,10 L-100,0 Z" fill="rgba(60, 90, 130, 0.3)" />
+    <path d="M-80,-10 L-60,0 M-60,0 L-80,10 M-80,10 L-100,0 M-100,0 L-80,-10"
+          stroke="rgba(60, 90, 130, 0.35)" stroke-width="0.4" />
+
+    <!-- Vector -->
+    <path d="M90,-5 L110,-5 L110,5 L90,5 Z" fill="rgba(40, 100, 140, 0.3)" />
+    <path d="M95,0 L105,0 M100,-3 L100,3" stroke="rgba(40, 100, 140, 0.4)" stroke-width="0.6" />
+  </g>
+
+  <!-- Overlay de ruido sutil ajustado -->
+  <rect width="100%" height="100%" filter="url(#noise)" fill="transparent" />
+
+  <!-- CNN en esquina superior izquierda -->
+  <g id="cnnTopLeft" transform="translate(40, 40)" opacity="0.75">
+    <!-- Capas convolucionales -->
+    <rect x="-30" y="-30" width="20" height="20" rx="1" fill="rgba(40, 70, 110, 0.25)" />
+    <rect x="-25" y="-25" width="10" height="10" fill="rgba(60, 90, 130, 0.3)" />
+
+    <rect x="-5" y="-25" width="15" height="15" rx="1" fill="rgba(40, 70, 110, 0.25)" />
+    <rect x="-2" y="-22" width="9" height="9" fill="rgba(60, 90, 130, 0.3)" />
+
+    <rect x="15" y="-20" width="10" height="10" rx="1" fill="rgba(40, 70, 110, 0.25)" />
+    <rect x="17" y="-18" width="6" height="6" fill="rgba(60, 90, 130, 0.3)" />
+
+    <!-- Conexiones -->
+    <path d="M-15,-20 L-5,-17.5 M-15,-15 L-5,-17.5 M-5,-17.5 L15,-15"
+          fill="none" stroke="rgba(70, 100, 140, 0.3)" stroke-width="0.6" />
+
+    <!-- Capas fully connected -->
+    <circle cx="-20" cy="5" r="2" fill="rgba(70, 100, 140, 0.35)" />
+    <circle cx="-20" cy="15" r="2" fill="rgba(70, 100, 140, 0.35)" />
+    <circle cx="0" cy="0" r="2" fill="rgba(70, 100, 140, 0.35)" />
+    <circle cx="0" cy="10" r="2" fill="rgba(70, 100, 140, 0.35)" />
+    <circle cx="0" cy="20" r="2" fill="rgba(70, 100, 140, 0.35)" />
+    <circle cx="20" cy="10" r="2" fill="rgba(70, 100, 140, 0.35)" />
+
+    <!-- Conexiones -->
+    <path d="M-20,5 L0,0 M-20,5 L0,10 M-20,5 L0,20 M-20,15 L0,0 M-20,15 L0,10 M-20,15 L0,20 M0,0 L20,10 M0,10 L20,10 M0,20 L20,10"
+          stroke="rgba(70, 100, 140, 0.2)" stroke-width="0.4" />
+  </g>
+
+  <!-- RNN/LSTM en esquina superior derecha -->
+  <g id="rnnTopRight" transform="translate(360, 40)" opacity="0.75">
+    <!-- Celdas recurrentes -->
+    <rect x="-25" y="-25" width="16" height="16" rx="2" fill="rgba(50, 80, 120, 0.25)" />
+    <path d="M-25,-17 L-9,-17 M-17,-25 L-17,-9" stroke="rgba(80, 110, 150, 0.3)" stroke-width="0.5" />
+    <path d="M-17,-17 C-12,-22 -7,-17 -17,-12" fill="none" stroke="rgba(80, 110, 150, 0.3)" stroke-width="0.6" />
+
+    <rect x="5" y="-20" width="14" height="14" rx="2" fill="rgba(50, 80, 120, 0.25)" />
+    <path d="M5,-13 L19,-13 M12,-20 L12,-6" stroke="rgba(80, 110, 150, 0.3)" stroke-width="0.5" />
+    <path d="M12,-13 C16,-17 19,-13 12,-9" fill="none" stroke="rgba(80, 110, 150, 0.3)" stroke-width="0.6" />
+
+    <!-- Conexiones temporales -->
+    <path d="M-9,-17 L5,-13" stroke="rgba(70, 100, 140, 0.3)" stroke-width="0.6" stroke-dasharray="1,1" />
+
+    <!-- Salidas -->
+    <circle cx="-17" cy="5" r="1.5" fill="rgba(80, 110, 150, 0.35)" />
+    <circle cx="12" cy="10" r="1.5" fill="rgba(80, 110, 150, 0.35)" />
+
+    <path d="M-17,-9 L-17,5 M12,-6 L12,10" stroke="rgba(70, 100, 140, 0.25)" stroke-width="0.5" />
+  </g>
+
+  <!-- Autoencoder en esquina inferior izquierda -->
+  <g id="autoencoderBottomLeft" transform="translate(40, 360)" opacity="0.75">
+    <!-- Encoder -->
+    <circle cx="-25" cy="-25" r="2" fill="rgba(60, 90, 130, 0.4)" />
+    <circle cx="-25" cy="-15" r="2" fill="rgba(60, 90, 130, 0.4)" />
+    <circle cx="-25" cy="-5" r="2" fill="rgba(60, 90, 130, 0.4)" />
+
+    <!-- Latent space -->
+    <circle cx="0" cy="-15" r="2.5" fill="rgba(80, 120, 160, 0.45)" />
+
+    <!-- Decoder -->
+    <circle cx="25" cy="-25" r="2" fill="rgba(60, 90, 130, 0.4)" />
+    <circle cx="25" cy="-15" r="2" fill="rgba(60, 90, 130, 0.4)" />
+    <circle cx="25" cy="-5" r="2" fill="rgba(60, 90, 130, 0.4)" />
+
+    <!-- Conexiones -->
+    <path d="M-25,-25 L0,-15 M-25,-15 L0,-15 M-25,-5 L0,-15 M0,-15 L25,-25 M0,-15 L25,-15 M0,-15 L25,-5"
+          stroke="rgba(70, 100, 140, 0.25)" stroke-width="0.5" />
+
+    <!-- Reconstrucción -->
+    <rect x="-10" y="5" width="20" height="5" rx="1" fill="rgba(50, 80, 120, 0.25)" />
+    <rect x="-10" y="15" width="20" height="5" rx="1" fill="rgba(50, 80, 120, 0.25)" />
+    <path d="M0,-15 L0,5" stroke="rgba(70, 100, 140, 0.2)" stroke-width="0.4" stroke-dasharray="1,1" />
+  </g>
+
+  <!-- GAN en esquina inferior derecha -->
+  <g id="ganBottomRight" transform="translate(360, 360)" opacity="0.75">
+    <!-- Generador -->
+    <rect x="-30" y="-30" width="15" height="10" rx="2" fill="rgba(40, 80, 120, 0.3)" />
+    <text x="-22.5" y="-23" font-family="monospace" font-size="4"
+          text-anchor="middle" fill="rgba(130, 160, 200, 0.6)">G</text>
+
+    <!-- Discriminador -->
+    <rect x="15" y="-30" width="15" height="10" rx="2" fill="rgba(40, 80, 120, 0.3)" />
+    <text x="22.5" y="-23" font-family="monospace" font-size="4"
+          text-anchor="middle" fill="rgba(130, 160, 200, 0.6)">D</text>
+
+    <!-- Data flow -->
+    <path d="M-15,-25 L15,-25" stroke="rgba(70, 100, 140, 0.3)" stroke-width="0.6" stroke-dasharray="1,1" />
+    <circle cx="0" cy="-25" r="3" fill="rgba(60, 90, 130, 0.2)" stroke="rgba(70, 100, 140, 0.3)" stroke-width="0.4" />
+
+    <!-- Función de pérdida -->
+    <path d="M-25,-15 L-15,-5 L-5,-15 L5,-5 L15,-15 L25,-5"
+          fill="none" stroke="rgba(70, 110, 150, 0.3)" stroke-width="0.6" />
+    <path d="M22.5,-25 L22.5,-15" stroke="rgba(70, 100, 140, 0.25)" stroke-width="0.5" />
+
+    <!-- Red adversarial -->
+    <path d="M-22.5,-20 C-30,-10 -15,0 -22.5,10" fill="none" stroke="rgba(70, 100, 140, 0.25)" stroke-width="0.5" stroke-dasharray="1,1" />
+    <path d="M22.5,-20 C30,-10 15,0 22.5,10" fill="none" stroke="rgba(70, 100, 140, 0.25)" stroke-width="0.5" stroke-dasharray="1,1" />
+  </g>
+
+  <!-- Arquitectura de Transformer multicapa avanzada -->
+  <g id="complexTransformer" transform="translate(250, 30)" opacity="0.7">
+    <!-- Embedding y posicional -->
+    <rect x="-40" y="0" width="80" height="8" rx="1" fill="rgba(50, 80, 120, 0.25)" />
+
+    <!-- Multi-head attention layers -->
+    <g id="attentionHeads">
+      <rect x="-38" y="12" width="18" height="5" rx="1" fill="rgba(60, 90, 130, 0.25)" />
+      <rect x="-18" y="12" width="18" height="5" rx="1" fill="rgba(60, 90, 130, 0.25)" />
+      <rect x="2" y="12" width="18" height="5" rx="1" fill="rgba(60, 90, 130, 0.25)" />
+      <rect x="22" y="12" width="18" height="5" rx="1" fill="rgba(60, 90, 130, 0.25)" />
+      <path d="M-29,17 L-29,20 M-9,17 L-9,20 M11,17 L11,20 M31,17 L31,20"
+            stroke="rgba(70, 100, 140, 0.3)" stroke-width="0.4" />
+    </g>
+
+    <!-- Concatenate + Linear -->
+    <rect x="-35" y="20" width="70" height="4" rx="1" fill="rgba(40, 80, 120, 0.3)" />
+
+    <!-- Add & Norm -->
+    <rect x="-35" y="26" width="70" height="3" rx="1" fill="rgba(70, 110, 150, 0.3)" />
+    <path d="M0,8 L0,26" stroke="rgba(70, 100, 140, 0.2)" stroke-width="0.4" stroke-dasharray="1,1" />
+
+    <!-- FFN -->
+    <rect x="-30" y="31" width="60" height="6" rx="1" fill="rgba(50, 90, 130, 0.25)" />
+
+    <!-- Add & Norm -->
+    <rect x="-30" y="39" width="60" height="3" rx="1" fill="rgba(70, 110, 150, 0.3)" />
+    <path d="M0,29 L0,39" stroke="rgba(70, 100, 140, 0.2)" stroke-width="0.4" stroke-dasharray="1,1" />
+
+    <!-- Conexión a siguiente capa -->
+    <path d="M0,42 L0,47" stroke="rgba(80, 120, 170, 0.3)" stroke-width="0.6" />
+    <circle cx="0" cy="47" r="1" fill="rgba(80, 120, 170, 0.4)" />
+
+    <text x="0" y="55" font-family="monospace" font-size="3.5"
+          text-anchor="middle" fill="rgba(100, 140, 190, 0.5)">TRANSFORMER BLOCK</text>
+  </g>
+
+  <!-- Graph Neural Network -->
+  <g id="graphNetwork" transform="translate(150, 350)" opacity="0.7">
+    <!-- Nodos del grafo -->
+    <circle cx="-25" cy="-25" r="4" fill="rgba(40, 70, 110, 0.2)" stroke="rgba(60, 90, 140, 0.25)" stroke-width="0.8" />
+    <circle cx="-10" cy="-15" r="4" fill="rgba(40, 70, 110, 0.2)" stroke="rgba(60, 90, 140, 0.25)" stroke-width="0.8" />
+    <circle cx="-30" cy="-5" r="4" fill="rgba(40, 70, 110, 0.2)" stroke="rgba(60, 90, 140, 0.25)" stroke-width="0.8" />
+    <circle cx="-5" cy="0" r="4" fill="rgba(40, 70, 110, 0.2)" stroke="rgba(60, 90, 140, 0.25)" stroke-width="0.8" />
+    <circle cx="-20" cy="15" r="4" fill="rgba(40, 70, 110, 0.2)" stroke="rgba(60, 90, 140, 0.25)" stroke-width="0.8" />
+    <circle cx="10" cy="-25" r="4" fill="rgba(40, 70, 110, 0.2)" stroke="rgba(60, 90, 140, 0.25)" stroke-width="0.8" />
+    <circle cx="25" cy="-15" r="4" fill="rgba(40, 70, 110, 0.2)" stroke="rgba(60, 90, 140, 0.25)" stroke-width="0.8" />
+    <circle cx="15" cy="5" r="4" fill="rgba(40, 70, 110, 0.2)" stroke="rgba(60, 90, 140, 0.25)" stroke-width="0.8" />
+    <circle cx="30" cy="15" r="4" fill="rgba(40, 70, 110, 0.2)" stroke="rgba(60, 90, 140, 0.25)" stroke-width="0.8" />
+
+    <!-- Conexiones del grafo -->
+    <path d="M-25,-25 L-10,-15 M-25,-25 L-30,-5 M-10,-15 L-5,0 M-10,-15 L-30,-5 M-30,-5 L-20,15 M-5,0 L-20,15 M-5,0 L15,5 M10,-25 L25,-15 M10,-25 L-10,-15 M25,-15 L15,5 M15,5 L30,15 M-20,15 L15,5"
+          stroke="rgba(60, 100, 150, 0.2)" stroke-width="0.5" />
+
+    <!-- Mensaje passing layers -->
+    <circle cx="-25" cy="-25" r="1.5" fill="rgba(70, 110, 160, 0.35)" />
+    <circle cx="-10" cy="-15" r="1.5" fill="rgba(70, 110, 160, 0.35)" />
+    <circle cx="-30" cy="-5" r="1.5" fill="rgba(70, 110, 160, 0.35)" />
+    <circle cx="-5" cy="0" r="1.5" fill="rgba(70, 110, 160, 0.35)" />
+    <circle cx="-20" cy="15" r="1.5" fill="rgba(70, 110, 160, 0.35)" />
+    <circle cx="10" cy="-25" r="1.5" fill="rgba(70, 110, 160, 0.35)" />
+    <circle cx="25" cy="-15" r="1.5" fill="rgba(70, 110, 160, 0.35)" />
+    <circle cx="15" cy="5" r="1.5" fill="rgba(70, 110, 160, 0.35)" />
+    <circle cx="30" cy="15" r="1.5" fill="rgba(70, 110, 160, 0.35)" />
+
+    <text x="0" y="28" font-family="monospace" font-size="3.5"
+          text-anchor="middle" fill="rgba(100, 140, 190, 0.5)">GRAPH NEURAL NETWORK</text>
+  </g>
+
+  <!-- Mixture of Experts -->
+  <g id="mixtureOfExperts" transform="translate(300, 200)" opacity="0.7">
+    <!-- Router -->
+    <rect x="-40" y="-45" width="80" height="8" rx="2" fill="rgba(60, 90, 130, 0.25)" />
+    <path d="M-30,-37 L-30,-25 M-10,-37 L-10,-25 M10,-37 L10,-25 M30,-37 L30,-25"
+          stroke="rgba(70, 100, 140, 0.25)" stroke-width="0.5" stroke-dasharray="1,1" />
+
+    <!-- Experts -->
+    <g id="expert1" transform="translate(-30, -15)">
+      <rect x="-8" y="-5" width="16" height="20" rx="2" fill="rgba(50, 80, 120, 0.2)" />
+      <path d="M-4,0 L4,0 M-4,5 L4,5 M-4,10 L4,10"
+            stroke="rgba(80, 110, 150, 0.3)" stroke-width="0.5" />
+    </g>
+
+    <g id="expert2" transform="translate(-10, -15)">
+      <rect x="-8" y="-5" width="16" height="20" rx="2" fill="rgba(50, 80, 120, 0.2)" />
+      <path d="M-4,0 L4,0 M-4,5 L4,5 M-4,10 L4,10"
+            stroke="rgba(80, 110, 150, 0.3)" stroke-width="0.5" />
+    </g>
+
+    <g id="expert3" transform="translate(10, -15)">
+      <rect x="-8" y="-5" width="16" height="20" rx="2" fill="rgba(50, 80, 120, 0.2)" />
+      <path d="M-4,0 L4,0 M-4,5 L4,5 M-4,10 L4,10"
+            stroke="rgba(80, 110, 150, 0.3)" stroke-width="0.5" />
+    </g>
+
+    <g id="expert4" transform="translate(30, -15)">
+      <rect x="-8" y="-5" width="16" height="20" rx="2" fill="rgba(50, 80, 120, 0.2)" />
+      <path d="M-4,0 L4,0 M-4,5 L4,5 M-4,10 L4,10"
+            stroke="rgba(80, 110, 150, 0.3)" stroke-width="0.5" />
+    </g>
+
+    <!-- Output merger -->
+    <rect x="-40" y="15" width="80" height="8" rx="2" fill="rgba(60, 90, 130, 0.25)" />
+    <path d="M-30,5 L-30,15 M-10,5 L-10,15 M10,5 L10,15 M30,5 L30,15"
+          stroke="rgba(70, 100, 140, 0.25)" stroke-width="0.5" />
+
+    <text x="0" y="30" font-family="monospace" font-size="3.5"
+          text-anchor="middle" fill="rgba(100, 140, 190, 0.5)">MIXTURE OF EXPERTS</text>
+  </g>
+
+  <!-- Residual Dense Network -->
+  <g id="residualDense" transform="translate(100, 30)" opacity="0.7">
+    <!-- Input -->
+    <rect x="-35" y="0" width="10" height="20" rx="1" fill="rgba(40, 70, 110, 0.25)" />
+
+    <!-- Dense blocks con residuales -->
+    <g id="denseBlock1" transform="translate(-15, 0)">
+      <rect x="-5" y="0" width="10" height="5" rx="1" fill="rgba(50, 80, 120, 0.25)" />
+      <rect x="-5" y="7" width="10" height="5" rx="1" fill="rgba(50, 80, 120, 0.25)" />
+      <rect x="-5" y="14" width="10" height="5" rx="1" fill="rgba(50, 80, 120, 0.25)" />
+      <path d="M0,5 L0,7 M0,12 L0,14" stroke="rgba(70, 100, 140, 0.3)" stroke-width="0.4" />
+      <path d="M-5,2.5 L-10,2.5 M-10,2.5 L-10,10 M-10,10 L-5,10"
+            stroke="rgba(70, 100, 140, 0.2)" stroke-width="0.4" stroke-dasharray="1,1" />
+      <path d="M-5,10 L-10,10 M-10,10 L-10,17 M-10,17 L-5,17"
+            stroke="rgba(70, 100, 140, 0.2)" stroke-width="0.4" stroke-dasharray="1,1" />
+    </g>
+
+    <g id="denseBlock2" transform="translate(5, 0)">
+      <rect x="-5" y="0" width="10" height="5" rx="1" fill="rgba(50, 80, 120, 0.25)" />
+      <rect x="-5" y="7" width="10" height="5" rx="1" fill="rgba(50, 80, 120, 0.25)" />
+      <rect x="-5" y="14" width="10" height="5" rx="1" fill="rgba(50, 80, 120, 0.25)" />
+      <path d="M0,5 L0,7 M0,12 L0,14" stroke="rgba(70, 100, 140, 0.3)" stroke-width="0.4" />
+      <path d="M-5,2.5 L-10,2.5 M-10,2.5 L-10,10 M-10,10 L-5,10"
+            stroke="rgba(70, 100, 140, 0.2)" stroke-width="0.4" stroke-dasharray="1,1" />
+      <path d="M-5,10 L-10,10 M-10,10 L-10,17 M-10,17 L-5,17"
+            stroke="rgba(70, 100, 140, 0.2)" stroke-width="0.4" stroke-dasharray="1,1" />
+    </g>
+
+    <g id="denseBlock3" transform="translate(25, 0)">
+      <rect x="-5" y="0" width="10" height="5" rx="1" fill="rgba(50, 80, 120, 0.25)" />
+      <rect x="-5" y="7" width="10" height="5" rx="1" fill="rgba(50, 80, 120, 0.25)" />
+      <rect x="-5" y="14" width="10" height="5" rx="1" fill="rgba(50, 80, 120, 0.25)" />
+      <path d="M0,5 L0,7 M0,12 L0,14" stroke="rgba(70, 100, 140, 0.3)" stroke-width="0.4" />
+      <path d="M-5,2.5 L-10,2.5 M-10,2.5 L-10,10 M-10,10 L-5,10"
+            stroke="rgba(70, 100, 140, 0.2)" stroke-width="0.4" stroke-dasharray="1,1" />
+      <path d="M-5,10 L-10,10 M-10,10 L-10,17 M-10,17 L-5,17"
+            stroke="rgba(70, 100, 140, 0.2)" stroke-width="0.4" stroke-dasharray="1,1" />
+    </g>
+
+    <!-- Output -->
+    <rect x="35" y="0" width="10" height="20" rx="1" fill="rgba(40, 70, 110, 0.25)" />
+
+    <!-- Conexiones entre bloques -->
+    <path d="M-25,10 L-20,10 M-5,10 L0,10 M15,10 L20,10 M35,10 L40,10"
+          stroke="rgba(70, 100, 140, 0.3)" stroke-width="0.5" />
+
+    <!-- Conexión residual global -->
+    <path d="M-25,10 C-25,-5 35,-5 35,10"
+          stroke="rgba(70, 110, 150, 0.2)" stroke-width="0.5" stroke-dasharray="1,1" />
+
+    <text x="5" y="28" font-family="monospace" font-size="3.5"
+          text-anchor="middle" fill="rgba(100, 140, 190, 0.5)">RESIDUAL DENSE NETWORK</text>
+  </g>
+
+  <!-- Diffusion model process -->
+  <g id="diffusionProcess" transform="translate(200, 280)" opacity="0.7">
+    <!-- Etapas de difusión -->
+    <rect x="-50" y="-15" width="20" height="20" rx="2" fill="rgba(60, 90, 130, 0.1)"
+          stroke="rgba(60, 90, 130, 0.2)" stroke-width="0.5" />
+    <circle cx="-40" cy="-5" r="6" fill="rgba(60, 90, 130, 0.25)" />
+
+    <rect x="-25" y="-15" width="20" height="20" rx="2" fill="rgba(60, 90, 130, 0.1)"
+          stroke="rgba(60, 90, 130, 0.2)" stroke-width="0.5" />
+    <circle cx="-15" cy="-5" r="6" fill="rgba(60, 90, 130, 0.2)" />
+    <circle cx="-15" cy="-5" r="3" fill="rgba(60, 90, 130, 0.3)" />
+
+    <rect x="0" y="-15" width="20" height="20" rx="2" fill="rgba(60, 90, 130, 0.1)"
+          stroke="rgba(60, 90, 130, 0.2)" stroke-width="0.5" />
+    <circle cx="10" cy="-5" r="6" fill="rgba(60, 90, 130, 0.15)" />
+    <circle cx="10" cy="-5" r="4" fill="rgba(60, 90, 130, 0.2)" />
+    <circle cx="10" cy="-5" r="2" fill="rgba(60, 90, 130, 0.3)" />
+
+    <rect x="25" y="-15" width="20" height="20" rx="2" fill="rgba(60, 90, 130, 0.1)"
+          stroke="rgba(60, 90, 130, 0.2)" stroke-width="0.5" />
+    <circle cx="35" cy="-5" r="6" fill="rgba(60, 90, 130, 0.1)" />
+    <circle cx="35" cy="-5" r="5" fill="rgba(60, 90, 130, 0.15)" />
+    <circle cx="35" cy="-5" r="4" fill="rgba(60, 90, 130, 0.2)" />
+    <circle cx="35" cy="-5" r="3" fill="rgba(60, 90, 130, 0.25)" />
+    <circle cx="35" cy="-5" r="2" fill="rgba(60, 90, 130, 0.3)" />
+    <circle cx="35" cy="-5" r="1" fill="rgba(60, 90, 130, 0.35)" />
+
+    <!-- Flechas de proceso -->
+    <path d="M-30,-5 L-25,-5 M-5,-5 L0,-5 M20,-5 L25,-5"
+          stroke="rgba(70, 100, 140, 0.3)" stroke-width="0.5" />
+    <polygon points="-26,-3 -25,-5 -26,-7" fill="rgba(70, 100, 140, 0.3)" />
+    <polygon points="-1,-3 0,-5 -1,-7" fill="rgba(70, 100, 140, 0.3)" />
+    <polygon points="24,-3 25,-5 24,-7" fill="rgba(70, 100, 140, 0.3)" />
+
+    <text x="-2" y="12" font-family="monospace" font-size="3.5"
+          text-anchor="middle" fill="rgba(100, 140, 190, 0.5)">DIFFUSION MODEL</text>
+  </g>
+</svg>

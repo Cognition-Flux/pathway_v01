@@ -6,7 +6,7 @@ PineconeVectorStore class.
 
 Usage
 -----
-uv run python pathway/vectorstore/retriever.py [--index pathway]
+uv run python agentic_workflow/vectorstore/retriever.py [--index pathway]
 
 Prerequisites
 -------------
@@ -18,7 +18,8 @@ Prerequisites
 import os
 
 from langchain_pinecone import PineconeVectorStore
-from pathway.utils import get_azure_embeddings
+
+from agentic_workflow.utils import get_azure_embeddings
 
 
 vectorstore = PineconeVectorStore.from_existing_index(

@@ -5,7 +5,7 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="1. Buscar información sobre el envejecimiento y sus definiciones",
+                  step="Buscar información sobre el envejecimiento y sus definiciones",
                   agent="rag",
                   reasoning="El agente RAG es el adecuado ya que la consulta está DIRECTAMENTE relacionada con el ENVEJECIMIENTO, que es precisamente la temática central de los documentos científicos en nuestra vectorstore especializada"
               )
@@ -19,12 +19,12 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="1. Buscar información científica sobre la definición y mecanismos del envejecimiento celular",
+                  step="Buscar información científica sobre la definición y mecanismos del envejecimiento celular",
                   agent="rag",
                   reasoning="El agente RAG es el indicado ya que la consulta sobre ENVEJECIMIENTO CELULAR está explícitamente relacionada con procesos de envejecimiento a nivel biológico, tema principal de nuestra vectorstore especializada"
               ),
               OneStep(
-                  step="2. Buscar información sobre los factores que aceleran el envejecimiento celular",
+                  step="Buscar información sobre los factores que aceleran el envejecimiento celular",
                   agent="rag",
                   reasoning="El agente RAG debe usarse porque los FACTORES QUE ACELERAN EL ENVEJECIMIENTO son un tema central en la investigación sobre envejecimiento presente en nuestra base de conocimiento científico"
               )
@@ -55,17 +55,17 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="1. Analizar los datos disponibles sobre dieta y longevidad (o edad) para identificar asociaciones",
+                  step="Analizar los datos disponibles sobre dieta y longevidad (o edad) para identificar asociaciones",
                   agent="tables",
                   reasoning="El agente de tablas es especialista en analizar datos estructurados y puede identificar patrones relevantes entre dieta, edad y longevidad"
               ),
               OneStep(
-                  step="2. Buscar en la base de conocimiento estudios científicos sobre los mecanismos biológicos de la dieta y su impacto en la longevidad",
+                  step="Buscar en la base de conocimiento estudios científicos sobre los mecanismos biológicos de la dieta y su impacto en la longevidad",
                   agent="rag",
                   reasoning="El agente RAG es el adecuado porque esta consulta busca la RELACIÓN ENTRE DIETA Y LONGEVIDAD, siendo la longevidad un aspecto intrínsecamente relacionado con el ENVEJECIMIENTO y sus procesos biológicos. La vectorstore contiene estudios específicos sobre cómo factores nutricionales afectan los mecanismos de envejecimiento"
               ),
               OneStep(
-                  step="3. Buscar investigaciones recientes y metaanálisis sobre dieta y su relación con la longevidad en diferentes poblaciones y especies",
+                  step="Buscar investigaciones recientes y metaanálisis sobre dieta y su relación con la longevidad en diferentes poblaciones y especies",
                   agent="websearch",
                   reasoning="El agente de búsqueda web debe usarse para complementar la información de la vectorstore con INVESTIGACIONES RECIENTES que NO ESTÁN INCLUIDAS en nuestra base de conocimiento sobre envejecimiento por ser publicaciones nuevas o por abarcar poblaciones y especies no cubiertas en detalle en nuestra vectorstore especializada"
               )
@@ -79,17 +79,17 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="1. Buscar información científica actualizada sobre la rapamicina, su mecanismo de acción y su potencial relación con el envejecimiento y la longevidad",
+                  step="Buscar información científica actualizada sobre la rapamicina, su mecanismo de acción y su potencial relación con el envejecimiento y la longevidad",
                   agent="websearch",
                   reasoning="El agente de búsqueda web es el adecuado porque la consulta sobre RAPAMICINA como fármaco general NO ESTÁ PRIMARIAMENTE ENFOCADA EN SU RELACIÓN CON EL ENVEJECIMIENTO, sino en información farmacológica general que no es el foco principal de nuestra vectorstore especializada en envejecimiento"
               ),
               OneStep(
-                  step="2. Buscar información científica actualizada sobre la metformina, su mecanismo de acción y sus posibles efectos en el envejecimiento",
+                  step="Buscar información científica actualizada sobre la metformina, su mecanismo de acción y sus posibles efectos en el envejecimiento",
                   agent="websearch",
                   reasoning="El agente de búsqueda web debe usarse porque la consulta sobre METFORMINA como fármaco general NO ESTÁ DIRECTAMENTE RELACIONADA CON EL ENVEJECIMIENTO como tema central, sino que busca información farmacológica amplia que está fuera del alcance principal de nuestra vectorstore especializada"
               ),
               OneStep(
-                  step="3. Analizar los datos encontrados sobre ambos compuestos para identificar patrones y comparar sus efectos",
+                  step="Analizar los datos encontrados sobre ambos compuestos para identificar patrones y comparar sus efectos",
                   agent="tables",
                   reasoning="El agente de tablas puede organizar y analizar comparativamente la información sobre los mecanismos de acción, efectos y evidencia científica de ambos compuestos"
               )
@@ -103,7 +103,7 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="1. Buscar información científica sobre estrategias e intervenciones para extender la longevidad humana",
+                  step="Buscar información científica sobre estrategias e intervenciones para extender la longevidad humana",
                   agent="rag",
                   reasoning="El agente RAG es el más apropiado porque la consulta sobre EXTENDER LA VIDA y ENVEJECER SALUDABLEMENTE está directamente relacionada con los procesos de ENVEJECIMIENTO y LONGEVIDAD, temas centrales de nuestra vectorstore que contiene investigación científica especializada sobre intervenciones que pueden modular estos procesos"
               )
@@ -117,12 +117,12 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="1. Buscar información general sobre la dieta con restricción calórica, sus definiciones, métodos de implementación y su relación con la longevidad y el envejecimiento",
+                  step="Buscar información general sobre la dieta con restricción calórica, sus definiciones, métodos de implementación y su relación con la longevidad y el envejecimiento",
                   agent="websearch",
                   reasoning="El agente de búsqueda web es necesario porque la consulta solicita información GENERAL sobre la RESTRICCIÓN CALÓRICA como práctica nutricional, NO ENFOCADA ESPECÍFICAMENTE en su relación con el envejecimiento. La vectorstore especializada contendría información limitada sobre los aspectos generales, definiciones y métodos de implementación de esta dieta"
               ),
               OneStep(
-                  step="2. Buscar información general sobre el ayuno, sus diferentes tipos, prácticas recomendadas y sus posibles efectos en el proceso de envejecimiento",
+                  step="Buscar información general sobre el ayuno, sus diferentes tipos, prácticas recomendadas y sus posibles efectos en el proceso de envejecimiento",
                   agent="websearch",
                   reasoning="El agente de búsqueda web debe usarse porque la consulta busca información GENERAL sobre el AYUNO como práctica nutricional, NO CENTRADA en sus efectos sobre el envejecimiento. Nuestra vectorstore especializada en envejecimiento no contiene información completa sobre los diferentes tipos de ayuno y sus implementaciones desde una perspectiva nutricional general"
               )
@@ -152,17 +152,17 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="1. Buscar información actualizada sobre el cerebro, su estructura, funciones y los cambios que experimenta durante el proceso de envejecimiento",
+                  step="Buscar información actualizada sobre el cerebro, su estructura, funciones y los cambios que experimenta durante el proceso de envejecimiento",
                   agent="websearch",
                   reasoning="El agente de búsqueda web es el adecuado porque la consulta requiere información general sobre EL CEREBRO y sus FUNCIONES que va más allá del enfoque específico de nuestra vectorstore especializada en envejecimiento. Se necesita información amplia y actualizada sobre neuroanatomía y fisiología cerebral para establecer la base del informe"
               ),
               OneStep(
-                  step="2. Complementar con búsqueda en estudios específicos sobre envejecimiento cerebral y sus implicaciones",
+                  step="Complementar con búsqueda en estudios específicos sobre envejecimiento cerebral y sus implicaciones",
                   agent="rag",
                   reasoning="El agente RAG puede proporcionar información especializada de la vectorstore sobre los cambios cerebrales relacionados específicamente con el ENVEJECIMIENTO, complementando la información general obtenida anteriormente"
               ),
               OneStep(
-                  step="3. Analizar los datos recopilados para identificar patrones en los cambios cerebrales asociados con el envejecimiento",
+                  step="Analizar los datos recopilados para identificar patrones en los cambios cerebrales asociados con el envejecimiento",
                   agent="tables",
                   reasoning="El agente de tablas puede organizar y analizar sistemáticamente la información sobre las distintas regiones cerebrales y cómo se ven afectadas por el envejecimiento"
               )
@@ -176,12 +176,12 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="1. Analizar las tablas de datos sobre la dieta de los pacientes para identificar patrones alimenticios predominantes",
+                  step="Analizar las tablas de datos sobre la dieta de los pacientes para identificar patrones alimenticios predominantes",
                   agent="tables",
                   reasoning="El agente de tablas es el más adecuado para analizar DATOS ESTRUCTURADOS sobre la DIETA de los pacientes, ya que puede procesar información tabular, identificar tendencias y resumir hábitos alimenticios de manera eficiente"
               ),
               OneStep(
-                  step="2. Buscar en la literatura científica estudios sobre cómo los patrones dietéticos identificados influyen en el proceso de envejecimiento",
+                  step="Buscar en la literatura científica estudios sobre cómo los patrones dietéticos identificados influyen en el proceso de envejecimiento",
                   agent="rag",
                   reasoning="El agente RAG es el apropiado para buscar información científica sobre la RELACIÓN ENTRE DIETA Y ENVEJECIMIENTO, tema directamente relacionado con los procesos de envejecimiento que están documentados en nuestra vectorstore especializada"
               )
@@ -195,7 +195,7 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="1. Obtener estadísticas generales de todas las tablas disponibles en la base de datos",
+                  step="Obtener estadísticas generales de todas las tablas disponibles en la base de datos",
                   agent="tables",
                   reasoning="El agente de tablas es el indicado para analizar DATOS ESTRUCTURADOS en TODAS LAS TABLAS disponibles, ya que puede procesar eficientemente información tabular y generar estadísticas descriptivas generales que permitan entender la distribución y características de los datos"
               )
@@ -310,17 +310,17 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="1. Usar pandas para iterar cada dataframe y aplicar `df.select_dtypes(include=['datetime', 'datetimetz'])` o buscar columnas con nombres como 'fecha', 'timestamp', 'time' y convertirlas con `pd.to_datetime` para comprobar si son válidas",
+                  step="Usar pandas para iterar cada dataframe y aplicar `df.select_dtypes(include=['datetime', 'datetimetz'])` o buscar columnas con nombres como 'fecha', 'timestamp', 'time' y convertirlas con `pd.to_datetime` para comprobar si son válidas",
                   agent="tables",
                   reasoning="El agente de tablas es necesario para explorar las tablas disponibles y encontrar aquella que incluya la columna relacionada con biomarcadores"
               ),
               OneStep(
-                  step="2. Extraer de la tabla identificada los datos en formato de serie temporal (fecha/tiempo vs biomarcador)",
+                  step="Extraer de la tabla identificada los datos en formato de serie temporal (fecha/tiempo vs biomarcador)",
                   agent="tables",
                   reasoning="Una vez localizada la tabla, el agente de tablas puede filtrar y organizar los datos temporales del biomarcador para su posterior visualización"
               ),
               OneStep(
-                  step="3. Generar un gráfico de serie temporal a partir de los datos extraídos del biomarcador",
+                  step="Generar un gráfico de serie temporal a partir de los datos extraídos del biomarcador",
                   agent="plot_generator",
                   reasoning="El agente plot_generator es el adecuado para crear la visualización que muestre la evolución temporal del biomarcador"
               )
@@ -334,17 +334,17 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="1. Buscar en las tablas la que contenga la variable 'indicador biológico', 'marcadores biológicos' o términos relacionados",
+                  step="Buscar en las tablas la que contenga la variable 'indicador biológico', 'marcadores biológicos' o términos relacionados",
                   agent="tables",
                   reasoning="El agente de tablas debe identificar la tabla pertinente buscando sinónimos de biomarcadores como 'indicador biológico' o 'marcadores biológicos'"
               ),
               OneStep(
-                  step="2. Extraer de la tabla seleccionada los datos cronológicos del indicador biológico para construir la serie temporal",
+                  step="Extraer de la tabla seleccionada los datos cronológicos del indicador biológico para construir la serie temporal",
                   agent="tables",
                   reasoning="Con la tabla localizada, el agente de tablas puede filtrar y ordenar los datos en función del tiempo para preparar la visualización"
               ),
               OneStep(
-                  step="3. Generar una gráfica de línea temporal a partir de los datos obtenidos del indicador biológico",
+                  step="Generar una gráfica de línea temporal a partir de los datos obtenidos del indicador biológico",
                   agent="plot_generator",
                   reasoning="El agente plot_generator creará la visualización de la evolución temporal del indicador biológico empleando una gráfica de líneas"
               )
@@ -358,7 +358,7 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="1. Obtener una descripción general (resumen, inventario, vista panorámica, perfil) de todas las tablas, listando columnas, tipos de datos y conteos básicos",
+                  step="Obtener una descripción general (resumen, inventario, vista panorámica, perfil) de todas las tablas, listando columnas, tipos de datos y conteos básicos",
                   agent="tables",
                   reasoning="El agente de tablas es el indicado para generar una DESCRIPCIÓN, RESUMEN, INVENTARIO o PERFIL de la información tabular disponible, proporcionando metadatos como nombres de columnas, tipos de datos y estadísticas descriptivas que faciliten la comprensión del contenido"
               )
@@ -372,7 +372,7 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="1. Generar un inventario/catálogo/listado completo de las tablas (dataset, conjunto de datos), indicando para cada una sus columnas, tipos, tamaño (conteo, número de filas) y descripción breve",
+                  step="Generar un inventario/catálogo/listado completo de las tablas (dataset, conjunto de datos), indicando para cada una sus columnas, tipos, tamaño (conteo, número de filas) y descripción breve",
                   agent="tables",
                   reasoning="El agente de tablas puede elaborar un INVENTARIO, CATÁLOGO o LISTADO con información detallada sobre cada tabla, incluyendo columnas, tipos de datos y número de registros, proporcionando así una visión panorámica del dataset"
               )
@@ -386,7 +386,7 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="1. Obtener un panorama/visión general/clasificación temática de todos los papers (artículos, publicaciones, estudios) recopilados, identificando áreas de investigación, objetivos, conclusiones y líneas de trabajo principales",
+                  step="Obtener un panorama/visión general/clasificación temática de todos los papers (artículos, publicaciones, estudios) recopilados, identificando áreas de investigación, objetivos, conclusiones y líneas de trabajo principales",
                   agent="rag",
                   reasoning="El agente RAG es el apropiado para analizar el corpus de papers y extraer la TEMÁTICA, ASUNTO, ENFOQUE o CAMPO de estudio predominante, así como los objetivos y conclusiones generales"
               )
@@ -400,7 +400,7 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="1. Analizar los artículos/papers/publicaciones para resumir su enfoque, campos temáticos, hipótesis, objetivos y hallazgos/resultados principales",
+                  step="Analizar los artículos/papers/publicaciones para resumir su enfoque, campos temáticos, hipótesis, objetivos y hallazgos/resultados principales",
                   agent="rag",
                   reasoning="El agente RAG puede compilar un RESUMEN temático y de conclusiones, identificando ÁREAS DE ESTUDIO, OBJETIVOS, METAS, RESULTADOS y CONCLUSIONES de las publicaciones"
               )
@@ -414,7 +414,7 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="1. Revisar los documentos/archivos/textos/fuentes disponibles para generar un resumen temático (panorama, sinopsis, clasificación de tópicos), incluyendo objetivos y conclusiones generales",
+                  step="Revisar los documentos/archivos/textos/fuentes disponibles para generar un resumen temático (panorama, sinopsis, clasificación de tópicos), incluyendo objetivos y conclusiones generales",
                   agent="rag",
                   reasoning="El agente RAG es el más adecuado para examinar el corpus de DOCUMENTOS (archivos, textos, materiales, fuentes) y extraer su CONTENIDO, TEMÁTICA, PROPÓSITO y CONCLUSIONES principales en un único paso"
               )
@@ -428,7 +428,7 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="1. Analizar el conjunto de documentos/fuentes/publicaciones para identificar temas/tópicos, objetivos/propósitos e insights/resultados clave, creando una clasificación o mapa temático",
+                  step="Analizar el conjunto de documentos/fuentes/publicaciones para identificar temas/tópicos, objetivos/propósitos e insights/resultados clave, creando una clasificación o mapa temático",
                   agent="rag",
                   reasoning="El agente RAG puede sintetizar la INFORMACIÓN TEMÁTICA de los DOCUMENTOS (fuentes, publicaciones, archivos) y presentar los principales tópicos, objetivos y hallazgos en un solo paso"
               )
@@ -617,12 +617,12 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="1. Interrogar la base vectorial para recuperar artículos, papers y revisiones sobre DIETA, NUTRICIÓN, INGESTA ALIMENTARIA y su vínculo con ENVEJECIMIENTO SALUDABLE, SENESCENCIA POSITIVA y LARGA VIDA",
+                  step="Interrogar la base vectorial para recuperar artículos, papers y revisiones sobre DIETA, NUTRICIÓN, INGESTA ALIMENTARIA y su vínculo con ENVEJECIMIENTO SALUDABLE, SENESCENCIA POSITIVA y LARGA VIDA",
                   agent="rag",
                   reasoning="El agente RAG es idóneo para indagar en la vectorstore y extraer conocimiento consolidado acerca de cómo la alimentación (nutrición, dieta, patrones dietéticos) repercute en la longevidad y la calidad de vida en edades avanzadas"
               ),
               OneStep(
-                  step="2. Ejecutar una búsqueda web avanzada para localizar estudios contemporáneos, metaanálisis recientes y noticias científicas de última hora sobre NUTRICIÓN y AGING WELL",
+                  step="Ejecutar una búsqueda web avanzada para localizar estudios contemporáneos, metaanálisis recientes y noticias científicas de última hora sobre NUTRICIÓN y AGING WELL",
                   agent="websearch",
                   reasoning="El agente websearch aportará información FRESCA y ACTUAL, capturando publicaciones emergentes (preprints, conferencias, notas de prensa) que aún no figuran en la vectorstore, completando la panorámica con evidencias recientes"
               )
@@ -636,12 +636,12 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="1. Consultar la vectorstore para rescatar información sobre PATRONES ALIMENTARIOS, MACRONUTRIENTES, MICROBIOTA y su efecto en LONGEVIDAD y AGING HEALTHY",
+                  step="Consultar la vectorstore para rescatar información sobre PATRONES ALIMENTARIOS, MACRONUTRIENTES, MICROBIOTA y su efecto en LONGEVIDAD y AGING HEALTHY",
                   agent="rag",
                   reasoning="Mediante RAG se accede rápidamente a literatura indexada que describe la influencia de distintos regímenes nutricionales (restricción calórica, dietas mediterráneas, ayuno intermitente, etc.) en biomarcadores de envejecimiento sano"
               ),
               OneStep(
-                  step="2. Realizar una indagación en línea para detectar investigaciones punteras, ensayos clínicos actuales y reportes divulgativos sobre NUTRICIÓN y HEALTHSPAN",
+                  step="Realizar una indagación en línea para detectar investigaciones punteras, ensayos clínicos actuales y reportes divulgativos sobre NUTRICIÓN y HEALTHSPAN",
                   agent="websearch",
                   reasoning="El agente de búsqueda web ampliará la base de evidencia con publicaciones recientes (último año) procedentes de los dominios científicos autorizados"
               )
@@ -655,12 +655,12 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="1. Buscar en la vectorstore literatura sobre FACTORES DIETÉTICOS, SUPLEMENTOS NUTRICIONALES y su repercusión en la ESPERANZA DE VIDA SALUDABLE",
+                  step="Buscar en la vectorstore literatura sobre FACTORES DIETÉTICOS, SUPLEMENTOS NUTRICIONALES y su repercusión en la ESPERANZA DE VIDA SALUDABLE",
                   agent="rag",
                   reasoning="RAG permite recuperar rápidamente revisiones sistemáticas, estudios observacionales y ensayos que relacionan la ingesta alimentaria con procesos biológicos de senescencia y bienestar en la tercera edad"
               ),
               OneStep(
-                  step="2. Complementar con una exploración web para capturar artículos novedosos, recomendaciones de organismos de salud y tendencias actuales en NUTRIGERONTOLOGÍA",
+                  step="Complementar con una exploración web para capturar artículos novedosos, recomendaciones de organismos de salud y tendencias actuales en NUTRIGERONTOLOGÍA",
                   agent="websearch",
                   reasoning="El agente websearch proporcionará la perspectiva más reciente, incluyendo publicaciones en servidores de preprints y revistas de alto impacto que aún no están incorporadas al corpus interno"
               )
@@ -674,12 +674,12 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="1. Explorar en la vectorstore papers y revisiones sobre EJERCICIO FÍSICO, ACTIVIDAD AERÓBICA y su efecto en ENVEJECIMIENTO, LONGEVIDAD y MARCADORES CELULARES",
+                  step="Explorar en la vectorstore papers y revisiones sobre EJERCICIO FÍSICO, ACTIVIDAD AERÓBICA y su efecto en ENVEJECIMIENTO, LONGEVIDAD y MARCADORES CELULARES",
                   agent="rag",
                   reasoning="El agente RAG recupera literatura consolidada que relaciona la actividad física con la modulación de los procesos de envejecimiento"
               ),
               OneStep(
-                  step="2. Realizar una búsqueda web avanzada para encontrar estudios recientes, ensayos clínicos y meta-análisis sobre EJERCICIO y AGING",
+                  step="Realizar una búsqueda web avanzada para encontrar estudios recientes, ensayos clínicos y meta-análisis sobre EJERCICIO y AGING",
                   agent="websearch",
                   reasoning="El agente websearch complementa con evidencia actualizada publicada en los últimos meses"
               )
@@ -693,12 +693,12 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="1. Recuperar artículos sobre CALIDAD DEL SUEÑO, CICLOS CIRCADIANOS y sus efectos en ENVEJECIMIENTO CELULAR dentro de la vectorstore",
+                  step="Recuperar artículos sobre CALIDAD DEL SUEÑO, CICLOS CIRCADIANOS y sus efectos en ENVEJECIMIENTO CELULAR dentro de la vectorstore",
                   agent="rag",
                   reasoning="RAG extrae estudios que analizan cómo el sueño modula procesos celulares de senescencia"
               ),
               OneStep(
-                  step="2. Buscar en la web investigaciones recientes y revisiones sistemáticas sobre SLEEP QUALITY y CELLULAR AGING",
+                  step="Buscar en la web investigaciones recientes y revisiones sistemáticas sobre SLEEP QUALITY y CELLULAR AGING",
                   agent="websearch",
                   reasoning="websearch amplía con publicaciones de último año no incluidas en la base"
               )
@@ -712,12 +712,12 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="1. Consultar la vectorstore sobre ESTRÉS CRÓNICO, CORTISOL y su relación con ACORTAMIENTO DE TELÓMEROS y SENESCENCIA",
+                  step="Consultar la vectorstore sobre ESTRÉS CRÓNICO, CORTISOL y su relación con ACORTAMIENTO DE TELÓMEROS y SENESCENCIA",
                   agent="rag",
                   reasoning="RAG provee estudios mecanísticos que vinculan estrés y envejecimiento"
               ),
               OneStep(
-                  step="2. Buscar evidencia reciente en la web (meta-análisis, reviews) sobre STRESS y AGEING",
+                  step="Buscar evidencia reciente en la web (meta-análisis, reviews) sobre STRESS y AGEING",
                   agent="websearch",
                   reasoning="websearch aporta la literatura más nueva y diversa"
               )
@@ -731,12 +731,12 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="1. Buscar en la vectorstore estudios sobre TABACO, TABAQUISMO y su impacto en MARCADORES DE ENVEJECIMIENTO (ej. telómeros, epigenética)",
+                  step="Buscar en la vectorstore estudios sobre TABACO, TABAQUISMO y su impacto en MARCADORES DE ENVEJECIMIENTO (ej. telómeros, epigenética)",
                   agent="rag",
                   reasoning="RAG entrega evidencia consolidada del efecto del tabaquismo en el envejecimiento"
               ),
               OneStep(
-                  step="2. Investigar en la web publicaciones recientes sobre SMOKING y AGEING, incluyendo datos epidemiológicos",
+                  step="Investigar en la web publicaciones recientes sobre SMOKING y AGEING, incluyendo datos epidemiológicos",
                   agent="websearch",
                   reasoning="websearch añade resultados actuales y estadísticas poblacionales"
               )
@@ -750,12 +750,12 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="1. Revisar la vectorstore para identificar ZONAS AZULES, regiones de ALTA LONGEVIDAD y factores asociados",
+                  step="Revisar la vectorstore para identificar ZONAS AZULES, regiones de ALTA LONGEVIDAD y factores asociados",
                   agent="rag",
                   reasoning="RAG proporciona estudios sobre demografía y factores de longevidad regional"
               ),
               OneStep(
-                  step="2. Ejecutar búsqueda web para obtener datos demográficos actualizados y reportes recientes sobre regiones con alta esperanza de vida",
+                  step="Ejecutar búsqueda web para obtener datos demográficos actualizados y reportes recientes sobre regiones con alta esperanza de vida",
                   agent="websearch",
                   reasoning="websearch actualiza la información con estadísticas y noticias recientes"
               )
@@ -769,12 +769,12 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="1. Consultar la vectorstore acerca de AISLAMIENTO SOCIAL, SOLEDAD y sus efectos en la SALUD y LONGEVIDAD",
+                  step="Consultar la vectorstore acerca de AISLAMIENTO SOCIAL, SOLEDAD y sus efectos en la SALUD y LONGEVIDAD",
                   agent="rag",
                   reasoning="RAG recupera estudios que vinculan soledad con biomarcadores de envejecimiento"
               ),
               OneStep(
-                  step="2. Buscar estudios recientes en la web sobre LONELINESS y HEALTHSPAN",
+                  step="Buscar estudios recientes en la web sobre LONELINESS y HEALTHSPAN",
                   agent="websearch",
                   reasoning="websearch complementa con hallazgos actuales y análisis sociológicos"
               )
@@ -788,12 +788,12 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="1. Explorar en la vectorstore estudios comparativos URBANO vs RURAL relacionados con ENVEJECIMIENTO y CALIDAD DE VIDA",
+                  step="Explorar en la vectorstore estudios comparativos URBANO vs RURAL relacionados con ENVEJECIMIENTO y CALIDAD DE VIDA",
                   agent="rag",
                   reasoning="RAG ofrece investigaciones sobre cómo el entorno influye en procesos de envejecimiento"
               ),
               OneStep(
-                  step="2. Realizar búsqueda web para hallar reportes y estudios recientes sobre URBAN/RURAL AGEING",
+                  step="Realizar búsqueda web para hallar reportes y estudios recientes sobre URBAN/RURAL AGEING",
                   agent="websearch",
                   reasoning="websearch añade datos demográficos y sanitarios actualizados"
               )
@@ -807,12 +807,12 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="1. Recuperar en la vectorstore literatura sobre APOYO SOCIAL, REDES COMUNITARIAS y su impacto en HEALTHY AGEING",
+                  step="Recuperar en la vectorstore literatura sobre APOYO SOCIAL, REDES COMUNITARIAS y su impacto en HEALTHY AGEING",
                   agent="rag",
                   reasoning="RAG muestra estudios que relacionan vínculos sociales y longevidad"
               ),
               OneStep(
-                  step="2. Buscar en la web investigaciones recientes y programas comunitarios exitosos ligados a ENVEJECIMIENTO SALUDABLE",
+                  step="Buscar en la web investigaciones recientes y programas comunitarios exitosos ligados a ENVEJECIMIENTO SALUDABLE",
                   agent="websearch",
                   reasoning="websearch provee ejemplos de políticas y estudios de caso actuales"
               )
@@ -826,12 +826,12 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="1. Investigar en la vectorstore estudios sobre EXPOSICIÓN A CONTAMINANTES, POLUCIÓN y sus efectos en BIOMARCADORES DE ENVEJECIMIENTO",
+                  step="Investigar en la vectorstore estudios sobre EXPOSICIÓN A CONTAMINANTES, POLUCIÓN y sus efectos en BIOMARCADORES DE ENVEJECIMIENTO",
                   agent="rag",
                   reasoning="RAG aporta la base mecanística del impacto de contaminantes en el envejecimiento"
               ),
               OneStep(
-                  step="2. Ejecutar búsqueda web para recabar datos epidemiológicos recientes y meta-análisis sobre POLLUTION y AGEING",
+                  step="Ejecutar búsqueda web para recabar datos epidemiológicos recientes y meta-análisis sobre POLLUTION y AGEING",
                   agent="websearch",
                   reasoning="websearch actualiza la visión con estadísticas y estudios recientes"
               )
@@ -845,7 +845,7 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="1. Explorar todas las tablas disponibles para detectar columnas de FECHA, TIMESTAMP o DATOS TEMPORALES (series, historiales, registros cronológicos)",
+                  step="Explorar todas las tablas disponibles para detectar columnas de FECHA, TIMESTAMP o DATOS TEMPORALES (series, historiales, registros cronológicos)",
                   agent="tables",
                   reasoning="El agente tables puede inspeccionar la estructura de las tablas y verificar la presencia de campos temporales que indiquen series de tiempo"
               )
@@ -859,7 +859,7 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="1. Analizar metadatos y nombres de columnas (timestamp, fecha, hora) para determinar si las tablas contienen SERIES TEMPORALES o registros cronológicos",
+                  step="Analizar metadatos y nombres de columnas (timestamp, fecha, hora) para determinar si las tablas contienen SERIES TEMPORALES o registros cronológicos",
                   agent="tables",
                   reasoning="El agente tables se especializa en escanear columnas y detectar patrones temporales; basta un único paso para responder"
               )
@@ -873,7 +873,7 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="1. Revisar cada tabla para identificar columnas de tipo datetime, timestamp o equivalentes que indiquen REGISTROS TEMPORALES o SERIES DE TIEMPO",
+                  step="Revisar cada tabla para identificar columnas de tipo datetime, timestamp o equivalentes que indiquen REGISTROS TEMPORALES o SERIES DE TIEMPO",
                   agent="tables",
                   reasoning="El agente tables inspeccionará columnas y tipos de datos para verificar la existencia de información temporal"
               )

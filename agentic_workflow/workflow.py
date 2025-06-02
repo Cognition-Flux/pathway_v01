@@ -15,6 +15,14 @@ from agentic_workflow.agents.agent_for_forecast.forecasting import (
     forecast_information_checker,
     make_forecast,
 )
+from agentic_workflow.agents.agent_for_rag.get_documents import rag
+from agentic_workflow.agents.agent_for_tables.tables_analysis import tables
+from agentic_workflow.agents.agent_for_visualizations.visualizer import (
+    ask_for_plot_edits,
+    ask_if_plot_is_needed,
+    plot_generator,
+)
+from agentic_workflow.agents.agent_for_websearch.search import websearch
 from agentic_workflow.agents.agent_multi_turn_planner.planner import (
     check_if_plan_is_done,
     conduct_plan,
@@ -49,6 +57,20 @@ builder.add_node("ask_if_another_forecast_is_needed", ask_if_another_forecast_is
 ##### Agent for report
 builder.add_node("report_generator", report_generator)
 
+##### Agent for visualization
+builder.add_node("ask_if_plot_is_needed", ask_if_plot_is_needed)
+builder.add_node("plot_generator", plot_generator)
+builder.add_node("ask_for_plot_edits", ask_for_plot_edits)
+
+##### Agent for websearch
+builder.add_node("websearch", websearch)
+
+##### Agent for rag
+builder.add_node("rag", rag)
+
+##### Agent for tables
+builder.add_node("tables", tables)
+
 builder.add_edge(START, "planner")
 
 
@@ -61,7 +83,10 @@ if __name__ == "__main__":
     thread_config = {"configurable": {"thread_id": uuid.uuid4()}}
 
     mensaje_del_usuario = (
-        "necesito un forecast de la variable biomarcador de la tabla patient_time_series, con contexto de 20 puntos y predicción de 10 puntos"
+        # "necesito un forecast de la variable biomarcador de la tabla patient_time_series, con contexto de 20 puntos y predicción de 10 puntos"
+        # "busca en internet que es la metformina"
+        # "busca en los papersque es el envejecimiento"
+        "busca en las tablas si es que hays series temporales"
         # "si"
         # "no"
     )

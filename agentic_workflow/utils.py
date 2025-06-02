@@ -1,12 +1,14 @@
 """Utility functions for the agentic workflow."""
 
 import os
+from typing import Any, Literal
 
 from dotenv import load_dotenv
 from langchain_anthropic import ChatAnthropic
+from langchain_core.documents import Document
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_groq import ChatGroq
-from langchain_openai import AzureChatOpenAI
+from langchain_openai import AzureChatOpenAI, AzureOpenAIEmbeddings
 
 
 load_dotenv(override=True)
@@ -89,3 +91,103 @@ def get_llm(
             f"Unsupported provider: {provider}. Supported providers are: "
             "azure, anthropic, google, groq"
         )
+
+
+def merge_reasoning(
+    existing: str | list[str] | None, new: str | list[str]
+) -> str | list[str]:
+    """Merge reasoning strings from multiple nodes.
+
+    This function concatenates new reasoning information with existing reasoning,
+    adding a delimiter between them to maintain readability. It can handle both
+    string and list of strings.
+
+    Args:
+        existing: The existing reasoning string or list of strings, if any
+        new: The new reasoning to add, which can be a string or list of strings
+
+    Returns:
+        A concatenated string with all reasoning information, or a list of messages
+
+    """
+    # Convert lists to strings to avoid showing raw Python list representation
+    if isinstance(new, list):
+        new = "\n".join(new)
+
+    if isinstance(existing, list):
+        existing = "\n".join(existing)
+
+    # Both are now strings or None, handle as before
+    if not existing:
+        return new
+    if not new:
+        return existing
+
+    # Add a delimiter to separate different reasoning chunks
+    return f"{existing}\n\n---\n\n{new}"
+
+
+def reduce_docs(
+    existing: list[Document] | None,
+    new: list[Document] | list[dict[str, Any]] | list[str] | str | Literal["delete"],
+) -> list[Document]:
+    """Reduce and process documents based on the input type."""
+    if new == "delete":
+        return []
+
+    existing_list = list(existing) if existing else []
+
+    # Function to convert metadata to a hashable representation for comparison
+    def metadata_signature(doc):
+        metadata = getattr(doc, "metadata", {})
+        if not isinstance(metadata, dict):
+            return None
+        # Sort items to ensure consistent comparison
+        return tuple(sorted(metadata.items()))
+
+    # Track metadata signatures for deduplication
+    existing_signatures = {metadata_signature(doc) for doc in existing_list}
+
+    if isinstance(new, str):
+        # For strings, create a Document with empty metadata
+        new_doc = Document(page_content=new, metadata={})
+        return existing_list + [new_doc]
+
+    new_list = []
+    if isinstance(new, list):
+        for item in new:
+            if isinstance(item, str):
+                # Create a new Document with empty metadata
+                new_doc = Document(page_content=item, metadata={})
+                new_list.append(new_doc)
+
+            elif isinstance(item, dict):
+                # Create Document from dict
+                metadata = item.get("metadata", {})
+                doc = Document(**item)
+                sig = metadata_signature(doc)
+
+                if sig not in existing_signatures:
+                    new_list.append(doc)
+                    existing_signatures.add(sig)
+
+            elif isinstance(item, Document):
+                # Check if document with identical metadata already exists
+                sig = metadata_signature(item)
+
+                if sig not in existing_signatures:
+                    new_list.append(item)
+                    existing_signatures.add(sig)
+
+    return existing_list + new_list
+
+
+def get_azure_embeddings(
+    model: str = "text-embedding-3-large",
+) -> AzureOpenAIEmbeddings:
+    """Instantiate Azure OpenAI embeddings helper with env-configured keys."""
+    return AzureOpenAIEmbeddings(
+        model=model,
+        azure_endpoint=os.getenv("AZUREOPENAIEMBEDDINGS_AZURE_ENDPOINT"),
+        api_key=os.getenv("AZUREOPENAIEMBEDDINGS_API_KEY"),
+    )

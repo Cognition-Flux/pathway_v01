@@ -57,7 +57,9 @@ def forecast_information_checker(
             {
                 "input": f"Estos son los parámetros anteriores "
                 f"{state.get('temporal_series_info', None)},  debe aplicar estos "
-                f"cambios o actualizar los campos (solo si existen): {forcast_update}"
+                f"cambios o actualizar los campos (solo si existen):"
+                # f"{state['messages'][-1]}"
+                f"{forcast_update}"
             }
         )
 
@@ -425,7 +427,7 @@ def ask_if_another_forecast_is_needed(
     if_another_forecast_is_needed = interrupt("¿Necesitas hacer otro forecast?")
 
     chain_for_if_another_forecast_is_needed = get_llm(
-        provider="google", model="gemini-2.5-flash-preview-05-20"
+        provider="azure", model="gpt-4.1-mini"
     ).with_structured_output(IfAnotherForecastIsNeeded)
     if_another_forecast_is_needed_response = (
         chain_for_if_another_forecast_is_needed.invoke(if_another_forecast_is_needed)
@@ -439,16 +441,17 @@ def ask_if_another_forecast_is_needed(
                 "current_agent": "ask_if_another_forecast_is_needed",
                 "next_node": next_node,
                 "llm_model": "logic",
-                "user_parameters_for_forecast": [RemoveMessage(id=REMOVE_ALL_MESSAGES)]
-                + (
-                    [if_another_forecast_is_needed_response.extra_information]
-                    if if_another_forecast_is_needed_response.extra_information
-                    else []
-                ),
+                "user_parameters_for_forecast": None,  # [RemoveMessage(id=REMOVE_ALL_MESSAGES)],
+                # + (
+                #     [if_another_forecast_is_needed_response.extra_information]
+                #     if if_another_forecast_is_needed_response.extra_information
+                #     else []
+                # ),
                 "reasoning": [
                     "El usuario pide hacer otro forecast, por lo que se debe verificar la información adicional que el usuario puede haber proporcionado",
                     "proximo agente: Forecast Information Checker",
                 ],
+                # "messages": state["messages"][-1],
             },
         )
     else:

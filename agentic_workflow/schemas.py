@@ -257,4 +257,30 @@ class IfReportIsNeeded(BaseModel):
     )
 
 
+class ReportGenerator(BaseModel):
+    """Report generator.
+
+    This class generates a report using the chain_for_report_generator.
+    """
+
+    report: str = Field(description=("El reporte que debes generar."))
+    reasoning: str = Field(
+        description=(
+            "Explica por que el reporte responde a la pregunta del usuario."
+            "Explica como aseguraste que no hay alucinaciones."
+            "Explica como te basaste exclusivamente en las fuentes "
+            "(documentos, websearch y/o tablas) para generar el reporte."
+        )
+    )
+
+
+class QueriesToWebsearch(BaseModel):
+    """Queries to websearch.
+
+    This class is used to convert a list of queries to a list of websearch results.
+    """
+
+    queries: list[str]
+
+
 # %%

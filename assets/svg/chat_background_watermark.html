@@ -1,0 +1,2699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Viewer - chat_background_watermark.svg</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .svg-wrapper {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.5s ease;
+        }
+
+        svg {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            font-size: 12px;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .controls:hover {
+            opacity: 1;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            white-space: nowrap;
+            user-select: none;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+        }
+
+        .control-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(255, 255, 255, 0.1);
+        }
+
+        .control-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .control-btn:disabled:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: none;
+            box-shadow: none;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                font-size: 10px;
+                padding: 8px 12px;
+                bottom: 10px;
+                gap: 10px;
+            }
+        }
+
+
+        .forecast-center-container {
+            position: fixed;
+            top: 20%;
+            left: 20%;
+            right: 60%;
+            bottom: 60%;
+            width: auto;
+            height: auto;
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            border-radius: 12px;
+            border: 2px solid #333;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+            cursor: grab;
+            user-select: none;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            min-width: 200px;
+            min-height: 120px;
+            max-width: 90vw;
+            max-height: 90vh;
+            resize: both;
+        }
+
+        .forecast-center-container.dragging {
+            cursor: grabbing;
+            transform: scale(1.02);
+        }
+
+        .forecast-center-container.resizing {
+            transition: none;
+        }
+
+        /* Resize handles */
+        .resize-handle {
+            position: absolute;
+            background: transparent;
+            z-index: 15;
+        }
+
+        .resize-handle:hover {
+            background: rgba(70, 130, 180, 0.3);
+            transition: background 0.2s ease;
+        }
+
+        .resize-handle.active {
+            background: rgba(70, 130, 180, 0.5);
+        }
+
+        /* Corner handles */
+        .resize-handle.nw {
+            top: -5px;
+            left: -5px;
+            width: 15px;
+            height: 15px;
+            cursor: nw-resize;
+            border-top-left-radius: 12px;
+        }
+
+        .resize-handle.ne {
+            top: -5px;
+            right: -5px;
+            width: 15px;
+            height: 15px;
+            cursor: ne-resize;
+            border-top-right-radius: 12px;
+        }
+
+        .resize-handle.sw {
+            bottom: -5px;
+            left: -5px;
+            width: 15px;
+            height: 15px;
+            cursor: sw-resize;
+            border-bottom-left-radius: 12px;
+        }
+
+        .resize-handle.se {
+            bottom: -5px;
+            right: -5px;
+            width: 15px;
+            height: 15px;
+            cursor: se-resize;
+            border-bottom-right-radius: 12px;
+        }
+
+        /* Edge handles */
+        .resize-handle.n {
+            top: -5px;
+            left: 15px;
+            right: 15px;
+            height: 10px;
+            cursor: n-resize;
+        }
+
+        .resize-handle.s {
+            bottom: -5px;
+            left: 15px;
+            right: 15px;
+            height: 10px;
+            cursor: s-resize;
+        }
+
+        .resize-handle.w {
+            left: -5px;
+            top: 15px;
+            bottom: 15px;
+            width: 10px;
+            cursor: w-resize;
+        }
+
+        .resize-handle.e {
+            right: -5px;
+            top: 15px;
+            bottom: 15px;
+            width: 10px;
+            cursor: e-resize;
+        }
+
+        /* Hide resize handles when dragging container */
+        .forecast-center-container.dragging .resize-handle {
+            display: none;
+        }
+
+        .forecast-plot-wrapper {
+            width: 100%;
+            height: 100%;
+            background: #1A1A1A;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            flex: 1;
+        }
+
+        .forecast-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 3px 8px;
+            background: linear-gradient(135deg, #2A2A2A, #1F1F1F);
+            border-bottom: 1px solid #333;
+            min-height: 20px;
+            position: relative;
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        .forecast-header h2 {
+            margin: 0;
+            color: #fff;
+            font-size: clamp(8px, 1.2vw, 10px);
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .forecast-content {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            transform-origin: center center;
+            transition: transform 0.3s ease;
+            min-height: 0;
+        }
+
+        .forecast-center-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent;
+            pointer-events: auto;
+        }
+
+        /* Auto-scaling styles for the iframe content */
+        .forecast-center-iframe {
+            transform-origin: top left;
+        }
+
+        /* Zoom and pan indicators */
+        .pan-indicator {
+            position: absolute;
+            bottom: 4px;
+            left: 4px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 2px 4px;
+            border-radius: 6px;
+            font-size: clamp(6px, 0.8vw, 8px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 20;
+            max-width: calc(100% - 8px);
+            word-wrap: break-word;
+        }
+
+        .pan-indicator.visible {
+            opacity: 1;
+        }
+
+
+
+        /* Responsive design for different screen sizes */
+        @media (max-width: 1200px) {
+            .forecast-center-container {
+                top: 15%;
+                left: 15%;
+                right: 55%;
+                bottom: 55%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .forecast-center-container {
+                top: 10%;
+                left: 10%;
+                right: 50%;
+                bottom: 50%;
+                border-radius: 8px;
+                min-width: 150px;
+                min-height: 100px;
+            }
+
+            .forecast-header {
+                padding: 2px 6px;
+                min-height: 18px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .forecast-center-container {
+                top: 5%;
+                left: 5%;
+                right: 45%;
+                bottom: 45%;
+                border-radius: 6px;
+                min-width: 120px;
+                min-height: 80px;
+            }
+
+            .forecast-header {
+                padding: 2px 4px;
+                min-height: 16px;
+            }
+        }
+
+        /* Ultra-wide screen support */
+        @media (min-width: 1920px) {
+            .forecast-center-container {
+                top: 25%;
+                left: 25%;
+                right: 65%;
+                bottom: 65%;
+            }
+        }
+
+        /* Portrait orientation adjustments */
+        @media (orientation: portrait) and (max-width: 768px) {
+            .forecast-center-container {
+                top: 5%;
+                left: 5%;
+                right: 45%;
+                bottom: 60%;
+            }
+
+            .forecast-header {
+                padding: 2px 4px;
+                min-height: 16px;
+            }
+        }
+
+        /* Loading state for forecast iframe */
+        .forecast-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: clamp(8px, 1.2vw, 10px);
+            z-index: 10;
+            text-align: center;
+        }
+
+        .forecast-loading.hidden {
+            display: none;
+        }
+
+        .forecast-spinner {
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 1px solid #70B7FF;
+            width: clamp(15px, 2.5vw, 20px);
+            height: clamp(15px, 2.5vw, 20px);
+            animation: spin 1s linear infinite;
+            margin: 0 auto 5px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Ensure container maintains aspect ratio on very small screens */
+        @media (max-height: 400px) {
+            .forecast-center-container {
+                top: 2%;
+                bottom: 70%;
+            }
+
+            .forecast-header {
+                min-height: 14px;
+                padding: 1px 3px;
+            }
+        }
+
+        /* Hover effect to show it's interactive */
+        .forecast-center-container:hover {
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            border-color: #444;
+        }
+
+        .forecast-center-container:hover .resize-handle {
+            background: rgba(70, 130, 180, 0.2);
+        }
+
+        .markdown-center-container {
+            position: fixed;
+            top: 20%;
+            left: 60%;
+            right: 20%;
+            bottom: 60%;
+            width: auto;
+            height: auto;
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(5px);
+            z-index: 1001;
+            border-radius: 12px;
+            border: 2px solid #333;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+            cursor: grab;
+            user-select: none;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            min-width: 200px;
+            min-height: 120px;
+            max-width: 90vw;
+            max-height: 90vh;
+            resize: both;
+        }
+
+        .markdown-center-container.dragging {
+            cursor: grabbing;
+            transform: scale(1.02);
+        }
+
+        .markdown-center-container.resizing {
+            transition: none;
+        }
+
+        .markdown-plot-wrapper {
+            width: 100%;
+            height: 100%;
+            background: #1A1A1A;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            flex: 1;
+        }
+
+        .markdown-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 3px 8px;
+            background: linear-gradient(135deg, #2A2A2A, #1F1F1F);
+            border-bottom: 1px solid #333;
+            min-height: 20px;
+            position: relative;
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        .markdown-header h2 {
+            margin: 0;
+            color: #fff;
+            font-size: clamp(8px, 1.2vw, 10px);
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .markdown-content {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            transform-origin: center center;
+            transition: transform 0.3s ease;
+            min-height: 0;
+        }
+
+        .markdown-center-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent;
+            pointer-events: auto;
+        }
+
+        /* Responsive design for markdown container */
+        @media (max-width: 1200px) {
+            .markdown-center-container {
+                top: 15%;
+                left: 55%;
+                right: 15%;
+                bottom: 55%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .markdown-center-container {
+                top: 10%;
+                left: 50%;
+                right: 10%;
+                bottom: 50%;
+                border-radius: 8px;
+                min-width: 150px;
+                min-height: 100px;
+            }
+
+            .markdown-header {
+                padding: 2px 6px;
+                min-height: 18px;
+            }
+        }
+
+        .markdown-center-container:hover {
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            border-color: #444;
+        }
+
+        .markdown-center-container:hover .resize-handle {
+            background: rgba(70, 130, 180, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="svg-wrapper">
+            <?xml version="1.0" encoding="UTF-8"?>
+<svg width="100%" height="100%" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <!-- Patrones y texturas con tonos azules oscuros -->
+    <pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="10" cy="10" r="1.2" fill="rgba(50, 90, 130, 0.3)" />
+    </pattern>
+
+    <pattern id="diagonals" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M0,0 L20,20 M-5,15 L5,25 M15,-5 L25,5" stroke="rgba(30, 60, 90, 0.25)" stroke-width="0.8" />
+    </pattern>
+
+    <pattern id="circuit" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M10,30 L30,30 L30,10 M50,30 L30,30 M30,50 L30,30" fill="none" stroke="rgba(70, 110, 150, 0.3)" stroke-width="0.8" stroke-linecap="round" />
+      <circle cx="10" cy="30" r="1.5" fill="rgba(70, 110, 150, 0.35)" />
+      <circle cx="50" cy="30" r="1.5" fill="rgba(70, 110, 150, 0.35)" />
+      <circle cx="30" cy="50" r="1.5" fill="rgba(70, 110, 150, 0.35)" />
+      <circle cx="30" cy="10" r="1.5" fill="rgba(70, 110, 150, 0.35)" />
+    </pattern>
+
+    <pattern id="hexGrid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M10,5 L20,0 L30,5 L30,15 L20,20 L10,15 Z" fill="none" stroke="rgba(40, 80, 120, 0.25)" stroke-width="0.6" />
+    </pattern>
+
+    <pattern id="attentionMatrix" width="30" height="30" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="10" height="10" fill="rgba(50, 80, 110, 0.2)" />
+      <rect x="10" y="0" width="10" height="10" fill="rgba(40, 60, 90, 0.18)" />
+      <rect x="20" y="0" width="10" height="10" fill="rgba(50, 80, 110, 0.2)" />
+      <rect x="0" y="10" width="10" height="10" fill="rgba(40, 60, 90, 0.18)" />
+      <rect x="10" y="10" width="10" height="10" fill="rgba(50, 80, 110, 0.22)" />
+      <rect x="20" y="10" width="10" height="10" fill="rgba(40, 60, 90, 0.18)" />
+      <rect x="0" y="20" width="10" height="10" fill="rgba(50, 80, 110, 0.2)" />
+      <rect x="10" y="20" width="10" height="10" fill="rgba(40, 60, 90, 0.18)" />
+      <rect x="20" y="20" width="10" height="10" fill="rgba(50, 80, 110, 0.2)" />
+    </pattern>
+
+    <pattern id="embedding" width="60" height="15" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="10" height="15" fill="rgba(40, 100, 140, 0.28)" rx="1" />
+      <rect x="12" y="0" width="10" height="15" fill="rgba(40, 100, 140, 0.25)" rx="1" />
+      <rect x="24" y="0" width="10" height="15" fill="rgba(40, 100, 140, 0.3)" rx="1" />
+      <rect x="36" y="0" width="10" height="15" fill="rgba(40, 100, 140, 0.27)" rx="1" />
+      <rect x="48" y="0" width="10" height="15" fill="rgba(40, 100, 140, 0.24)" rx="1" />
+    </pattern>
+
+    <!-- Degradados oscurecidos con variedad de azules -->
+    <radialGradient id="glow" cx="50%" cy="50%" r="70%" fx="50%" fy="50%">
+      <stop offset="0%" stop-color="rgba(10, 15, 25, 0.3)" />
+      <stop offset="50%" stop-color="rgba(20, 30, 50, 0.2)" />
+      <stop offset="100%" stop-color="rgba(5, 8, 15, 0.1)" />
+    </radialGradient>
+
+    <linearGradient id="text-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(40, 100, 180, 0.4)" />
+      <stop offset="25%" stop-color="rgba(20, 70, 150, 0.35)" />
+      <stop offset="50%" stop-color="rgba(10, 50, 120, 0.3)" />
+      <stop offset="75%" stop-color="rgba(20, 70, 150, 0.35)" />
+      <stop offset="100%" stop-color="rgba(40, 100, 180, 0.4)" />
+    </linearGradient>
+
+    <linearGradient id="accent-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(40, 60, 90, 0.35)" />
+      <stop offset="50%" stop-color="rgba(25, 40, 60, 0.3)" />
+      <stop offset="100%" stop-color="rgba(40, 60, 90, 0.35)" />
+    </linearGradient>
+
+    <linearGradient id="tech-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(50, 90, 130, 0.35)" />
+      <stop offset="50%" stop-color="rgba(30, 70, 100, 0.3)" />
+      <stop offset="100%" stop-color="rgba(50, 90, 130, 0.35)" />
+    </linearGradient>
+
+    <linearGradient id="neuron-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(60, 80, 110, 0.3)" />
+      <stop offset="50%" stop-color="rgba(40, 60, 90, 0.28)" />
+      <stop offset="100%" stop-color="rgba(60, 80, 110, 0.3)" />
+    </linearGradient>
+
+    <!-- Filtros ajustados -->
+    <filter id="blur-filter" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" />
+    </filter>
+
+    <filter id="noise" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="2" seed="1" result="noise" />
+      <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.08 0" result="coloredNoise" />
+      <feBlend in="SourceGraphic" in2="coloredNoise" mode="overlay" />
+    </filter>
+
+    <filter id="glow-effect" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 12 -4" result="glow" />
+      <feBlend in="SourceGraphic" in2="glow" mode="normal" />
+    </filter>
+
+    <!-- También añadimos un nuevo gradiente específico para el texto -->
+    <linearGradient id="dark-blue-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgba(20, 60, 120, 0.5)" />
+      <stop offset="50%" stop-color="rgba(30, 80, 150, 0.45)" />
+      <stop offset="100%" stop-color="rgba(15, 50, 100, 0.5)" />
+    </linearGradient>
+
+    <!-- Añado un nuevo gradiente con efecto de vidrio/glass -->
+    <linearGradient id="glass-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="rgba(90, 160, 220, 0.65)" />
+      <stop offset="15%" stop-color="rgba(50, 120, 200, 0.45)" />
+      <stop offset="48%" stop-color="rgba(20, 80, 160, 0.3)" />
+      <stop offset="52%" stop-color="rgba(30, 90, 180, 0.35)" />
+      <stop offset="85%" stop-color="rgba(70, 140, 210, 0.5)" />
+      <stop offset="100%" stop-color="rgba(100, 170, 230, 0.6)" />
+    </linearGradient>
+
+    <!-- Variación clara del gradiente con efecto de vidrio/glass -->
+    <linearGradient id="glass-gradient-light" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="rgba(190, 220, 250, 0.55)" />
+      <stop offset="20%" stop-color="rgba(160, 200, 240, 0.45)" />
+      <stop offset="50%" stop-color="rgba(140, 180, 220, 0.35)" />
+      <stop offset="80%" stop-color="rgba(170, 210, 240, 0.5)" />
+      <stop offset="100%" stop-color="rgba(195, 225, 255, 0.6)" />
+    </linearGradient>
+    <linearGradient id="glass-gradient-orange" x1="0%" y1="0%" x2="0%" y2="100%">
+      <!-- Darker orange tones with increased transparency for a subtle glass reflection -->
+      <stop offset="0%" stop-color="rgba(255, 180, 90, 0.35)" />
+      <stop offset="30%" stop-color="rgba(255, 140, 50, 0.25)" />
+      <stop offset="50%" stop-color="rgba(220, 100, 30, 0.18)" />
+      <stop offset="70%" stop-color="rgba(255, 140, 50, 0.25)" />
+      <stop offset="100%" stop-color="rgba(255, 180, 90, 0.35)" />
+    </linearGradient>
+  </defs>
+
+  <!-- Fondo negro sólido -->
+  <rect width="100%" height="100%" fill="#05080F" /> <!-- Azul muy oscuro casi negro -->
+
+  <!-- Fondo base con degradado sutil oscuro -->
+  <rect width="100%" height="100%" fill="url(#glow)" opacity="0.7" />
+
+  <!-- Patrones y texturas con opacidad ajustada -->
+  <rect width="100%" height="100%" fill="url(#dots)" opacity="0.4" />
+  <rect width="100%" height="100%" fill="url(#diagonals)" opacity="0.25" />
+  <rect width="100%" height="100%" fill="url(#circuit)" opacity="0.3" />
+  <rect width="100%" height="100%" fill="url(#hexGrid)" opacity="0.2" />
+  <rect width="100%" height="100%" fill="url(#attentionMatrix)" opacity="0.18" />
+
+  <!-- Elementos decorativos con colores azules oscuros y opacidad ajustada -->
+  <circle cx="40" cy="360" r="120" fill="rgba(20, 35, 60, 0.2)" />
+  <circle cx="360" cy="40" r="120" fill="rgba(30, 50, 80, 0.2)" />
+  <circle cx="200" cy="200" r="160" fill="rgba(15, 25, 45, 0.15)" />
+  <circle cx="300" cy="300" r="70" fill="rgba(45, 70, 100, 0.2)" />
+  <circle cx="100" cy="100" r="50" fill="rgba(35, 60, 90, 0.2)" />
+
+  <!-- Elementos de circuito con estilo oscuro -->
+  <path d="M50,120 L50,150 L80,150 L80,180 L110,180 L110,150 L140,150"
+        fill="none" stroke="rgba(80, 130, 180, 0.35)" stroke-width="1" />
+  <circle cx="50" cy="120" r="2" fill="rgba(80, 130, 180, 0.4)" />
+  <circle cx="80" cy="150" r="2" fill="rgba(80, 130, 180, 0.4)" />
+  <circle cx="110" cy="180" r="2" fill="rgba(80, 130, 180, 0.4)" />
+  <circle cx="140" cy="150" r="2" fill="rgba(80, 130, 180, 0.4)" />
+
+  <!-- Estructura molecular con estilo oscuro -->
+  <path d="M280,210 L300,240 L330,230 L320,200 L290,190 Z"
+        fill="none" stroke="rgba(70, 100, 140, 0.3)" stroke-width="0.8" />
+  <circle cx="280" cy="210" r="3" fill="rgba(70, 100, 140, 0.35)" />
+  <circle cx="300" cy="240" r="3" fill="rgba(70, 100, 140, 0.35)" />
+  <circle cx="330" cy="230" r="3" fill="rgba(70, 100, 140, 0.35)" />
+  <circle cx="320" cy="200" r="3" fill="rgba(70, 100, 140, 0.35)" />
+  <circle cx="290" cy="190" r="3" fill="rgba(70, 100, 140, 0.35)" />
+
+  <!-- Red neuronal profunda con estilo oscuro -->
+  <g id="deepNeuralNetwork" transform="translate(320, 150)" opacity="0.8">
+    <!-- Capas -->
+    <circle cx="-105" cy="-35" r="2.5" fill="rgba(60, 90, 130, 0.4)" />
+    <circle cx="-105" cy="-21" r="2.5" fill="rgba(60, 90, 130, 0.4)" />
+    <circle cx="-105" cy="-7" r="2.5" fill="rgba(60, 90, 130, 0.4)" />
+    <circle cx="-105" cy="7" r="2.5" fill="rgba(60, 90, 130, 0.4)" />
+    <circle cx="-105" cy="21" r="2.5" fill="rgba(60, 90, 130, 0.4)" />
+    <circle cx="-105" cy="35" r="2.5" fill="rgba(60, 90, 130, 0.4)" />
+    <circle cx="-75" cy="-30" r="2.5" fill="rgba(70, 100, 140, 0.4)" />
+    <circle cx="-75" cy="-18" r="2.5" fill="rgba(70, 100, 140, 0.4)" />
+    <circle cx="-75" cy="-6" r="2.5" fill="rgba(70, 100, 140, 0.4)" />
+    <circle cx="-75" cy="6" r="2.5" fill="rgba(70, 100, 140, 0.4)" />
+    <circle cx="-75" cy="18" r="2.5" fill="rgba(70, 100, 140, 0.4)" />
+    <circle cx="-75" cy="30" r="2.5" fill="rgba(70, 100, 140, 0.4)" />
+    <circle cx="-45" cy="-25" r="2.5" fill="rgba(80, 110, 150, 0.4)" />
+    <circle cx="-45" cy="-12" r="2.5" fill="rgba(80, 110, 150, 0.4)" />
+    <circle cx="-45" cy="0" r="2.5" fill="rgba(80, 110, 150, 0.4)" />
+    <circle cx="-45" cy="12" r="2.5" fill="rgba(80, 110, 150, 0.4)" />
+    <circle cx="-45" cy="25" r="2.5" fill="rgba(80, 110, 150, 0.4)" />
+    <circle cx="-15" cy="-20" r="2.5" fill="rgba(90, 120, 160, 0.4)" />
+    <circle cx="-15" cy="-6" r="2.5" fill="rgba(90, 120, 160, 0.4)" />
+    <circle cx="-15" cy="6" r="2.5" fill="rgba(90, 120, 160, 0.4)" />
+    <circle cx="-15" cy="20" r="2.5" fill="rgba(90, 120, 160, 0.4)" />
+    <circle cx="15" cy="-15" r="2.5" fill="rgba(100, 130, 170, 0.4)" />
+    <circle cx="15" cy="0" r="2.5" fill="rgba(100, 130, 170, 0.4)" />
+    <circle cx="15" cy="15" r="2.5" fill="rgba(100, 130, 170, 0.4)" />
+    <circle cx="45" cy="-10" r="2.5" fill="rgba(110, 140, 180, 0.4)" />
+    <circle cx="45" cy="10" r="2.5" fill="rgba(110, 140, 180, 0.4)" />
+
+    <!-- Conexiones oscurecidas -->
+    <path d="M-105,-35 L-75,-30 M-105,-35 L-75,-18 M-105,-35 L-75,-6 M-105,-21 L-75,-30 M-105,-21 L-75,-18 M-105,-21 L-75,-6 M-105,-21 L-75,6 M-105,-7 L-75,-18 M-105,-7 L-75,-6 M-105,-7 L-75,6 M-105,-7 L-75,18 M-105,7 L-75,-6 M-105,7 L-75,6 M-105,7 L-75,18 M-105,7 L-75,30 M-105,21 L-75,6 M-105,21 L-75,18 M-105,21 L-75,30 M-105,35 L-75,18 M-105,35 L-75,30" stroke="rgba(60, 90, 130, 0.15)" stroke-width="0.35" />
+    <path d="M-75,-30 L-45,-25 M-75,-30 L-45,-12 M-75,-18 L-45,-25 M-75,-18 L-45,-12 M-75,-18 L-45,0 M-75,-6 L-45,-12 M-75,-6 L-45,0 M-75,-6 L-45,12 M-75,6 L-45,0 M-75,6 L-45,12 M-75,6 L-45,25 M-75,18 L-45,12 M-75,18 L-45,25 M-75,30 L-45,25" stroke="rgba(70, 100, 140, 0.15)" stroke-width="0.35" />
+    <path d="M-45,-25 L-15,-20 M-45,-25 L-15,-6 M-45,-12 L-15,-20 M-45,-12 L-15,-6 M-45,-12 L-15,6 M-45,0 L-15,-6 M-45,0 L-15,6 M-45,0 L-15,20 M-45,12 L-15,6 M-45,12 L-15,20 M-45,25 L-15,20" stroke="rgba(80, 110, 150, 0.15)" stroke-width="0.35" />
+    <path d="M-15,-20 L15,-15 M-15,-20 L15,0 M-15,-6 L15,-15 M-15,-6 L15,0 M-15,-6 L15,15 M-15,6 L15,0 M-15,6 L15,15 M-15,20 L15,15" stroke="rgba(90, 120, 160, 0.15)" stroke-width="0.35" />
+    <path d="M15,-15 L45,-10 M15,-15 L45,10 M15,0 L45,-10 M15,0 L45,10 M15,15 L45,-10 M15,15 L45,10" stroke="rgba(100, 130, 170, 0.15)" stroke-width="0.35" />
+  </g>
+
+  <!-- Arquitectura Transformer con estilo oscuro -->
+  <g id="transformer" transform="translate(80, 320)" opacity="0.75">
+    <rect x="-40" y="-60" width="15" height="40" rx="2" fill="rgba(30, 70, 100, 0.3)" />
+    <rect x="-40" y="-15" width="15" height="40" rx="2" fill="rgba(30, 70, 100, 0.3)" />
+    <rect x="25" y="-60" width="15" height="40" rx="2" fill="rgba(40, 80, 120, 0.3)" />
+    <rect x="25" y="-15" width="15" height="40" rx="2" fill="rgba(40, 80, 120, 0.3)" />
+
+    <path d="M-25,-50 C0,-50 0,-50 25,-50" stroke="rgba(70, 100, 140, 0.3)" stroke-width="0.6" stroke-dasharray="1.5,1.5" />
+    <path d="M-25,-30 C0,-30 0,-30 25,-30" stroke="rgba(70, 100, 140, 0.3)" stroke-width="0.6" stroke-dasharray="1.5,1.5" />
+    <path d="M-25,-5 C0,-5 0,-5 25,-5" stroke="rgba(70, 100, 140, 0.3)" stroke-width="0.6" stroke-dasharray="1.5,1.5" />
+    <path d="M-25,15 C0,15 0,15 25,15" stroke="rgba(70, 100, 140, 0.3)" stroke-width="0.6" stroke-dasharray="1.5,1.5" />
+
+    <circle cx="-32.5" cy="-45" r="1.5" fill="rgba(90, 120, 150, 0.35)" />
+    <circle cx="-32.5" cy="-35" r="1.5" fill="rgba(90, 120, 150, 0.35)" />
+    <circle cx="-32.5" cy="0" r="1.5" fill="rgba(90, 120, 150, 0.35)" />
+    <circle cx="-32.5" cy="10" r="1.5" fill="rgba(90, 120, 150, 0.35)" />
+    <circle cx="32.5" cy="-45" r="1.5" fill="rgba(90, 120, 150, 0.35)" />
+    <circle cx="32.5" cy="-35" r="1.5" fill="rgba(90, 120, 150, 0.35)" />
+    <circle cx="32.5" cy="0" r="1.5" fill="rgba(90, 120, 150, 0.35)" />
+    <circle cx="32.5" cy="10" r="1.5" fill="rgba(90, 120, 150, 0.35)" />
+
+    <text x="-7" y="35" font-family="monospace" font-size="7"
+          text-anchor="middle" fill="rgba(80, 120, 160, 0.5)">TRANSFORMER</text>
+  </g>
+
+  <!-- Large Language Model - Token Embeddings con estilo oscuro -->
+  <g id="llm" transform="translate(200, 100)" opacity="0.75">
+    <rect x="-60" y="-20" width="120" height="40" fill="url(#embedding)" opacity="0.5" rx="2" />
+
+    <rect x="-55" y="-25" width="20" height="10" rx="1" fill="rgba(40, 100, 140, 0.3)" />
+    <rect x="-30" y="-25" width="20" height="10" rx="1" fill="rgba(40, 100, 140, 0.3)" />
+    <rect x="-5" y="-25" width="20" height="10" rx="1" fill="rgba(40, 100, 140, 0.3)" />
+    <rect x="20" y="-25" width="20" height="10" rx="1" fill="rgba(40, 100, 140, 0.3)" />
+    <rect x="45" y="-25" width="20" height="10" rx="1" fill="rgba(40, 100, 140, 0.3)" />
+
+    <path d="M-45,-15 L-45,20 M-20,-15 L-20,30 M5,-15 L5,20 M30,-15 L30,25 M55,-15 L55,15"
+          stroke="rgba(40, 100, 140, 0.25)" stroke-width="1" />
+    <rect x="-40" y="20" width="80" height="15" rx="2" fill="url(#attentionMatrix)" opacity="0.6" />
+  </g>
+
+  <!-- Matemáticas de matrices de atención con estilo oscuro -->
+  <g id="mathFormulas" transform="translate(350, 350)" opacity="0.6">
+    <rect x="-30" y="-20" width="10" height="10" fill="rgba(90, 120, 160, 0.3)" />
+    <text x="-25" y="-13" font-family="monospace" font-size="5"
+          text-anchor="middle" fill="rgba(130, 160, 200, 0.6)">Q</text>
+    <rect x="-15" y="-20" width="10" height="10" fill="rgba(90, 120, 160, 0.3)" />
+    <text x="-10" y="-13" font-family="monospace" font-size="5"
+          text-anchor="middle" fill="rgba(130, 160, 200, 0.6)">K</text>
+    <text x="0" y="-13" font-family="monospace" font-size="5"
+          text-anchor="middle" fill="rgba(130, 160, 200, 0.6)">×</text>
+    <rect x="10" y="-20" width="15" height="15" fill="rgba(90, 120, 160, 0.25)" />
+    <path d="M12,-18 L22,-18 M12,-15 L22,-15 M12,-12 L22,-12 M12,-9 L22,-9"
+          stroke="rgba(90, 120, 160, 0.3)" stroke-width="0.4" />
+    <path d="M14,-18 L14,-8 M17,-18 L17,-8 M20,-18 L20,-8"
+          stroke="rgba(90, 120, 160, 0.3)" stroke-width="0.4" />
+  </g>
+
+  <!-- Hexágonos decorativos con estilo oscuro -->
+  <path d="M320,100 L340,130 L320,160 L280,160 L260,130 L280,100 Z"
+        fill="none" stroke="rgba(50, 80, 110, 0.25)" stroke-width="0.8" />
+  <path d="M100,260 L120,290 L100,320 L60,320 L40,290 L60,260 Z"
+        fill="none" stroke="rgba(30, 60, 90, 0.25)" stroke-width="0.8" />
+
+  <!-- Símbolos matemáticos con estilo oscuro -->
+  <path d="M330,270 L350,270 M340,260 L340,280" stroke="rgba(90, 120, 150, 0.4)" stroke-width="1.5" />
+  <path d="M60,60 L80,60 M60,70 L80,70" stroke="rgba(50, 90, 130, 0.4)" stroke-width="1.5" />
+  <path d="M270,60 C275,50 285,50 290,60 C295,70 305,70 310,60"
+        fill="none" stroke="rgba(70, 100, 140, 0.35)" stroke-width="1" />
+
+  <!-- Líneas decorativas con estilo oscuro -->
+  <path d="M 30,200 L 370,200" stroke="rgba(50, 80, 110, 0.2)" stroke-width="0.8" stroke-dasharray="4,4" />
+  <path d="M 200,30 L 200,370" stroke="rgba(30, 60, 90, 0.2)" stroke-width="0.8" stroke-dasharray="4,4" />
+  <path d="M 50,50 L 350,350" stroke="rgba(40, 60, 90, 0.2)" stroke-width="0.8" stroke-dasharray="2,5" />
+  <path d="M 350,50 L 50,350" stroke="rgba(40, 60, 90, 0.2)" stroke-width="0.8" stroke-dasharray="2,5" />
+
+  <!-- Nuevas líneas de cuadrícula técnica con estilo oscuro -->
+  <path d="M 30,100 L 370,100" stroke="rgba(70, 110, 150, 0.2)" stroke-width="0.6" stroke-dasharray="1,8" />
+  <path d="M 30,300 L 370,300" stroke="rgba(70, 110, 150, 0.2)" stroke-width="0.6" stroke-dasharray="1,8" />
+  <path d="M 100,30 L 100,370" stroke="rgba(70, 110, 150, 0.2)" stroke-width="0.6" stroke-dasharray="1,8" />
+  <path d="M 300,30 L 300,370" stroke="rgba(70, 110, 150, 0.2)" stroke-width="0.6" stroke-dasharray="1,8" />
+
+  <!-- Formas geométricas adicionales con estilo oscuro -->
+  <rect x="10" y="10" width="20" height="20" rx="2" fill="url(#accent-gradient)" opacity="0.3" />
+  <rect x="370" y="370" width="20" height="20" rx="2" fill="url(#accent-gradient)" opacity="0.3" />
+  <rect x="370" y="10" width="20" height="20" rx="2" fill="url(#accent-gradient)" opacity="0.3" />
+  <rect x="10" y="370" width="20" height="20" rx="2" fill="url(#accent-gradient)" opacity="0.3" />
+
+  <!-- Nuevas formas geométricas técnicas con estilo oscuro -->
+  <polygon points="150,125 170,135 170,155 150,165 130,155 130,135"
+           fill="url(#tech-gradient)" opacity="0.25" />
+  <polygon points="250,250 260,270 250,290 230,290 220,270 230,250"
+           fill="url(#tech-gradient)" opacity="0.25" />
+
+  <!-- Diagrama técnico con estilo oscuro -->
+  <path d="M50,200 Q65,220 80,200 Q95,180 110,200"
+        fill="none" stroke="rgba(70, 100, 140, 0.4)" stroke-width="0.8" />
+  <path d="M50,210 L110,210" stroke="rgba(70, 100, 140, 0.25)" stroke-width="0.6" stroke-dasharray="1.5,1.5" />
+  <circle cx="80" cy="200" r="1.5" fill="rgba(70, 100, 140, 0.5)" />
+
+  <!-- Texto Pathway como marca de agua en esquina superior derecha -->
+  <g transform="translate(320, 50)" opacity="0.8">
+    <text x="0" y="0" font-family="'Inter', sans-serif" font-size="18" font-weight="700"
+          text-anchor="middle" fill="url(#glass-gradient)">Pathway</text>
+    <text x="0" y="12" font-family="'Inter', sans-serif" font-size="6" font-weight="300"
+          text-anchor="middle" fill="url(#glass-gradient-light)">
+      <tspan fill="url(#glass-gradient-orange)" font-weight="600">Personalized</tspan>
+      <tspan> Multi-Agentic Workflows</tspan>
+    </text>
+  </g>
+
+  <!-- Símbolos técnicos alrededor del texto con estilo oscuro -->
+  <g transform="translate(200, 200)" opacity="0.7">
+    <path d="M-160,-30 L-145,-30 M-152.5,-37.5 L-152.5,-22.5"
+          stroke="rgba(50, 90, 130, 0.4)" stroke-width="0.8" />
+    <path d="M150,40 L165,40 M157.5,32.5 L157.5,47.5"
+          stroke="rgba(50, 90, 130, 0.4)" stroke-width="0.8" />
+    <path d="M-80,-70 C-70,-80 -60,-80 -50,-70"
+          fill="none" stroke="rgba(90, 120, 150, 0.3)" stroke-width="0.8" />
+    <path d="M70,80 C80,70 90,70 100,80"
+          fill="none" stroke="rgba(90, 120, 150, 0.3)" stroke-width="0.8" />
+  </g>
+
+  <!-- Símbolos específicos de IA con estilo oscuro -->
+  <g transform="translate(200, 300)" opacity="0.7">
+    <!-- Tensor -->
+    <path d="M-80,-10 L-60,0 L-80,10 L-100,0 Z" fill="rgba(60, 90, 130, 0.3)" />
+    <path d="M-80,-10 L-60,0 M-60,0 L-80,10 M-80,10 L-100,0 M-100,0 L-80,-10"
+          stroke="rgba(60, 90, 130, 0.35)" stroke-width="0.4" />
+
+    <!-- Vector -->
+    <path d="M90,-5 L110,-5 L110,5 L90,5 Z" fill="rgba(40, 100, 140, 0.3)" />
+    <path d="M95,0 L105,0 M100,-3 L100,3" stroke="rgba(40, 100, 140, 0.4)" stroke-width="0.6" />
+  </g>
+
+  <!-- Overlay de ruido sutil ajustado -->
+  <rect width="100%" height="100%" filter="url(#noise)" fill="transparent" />
+
+  <!-- CNN en esquina superior izquierda -->
+  <g id="cnnTopLeft" transform="translate(40, 40)" opacity="0.75">
+    <!-- Capas convolucionales -->
+    <rect x="-30" y="-30" width="20" height="20" rx="1" fill="rgba(40, 70, 110, 0.25)" />
+    <rect x="-25" y="-25" width="10" height="10" fill="rgba(60, 90, 130, 0.3)" />
+
+    <rect x="-5" y="-25" width="15" height="15" rx="1" fill="rgba(40, 70, 110, 0.25)" />
+    <rect x="-2" y="-22" width="9" height="9" fill="rgba(60, 90, 130, 0.3)" />
+
+    <rect x="15" y="-20" width="10" height="10" rx="1" fill="rgba(40, 70, 110, 0.25)" />
+    <rect x="17" y="-18" width="6" height="6" fill="rgba(60, 90, 130, 0.3)" />
+
+    <!-- Conexiones -->
+    <path d="M-15,-20 L-5,-17.5 M-15,-15 L-5,-17.5 M-5,-17.5 L15,-15"
+          fill="none" stroke="rgba(70, 100, 140, 0.3)" stroke-width="0.6" />
+
+    <!-- Capas fully connected -->
+    <circle cx="-20" cy="5" r="2" fill="rgba(70, 100, 140, 0.35)" />
+    <circle cx="-20" cy="15" r="2" fill="rgba(70, 100, 140, 0.35)" />
+    <circle cx="0" cy="0" r="2" fill="rgba(70, 100, 140, 0.35)" />
+    <circle cx="0" cy="10" r="2" fill="rgba(70, 100, 140, 0.35)" />
+    <circle cx="0" cy="20" r="2" fill="rgba(70, 100, 140, 0.35)" />
+    <circle cx="20" cy="10" r="2" fill="rgba(70, 100, 140, 0.35)" />
+
+    <!-- Conexiones -->
+    <path d="M-20,5 L0,0 M-20,5 L0,10 M-20,5 L0,20 M-20,15 L0,0 M-20,15 L0,10 M-20,15 L0,20 M0,0 L20,10 M0,10 L20,10 M0,20 L20,10"
+          stroke="rgba(70, 100, 140, 0.2)" stroke-width="0.4" />
+  </g>
+
+  <!-- RNN/LSTM en esquina superior derecha -->
+  <g id="rnnTopRight" transform="translate(360, 40)" opacity="0.75">
+    <!-- Celdas recurrentes -->
+    <rect x="-25" y="-25" width="16" height="16" rx="2" fill="rgba(50, 80, 120, 0.25)" />
+    <path d="M-25,-17 L-9,-17 M-17,-25 L-17,-9" stroke="rgba(80, 110, 150, 0.3)" stroke-width="0.5" />
+    <path d="M-17,-17 C-12,-22 -7,-17 -17,-12" fill="none" stroke="rgba(80, 110, 150, 0.3)" stroke-width="0.6" />
+
+    <rect x="5" y="-20" width="14" height="14" rx="2" fill="rgba(50, 80, 120, 0.25)" />
+    <path d="M5,-13 L19,-13 M12,-20 L12,-6" stroke="rgba(80, 110, 150, 0.3)" stroke-width="0.5" />
+    <path d="M12,-13 C16,-17 19,-13 12,-9" fill="none" stroke="rgba(80, 110, 150, 0.3)" stroke-width="0.6" />
+
+    <!-- Conexiones temporales -->
+    <path d="M-9,-17 L5,-13" stroke="rgba(70, 100, 140, 0.3)" stroke-width="0.6" stroke-dasharray="1,1" />
+
+    <!-- Salidas -->
+    <circle cx="-17" cy="5" r="1.5" fill="rgba(80, 110, 150, 0.35)" />
+    <circle cx="12" cy="10" r="1.5" fill="rgba(80, 110, 150, 0.35)" />
+
+    <path d="M-17,-9 L-17,5 M12,-6 L12,10" stroke="rgba(70, 100, 140, 0.25)" stroke-width="0.5" />
+  </g>
+
+  <!-- Autoencoder en esquina inferior izquierda -->
+  <g id="autoencoderBottomLeft" transform="translate(40, 360)" opacity="0.75">
+    <!-- Encoder -->
+    <circle cx="-25" cy="-25" r="2" fill="rgba(60, 90, 130, 0.4)" />
+    <circle cx="-25" cy="-15" r="2" fill="rgba(60, 90, 130, 0.4)" />
+    <circle cx="-25" cy="-5" r="2" fill="rgba(60, 90, 130, 0.4)" />
+
+    <!-- Latent space -->
+    <circle cx="0" cy="-15" r="2.5" fill="rgba(80, 120, 160, 0.45)" />
+
+    <!-- Decoder -->
+    <circle cx="25" cy="-25" r="2" fill="rgba(60, 90, 130, 0.4)" />
+    <circle cx="25" cy="-15" r="2" fill="rgba(60, 90, 130, 0.4)" />
+    <circle cx="25" cy="-5" r="2" fill="rgba(60, 90, 130, 0.4)" />
+
+    <!-- Conexiones -->
+    <path d="M-25,-25 L0,-15 M-25,-15 L0,-15 M-25,-5 L0,-15 M0,-15 L25,-25 M0,-15 L25,-15 M0,-15 L25,-5"
+          stroke="rgba(70, 100, 140, 0.25)" stroke-width="0.5" />
+
+    <!-- Reconstrucción -->
+    <rect x="-10" y="5" width="20" height="5" rx="1" fill="rgba(50, 80, 120, 0.25)" />
+    <rect x="-10" y="15" width="20" height="5" rx="1" fill="rgba(50, 80, 120, 0.25)" />
+    <path d="M0,-15 L0,5" stroke="rgba(70, 100, 140, 0.2)" stroke-width="0.4" stroke-dasharray="1,1" />
+  </g>
+
+  <!-- GAN en esquina inferior derecha -->
+  <g id="ganBottomRight" transform="translate(360, 360)" opacity="0.75">
+    <!-- Generador -->
+    <rect x="-30" y="-30" width="15" height="10" rx="2" fill="rgba(40, 80, 120, 0.3)" />
+    <text x="-22.5" y="-23" font-family="monospace" font-size="4"
+          text-anchor="middle" fill="rgba(130, 160, 200, 0.6)">G</text>
+
+    <!-- Discriminador -->
+    <rect x="15" y="-30" width="15" height="10" rx="2" fill="rgba(40, 80, 120, 0.3)" />
+    <text x="22.5" y="-23" font-family="monospace" font-size="4"
+          text-anchor="middle" fill="rgba(130, 160, 200, 0.6)">D</text>
+
+    <!-- Data flow -->
+    <path d="M-15,-25 L15,-25" stroke="rgba(70, 100, 140, 0.3)" stroke-width="0.6" stroke-dasharray="1,1" />
+    <circle cx="0" cy="-25" r="3" fill="rgba(60, 90, 130, 0.2)" stroke="rgba(70, 100, 140, 0.3)" stroke-width="0.4" />
+
+    <!-- Función de pérdida -->
+    <path d="M-25,-15 L-15,-5 L-5,-15 L5,-5 L15,-15 L25,-5"
+          fill="none" stroke="rgba(70, 110, 150, 0.3)" stroke-width="0.6" />
+    <path d="M22.5,-25 L22.5,-15" stroke="rgba(70, 100, 140, 0.25)" stroke-width="0.5" />
+
+    <!-- Red adversarial -->
+    <path d="M-22.5,-20 C-30,-10 -15,0 -22.5,10" fill="none" stroke="rgba(70, 100, 140, 0.25)" stroke-width="0.5" stroke-dasharray="1,1" />
+    <path d="M22.5,-20 C30,-10 15,0 22.5,10" fill="none" stroke="rgba(70, 100, 140, 0.25)" stroke-width="0.5" stroke-dasharray="1,1" />
+  </g>
+
+  <!-- Arquitectura de Transformer multicapa avanzada -->
+  <g id="complexTransformer" transform="translate(250, 30)" opacity="0.7">
+    <!-- Embedding y posicional -->
+    <rect x="-40" y="0" width="80" height="8" rx="1" fill="rgba(50, 80, 120, 0.25)" />
+
+    <!-- Multi-head attention layers -->
+    <g id="attentionHeads">
+      <rect x="-38" y="12" width="18" height="5" rx="1" fill="rgba(60, 90, 130, 0.25)" />
+      <rect x="-18" y="12" width="18" height="5" rx="1" fill="rgba(60, 90, 130, 0.25)" />
+      <rect x="2" y="12" width="18" height="5" rx="1" fill="rgba(60, 90, 130, 0.25)" />
+      <rect x="22" y="12" width="18" height="5" rx="1" fill="rgba(60, 90, 130, 0.25)" />
+      <path d="M-29,17 L-29,20 M-9,17 L-9,20 M11,17 L11,20 M31,17 L31,20"
+            stroke="rgba(70, 100, 140, 0.3)" stroke-width="0.4" />
+    </g>
+
+    <!-- Concatenate + Linear -->
+    <rect x="-35" y="20" width="70" height="4" rx="1" fill="rgba(40, 80, 120, 0.3)" />
+
+    <!-- Add & Norm -->
+    <rect x="-35" y="26" width="70" height="3" rx="1" fill="rgba(70, 110, 150, 0.3)" />
+    <path d="M0,8 L0,26" stroke="rgba(70, 100, 140, 0.2)" stroke-width="0.4" stroke-dasharray="1,1" />
+
+    <!-- FFN -->
+    <rect x="-30" y="31" width="60" height="6" rx="1" fill="rgba(50, 90, 130, 0.25)" />
+
+    <!-- Add & Norm -->
+    <rect x="-30" y="39" width="60" height="3" rx="1" fill="rgba(70, 110, 150, 0.3)" />
+    <path d="M0,29 L0,39" stroke="rgba(70, 100, 140, 0.2)" stroke-width="0.4" stroke-dasharray="1,1" />
+
+    <!-- Conexión a siguiente capa -->
+    <path d="M0,42 L0,47" stroke="rgba(80, 120, 170, 0.3)" stroke-width="0.6" />
+    <circle cx="0" cy="47" r="1" fill="rgba(80, 120, 170, 0.4)" />
+
+    <text x="0" y="55" font-family="monospace" font-size="3.5"
+          text-anchor="middle" fill="rgba(100, 140, 190, 0.5)">TRANSFORMER BLOCK</text>
+  </g>
+
+  <!-- Graph Neural Network -->
+  <g id="graphNetwork" transform="translate(150, 350)" opacity="0.7">
+    <!-- Nodos del grafo -->
+    <circle cx="-25" cy="-25" r="4" fill="rgba(40, 70, 110, 0.2)" stroke="rgba(60, 90, 140, 0.25)" stroke-width="0.8" />
+    <circle cx="-10" cy="-15" r="4" fill="rgba(40, 70, 110, 0.2)" stroke="rgba(60, 90, 140, 0.25)" stroke-width="0.8" />
+    <circle cx="-30" cy="-5" r="4" fill="rgba(40, 70, 110, 0.2)" stroke="rgba(60, 90, 140, 0.25)" stroke-width="0.8" />
+    <circle cx="-5" cy="0" r="4" fill="rgba(40, 70, 110, 0.2)" stroke="rgba(60, 90, 140, 0.25)" stroke-width="0.8" />
+    <circle cx="-20" cy="15" r="4" fill="rgba(40, 70, 110, 0.2)" stroke="rgba(60, 90, 140, 0.25)" stroke-width="0.8" />
+    <circle cx="10" cy="-25" r="4" fill="rgba(40, 70, 110, 0.2)" stroke="rgba(60, 90, 140, 0.25)" stroke-width="0.8" />
+    <circle cx="25" cy="-15" r="4" fill="rgba(40, 70, 110, 0.2)" stroke="rgba(60, 90, 140, 0.25)" stroke-width="0.8" />
+    <circle cx="15" cy="5" r="4" fill="rgba(40, 70, 110, 0.2)" stroke="rgba(60, 90, 140, 0.25)" stroke-width="0.8" />
+    <circle cx="30" cy="15" r="4" fill="rgba(40, 70, 110, 0.2)" stroke="rgba(60, 90, 140, 0.25)" stroke-width="0.8" />
+
+    <!-- Conexiones del grafo -->
+    <path d="M-25,-25 L-10,-15 M-25,-25 L-30,-5 M-10,-15 L-5,0 M-10,-15 L-30,-5 M-30,-5 L-20,15 M-5,0 L-20,15 M-5,0 L15,5 M10,-25 L25,-15 M10,-25 L-10,-15 M25,-15 L15,5 M15,5 L30,15 M-20,15 L15,5"
+          stroke="rgba(60, 100, 150, 0.2)" stroke-width="0.5" />
+
+    <!-- Mensaje passing layers -->
+    <circle cx="-25" cy="-25" r="1.5" fill="rgba(70, 110, 160, 0.35)" />
+    <circle cx="-10" cy="-15" r="1.5" fill="rgba(70, 110, 160, 0.35)" />
+    <circle cx="-30" cy="-5" r="1.5" fill="rgba(70, 110, 160, 0.35)" />
+    <circle cx="-5" cy="0" r="1.5" fill="rgba(70, 110, 160, 0.35)" />
+    <circle cx="-20" cy="15" r="1.5" fill="rgba(70, 110, 160, 0.35)" />
+    <circle cx="10" cy="-25" r="1.5" fill="rgba(70, 110, 160, 0.35)" />
+    <circle cx="25" cy="-15" r="1.5" fill="rgba(70, 110, 160, 0.35)" />
+    <circle cx="15" cy="5" r="1.5" fill="rgba(70, 110, 160, 0.35)" />
+    <circle cx="30" cy="15" r="1.5" fill="rgba(70, 110, 160, 0.35)" />
+
+    <text x="0" y="28" font-family="monospace" font-size="3.5"
+          text-anchor="middle" fill="rgba(100, 140, 190, 0.5)">GRAPH NEURAL NETWORK</text>
+  </g>
+
+  <!-- Mixture of Experts -->
+  <g id="mixtureOfExperts" transform="translate(300, 200)" opacity="0.7">
+    <!-- Router -->
+    <rect x="-40" y="-45" width="80" height="8" rx="2" fill="rgba(60, 90, 130, 0.25)" />
+    <path d="M-30,-37 L-30,-25 M-10,-37 L-10,-25 M10,-37 L10,-25 M30,-37 L30,-25"
+          stroke="rgba(70, 100, 140, 0.25)" stroke-width="0.5" stroke-dasharray="1,1" />
+
+    <!-- Experts -->
+    <g id="expert1" transform="translate(-30, -15)">
+      <rect x="-8" y="-5" width="16" height="20" rx="2" fill="rgba(50, 80, 120, 0.2)" />
+      <path d="M-4,0 L4,0 M-4,5 L4,5 M-4,10 L4,10"
+            stroke="rgba(80, 110, 150, 0.3)" stroke-width="0.5" />
+    </g>
+
+    <g id="expert2" transform="translate(-10, -15)">
+      <rect x="-8" y="-5" width="16" height="20" rx="2" fill="rgba(50, 80, 120, 0.2)" />
+      <path d="M-4,0 L4,0 M-4,5 L4,5 M-4,10 L4,10"
+            stroke="rgba(80, 110, 150, 0.3)" stroke-width="0.5" />
+    </g>
+
+    <g id="expert3" transform="translate(10, -15)">
+      <rect x="-8" y="-5" width="16" height="20" rx="2" fill="rgba(50, 80, 120, 0.2)" />
+      <path d="M-4,0 L4,0 M-4,5 L4,5 M-4,10 L4,10"
+            stroke="rgba(80, 110, 150, 0.3)" stroke-width="0.5" />
+    </g>
+
+    <g id="expert4" transform="translate(30, -15)">
+      <rect x="-8" y="-5" width="16" height="20" rx="2" fill="rgba(50, 80, 120, 0.2)" />
+      <path d="M-4,0 L4,0 M-4,5 L4,5 M-4,10 L4,10"
+            stroke="rgba(80, 110, 150, 0.3)" stroke-width="0.5" />
+    </g>
+
+    <!-- Output merger -->
+    <rect x="-40" y="15" width="80" height="8" rx="2" fill="rgba(60, 90, 130, 0.25)" />
+    <path d="M-30,5 L-30,15 M-10,5 L-10,15 M10,5 L10,15 M30,5 L30,15"
+          stroke="rgba(70, 100, 140, 0.25)" stroke-width="0.5" />
+
+    <text x="0" y="30" font-family="monospace" font-size="3.5"
+          text-anchor="middle" fill="rgba(100, 140, 190, 0.5)">MIXTURE OF EXPERTS</text>
+  </g>
+
+  <!-- Residual Dense Network -->
+  <g id="residualDense" transform="translate(100, 30)" opacity="0.7">
+    <!-- Input -->
+    <rect x="-35" y="0" width="10" height="20" rx="1" fill="rgba(40, 70, 110, 0.25)" />
+
+    <!-- Dense blocks con residuales -->
+    <g id="denseBlock1" transform="translate(-15, 0)">
+      <rect x="-5" y="0" width="10" height="5" rx="1" fill="rgba(50, 80, 120, 0.25)" />
+      <rect x="-5" y="7" width="10" height="5" rx="1" fill="rgba(50, 80, 120, 0.25)" />
+      <rect x="-5" y="14" width="10" height="5" rx="1" fill="rgba(50, 80, 120, 0.25)" />
+      <path d="M0,5 L0,7 M0,12 L0,14" stroke="rgba(70, 100, 140, 0.3)" stroke-width="0.4" />
+      <path d="M-5,2.5 L-10,2.5 M-10,2.5 L-10,10 M-10,10 L-5,10"
+            stroke="rgba(70, 100, 140, 0.2)" stroke-width="0.4" stroke-dasharray="1,1" />
+      <path d="M-5,10 L-10,10 M-10,10 L-10,17 M-10,17 L-5,17"
+            stroke="rgba(70, 100, 140, 0.2)" stroke-width="0.4" stroke-dasharray="1,1" />
+    </g>
+
+    <g id="denseBlock2" transform="translate(5, 0)">
+      <rect x="-5" y="0" width="10" height="5" rx="1" fill="rgba(50, 80, 120, 0.25)" />
+      <rect x="-5" y="7" width="10" height="5" rx="1" fill="rgba(50, 80, 120, 0.25)" />
+      <rect x="-5" y="14" width="10" height="5" rx="1" fill="rgba(50, 80, 120, 0.25)" />
+      <path d="M0,5 L0,7 M0,12 L0,14" stroke="rgba(70, 100, 140, 0.3)" stroke-width="0.4" />
+      <path d="M-5,2.5 L-10,2.5 M-10,2.5 L-10,10 M-10,10 L-5,10"
+            stroke="rgba(70, 100, 140, 0.2)" stroke-width="0.4" stroke-dasharray="1,1" />
+      <path d="M-5,10 L-10,10 M-10,10 L-10,17 M-10,17 L-5,17"
+            stroke="rgba(70, 100, 140, 0.2)" stroke-width="0.4" stroke-dasharray="1,1" />
+    </g>
+
+    <g id="denseBlock3" transform="translate(25, 0)">
+      <rect x="-5" y="0" width="10" height="5" rx="1" fill="rgba(50, 80, 120, 0.25)" />
+      <rect x="-5" y="7" width="10" height="5" rx="1" fill="rgba(50, 80, 120, 0.25)" />
+      <rect x="-5" y="14" width="10" height="5" rx="1" fill="rgba(50, 80, 120, 0.25)" />
+      <path d="M0,5 L0,7 M0,12 L0,14" stroke="rgba(70, 100, 140, 0.3)" stroke-width="0.4" />
+      <path d="M-5,2.5 L-10,2.5 M-10,2.5 L-10,10 M-10,10 L-5,10"
+            stroke="rgba(70, 100, 140, 0.2)" stroke-width="0.4" stroke-dasharray="1,1" />
+      <path d="M-5,10 L-10,10 M-10,10 L-10,17 M-10,17 L-5,17"
+            stroke="rgba(70, 100, 140, 0.2)" stroke-width="0.4" stroke-dasharray="1,1" />
+    </g>
+
+    <!-- Output -->
+    <rect x="35" y="0" width="10" height="20" rx="1" fill="rgba(40, 70, 110, 0.25)" />
+
+    <!-- Conexiones entre bloques -->
+    <path d="M-25,10 L-20,10 M-5,10 L0,10 M15,10 L20,10 M35,10 L40,10"
+          stroke="rgba(70, 100, 140, 0.3)" stroke-width="0.5" />
+
+    <!-- Conexión residual global -->
+    <path d="M-25,10 C-25,-5 35,-5 35,10"
+          stroke="rgba(70, 110, 150, 0.2)" stroke-width="0.5" stroke-dasharray="1,1" />
+
+    <text x="5" y="28" font-family="monospace" font-size="3.5"
+          text-anchor="middle" fill="rgba(100, 140, 190, 0.5)">RESIDUAL DENSE NETWORK</text>
+  </g>
+
+  <!-- Diffusion model process -->
+  <g id="diffusionProcess" transform="translate(200, 280)" opacity="0.7">
+    <!-- Etapas de difusión -->
+    <rect x="-50" y="-15" width="20" height="20" rx="2" fill="rgba(60, 90, 130, 0.1)"
+          stroke="rgba(60, 90, 130, 0.2)" stroke-width="0.5" />
+    <circle cx="-40" cy="-5" r="6" fill="rgba(60, 90, 130, 0.25)" />
+
+    <rect x="-25" y="-15" width="20" height="20" rx="2" fill="rgba(60, 90, 130, 0.1)"
+          stroke="rgba(60, 90, 130, 0.2)" stroke-width="0.5" />
+    <circle cx="-15" cy="-5" r="6" fill="rgba(60, 90, 130, 0.2)" />
+    <circle cx="-15" cy="-5" r="3" fill="rgba(60, 90, 130, 0.3)" />
+
+    <rect x="0" y="-15" width="20" height="20" rx="2" fill="rgba(60, 90, 130, 0.1)"
+          stroke="rgba(60, 90, 130, 0.2)" stroke-width="0.5" />
+    <circle cx="10" cy="-5" r="6" fill="rgba(60, 90, 130, 0.15)" />
+    <circle cx="10" cy="-5" r="4" fill="rgba(60, 90, 130, 0.2)" />
+    <circle cx="10" cy="-5" r="2" fill="rgba(60, 90, 130, 0.3)" />
+
+    <rect x="25" y="-15" width="20" height="20" rx="2" fill="rgba(60, 90, 130, 0.1)"
+          stroke="rgba(60, 90, 130, 0.2)" stroke-width="0.5" />
+    <circle cx="35" cy="-5" r="6" fill="rgba(60, 90, 130, 0.1)" />
+    <circle cx="35" cy="-5" r="5" fill="rgba(60, 90, 130, 0.15)" />
+    <circle cx="35" cy="-5" r="4" fill="rgba(60, 90, 130, 0.2)" />
+    <circle cx="35" cy="-5" r="3" fill="rgba(60, 90, 130, 0.25)" />
+    <circle cx="35" cy="-5" r="2" fill="rgba(60, 90, 130, 0.3)" />
+    <circle cx="35" cy="-5" r="1" fill="rgba(60, 90, 130, 0.35)" />
+
+    <!-- Flechas de proceso -->
+    <path d="M-30,-5 L-25,-5 M-5,-5 L0,-5 M20,-5 L25,-5"
+          stroke="rgba(70, 100, 140, 0.3)" stroke-width="0.5" />
+    <polygon points="-26,-3 -25,-5 -26,-7" fill="rgba(70, 100, 140, 0.3)" />
+    <polygon points="-1,-3 0,-5 -1,-7" fill="rgba(70, 100, 140, 0.3)" />
+    <polygon points="24,-3 25,-5 24,-7" fill="rgba(70, 100, 140, 0.3)" />
+
+    <text x="-2" y="12" font-family="monospace" font-size="3.5"
+          text-anchor="middle" fill="rgba(100, 140, 190, 0.5)">DIFFUSION MODEL</text>
+  </g>
+</svg>
+        </div>
+
+        <div class="controls">
+            <button class="control-btn" onclick="toggleFullscreen()">🔍 Fullscreen</button>
+            <button class="control-btn" onclick="downloadSVG()">📄 Download SVG</button>
+            <button class="control-btn" onclick="downloadPNG()" id="pngBtn">🖼️ Generate PNG</button>
+            <button class="control-btn" onclick="copyToClipboard()">🔗 Copy Link</button>
+        </div>
+    </div>
+
+
+        <!-- Forecast Plot Center Container -->
+        <div class="forecast-center-container" id="forecastCenterContainer">
+            <!-- Resize handles -->
+            <div class="resize-handle nw" data-direction="nw"></div>
+            <div class="resize-handle n" data-direction="n"></div>
+            <div class="resize-handle ne" data-direction="ne"></div>
+            <div class="resize-handle w" data-direction="w"></div>
+            <div class="resize-handle e" data-direction="e"></div>
+            <div class="resize-handle sw" data-direction="sw"></div>
+            <div class="resize-handle s" data-direction="s"></div>
+            <div class="resize-handle se" data-direction="se"></div>
+
+            <div class="forecast-plot-wrapper" id="forecastPlotWrapper">
+                <div class="forecast-header">
+                    <h2>📈 Time Series Forecast</h2>
+                </div>
+                <div class="forecast-content" id="forecastContent">
+                    <iframe src="../../../../../Pictures/pathway_plots/forecast_plot.html" class="forecast-center-iframe" id="forecastCenterIframe"></iframe>
+                    <div class="pan-indicator" id="panIndicator">📱 Drag header to move • Drag edges to resize • Scroll/+/- to zoom • ESC to release</div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Markdown Report Container -->
+        <div class="markdown-center-container" id="markdownCenterContainer">
+            <!-- Resize handles -->
+            <div class="resize-handle nw" data-direction="nw" data-container="markdown"></div>
+            <div class="resize-handle n" data-direction="n" data-container="markdown"></div>
+            <div class="resize-handle ne" data-direction="ne" data-container="markdown"></div>
+            <div class="resize-handle w" data-direction="w" data-container="markdown"></div>
+            <div class="resize-handle e" data-direction="e" data-container="markdown"></div>
+            <div class="resize-handle sw" data-direction="sw" data-container="markdown"></div>
+            <div class="resize-handle s" data-direction="s" data-container="markdown"></div>
+            <div class="resize-handle se" data-direction="se" data-container="markdown"></div>
+
+            <div class="markdown-plot-wrapper" id="markdownPlotWrapper">
+                <div class="markdown-header">
+                    <h2>📄 Generated Report</h2>
+                </div>
+                <div class="markdown-content" id="markdownContent">
+                    <iframe src="temp_markdown_report.html" class="markdown-center-iframe" id="markdownCenterIframe"></iframe>
+                    <div class="pan-indicator" id="markdownPanIndicator">📄 Drag header to move • Drag edges to resize • Scroll to navigate • ESC to release</div>
+                </div>
+            </div>
+        </div>
+
+    <script>
+        // Fullscreen toggle
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log('Error attempting to enable fullscreen:', err);
+                    showNotification('Fullscreen not supported', 'error');
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // Download SVG
+        function downloadSVG() {
+            try {
+                const svgElement = document.querySelector('svg');
+                const svgData = new XMLSerializer().serializeToString(svgElement);
+                const blob = new Blob([svgData], {type: 'image/svg+xml'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'chat_background_watermark.svg';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showNotification('✅ SVG downloaded successfully!', 'success');
+            } catch (err) {
+                console.error('Error downloading SVG:', err);
+                showNotification('Error downloading SVG', 'error');
+            }
+        }
+
+        // Download PNG - Always generate from SVG for reliability
+        function downloadPNG() {
+            showNotification('Generating PNG...', 'info');
+            convertSVGToPNG();
+        }
+
+        // Convert SVG to PNG in browser using Canvas
+        function convertSVGToPNG() {
+            try {
+                const svgElement = document.querySelector('svg');
+                if (!svgElement) {
+                    showNotification('SVG element not found', 'error');
+                    return;
+                }
+
+                // Get SVG dimensions
+                const svgRect = svgElement.getBoundingClientRect();
+                const svgData = new XMLSerializer().serializeToString(svgElement);
+
+                // Create canvas with high resolution
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const scale = 4; // Higher resolution for better quality (2x display scale + 2x internal scale)
+
+                // Determine optimal canvas size
+                let canvasWidth, canvasHeight;
+
+                // Try to get dimensions from viewBox first (most accurate)
+                if (svgElement.viewBox && svgElement.viewBox.baseVal && svgElement.viewBox.baseVal.width > 0) {
+                    canvasWidth = svgElement.viewBox.baseVal.width;
+                    canvasHeight = svgElement.viewBox.baseVal.height;
+                } else if (svgElement.width && svgElement.height) {
+                    // Try width/height attributes
+                    canvasWidth = parseFloat(svgElement.width.baseVal?.value || svgElement.getAttribute('width') || 0);
+                    canvasHeight = parseFloat(svgElement.height.baseVal?.value || svgElement.getAttribute('height') || 0);
+                } else if (svgRect.width > 0 && svgRect.height > 0) {
+                    // Use computed dimensions
+                    canvasWidth = svgRect.width;
+                    canvasHeight = svgRect.height;
+                } else {
+                    // Fallback to configured dimensions
+                    canvasWidth = 3840;
+                    canvasHeight = 3840;
+                }
+
+                // Ensure minimum size and reasonable maximum
+                canvasWidth = Math.max(400, Math.min(canvasWidth, 4000));
+                canvasHeight = Math.max(400, Math.min(canvasHeight, 4000));
+
+                canvas.width = canvasWidth * scale;
+                canvas.height = canvasHeight * scale;
+                canvas.style.width = canvasWidth + 'px';
+                canvas.style.height = canvasHeight + 'px';
+
+                // Scale context for high DPI
+                ctx.scale(scale, scale);
+
+                // Optional: Set background (transparent by default, white for better compatibility)
+                // Uncomment next lines for white background:
+                // ctx.fillStyle = '#FFFFFF';
+                // ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+                const img = new Image();
+
+                img.onload = function() {
+                    try {
+                        // Draw SVG to canvas
+                        ctx.drawImage(img, 0, 0, canvasWidth, canvasHeight);
+
+                        // Convert to PNG and download
+                        canvas.toBlob(function(blob) {
+                            if (!blob) {
+                                showNotification('Failed to generate PNG blob', 'error');
+                                return;
+                            }
+
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            const actualWidth = canvasWidth * scale;
+                            const actualHeight = canvasHeight * scale;
+                            a.download = 'chat_background_watermark_' + actualWidth + 'x' + actualHeight + '.png';
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(url);
+
+                            const sizeKB = Math.round(blob.size / 1024);
+                            showNotification(`🖼️ PNG generated successfully! ${actualWidth}×${actualHeight} • ${sizeKB}KB`, 'success');
+                        }, 'image/png', 0.95); // High quality PNG
+                    } catch (drawError) {
+                        console.error('Error drawing to canvas:', drawError);
+                        showNotification('Error drawing SVG to canvas', 'error');
+                    }
+                };
+
+                img.onerror = function(imgError) {
+                    console.error('Error loading SVG image:', imgError);
+                    showNotification('Error loading SVG for conversion', 'error');
+                };
+
+                // Create data URL with proper encoding
+                const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+                const url = URL.createObjectURL(svgBlob);
+                img.src = url;
+
+                // Cleanup URL after a delay
+                setTimeout(() => {
+                    URL.revokeObjectURL(url);
+                }, 1000);
+
+            } catch (err) {
+                console.error('Error in convertSVGToPNG:', err);
+                showNotification('Error converting SVG to PNG: ' + err.message, 'error');
+            }
+        }
+
+        // Copy current URL to clipboard
+        function copyToClipboard() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✅ Copied!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+                showNotification('🔗 Link copied to clipboard!', 'success');
+            }).catch(err => {
+                console.error('Error copying to clipboard:', err);
+                showNotification('Error copying link', 'error');
+            });
+        }
+
+        // Show notification with improved dark theme styling
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+
+            // Define colors that match the dark theme with more transparency
+            const colors = {
+                success: {
+                    background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.25), rgba(22, 163, 74, 0.3))',
+                    shadow: 'rgba(34, 197, 94, 0.15)'
+                },
+                error: {
+                    background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(220, 38, 38, 0.3))',
+                    shadow: 'rgba(239, 68, 68, 0.15)'
+                },
+                info: {
+                    background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(37, 99, 235, 0.3))',
+                    shadow: 'rgba(59, 130, 246, 0.15)'
+                }
+            };
+
+            const colorScheme = colors[type] || colors.info;
+
+            notification.style.cssText = `
+                position: fixed;
+                top: 30px;
+                left: 50%;
+                transform: translateX(-50%) translateY(-10px);
+                background: ${colorScheme.background};
+                color: rgba(255, 255, 255, 0.95);
+                padding: 14px 28px;
+                border-radius: 16px;
+                border: none;
+                z-index: 10000;
+                font-size: 14px;
+                font-weight: 500;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                box-shadow: 0 12px 40px ${colorScheme.shadow}, 0 6px 20px rgba(0, 0, 0, 0.2);
+                backdrop-filter: blur(24px);
+                transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+                opacity: 0;
+                animation: slideInNotification 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+                max-width: 90vw;
+                text-align: center;
+                letter-spacing: 0.025em;
+                text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            `;
+
+            // Add CSS animation keyframes if not already added
+            if (!document.querySelector('#notification-styles')) {
+                const style = document.createElement('style');
+                style.id = 'notification-styles';
+                style.textContent = `
+                    @keyframes slideInNotification {
+                        0% {
+                            opacity: 0;
+                            transform: translateX(-50%) translateY(-20px) scale(0.95);
+                        }
+                        100% {
+                            opacity: 1;
+                            transform: translateX(-50%) translateY(0px) scale(1);
+                        }
+                    }
+                    @keyframes slideOutNotification {
+                        0% {
+                            opacity: 1;
+                            transform: translateX(-50%) translateY(0px) scale(1);
+                        }
+                        100% {
+                            opacity: 0;
+                            transform: translateX(-50%) translateY(-20px) scale(0.95);
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            // Auto-dismiss with smooth animation
+            setTimeout(() => {
+                notification.style.animation = 'slideOutNotification 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards';
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 500);
+            }, 4000);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 's' || e.key === 'S') {
+                e.preventDefault();
+                downloadSVG();
+            } else if (e.key === 'p' || e.key === 'P') {
+                e.preventDefault();
+                downloadPNG();
+            } else if (e.key === 'c' || e.key === 'C') {
+                e.preventDefault();
+                copyToClipboard();
+            } else if (e.key === 'Escape') {
+                if (document.fullscreenElement) {
+                    document.exitFullscreen();
+                }
+            }
+        });
+
+        // Hide controls after inactivity
+        let hideTimeout;
+        const controls = document.querySelector('.controls');
+
+        function resetHideTimeout() {
+            clearTimeout(hideTimeout);
+            controls.style.opacity = '0.7';
+            hideTimeout = setTimeout(() => {
+                controls.style.opacity = '0.2';
+            }, 3000);
+        }
+
+        document.addEventListener('mousemove', resetHideTimeout);
+        document.addEventListener('keydown', resetHideTimeout);
+        document.addEventListener('click', resetHideTimeout);
+        resetHideTimeout();
+
+        // Show initial notification with keyboard shortcuts
+        setTimeout(() => {
+            showNotification('💡 Fully Responsive: Auto-scales to window • Drag header to move • Pinch/scroll to zoom • F/R/0 to reset • ESC to release', 'info');
+        }, 1500);
+
+
+        // Forecast center management with zoom, pan, container dragging and resizing
+        let currentZoom = 1;
+        let currentPanX = 0;
+        let currentPanY = 0;
+        let isDragging = false;
+        let isContainerDragging = false;
+        let isResizing = false;
+        let resizeDirection = '';
+        let activeContainer = '';
+        let dragStartX = 0;
+        let dragStartY = 0;
+        let dragStartPanX = 0;
+        let dragStartPanY = 0;
+        let containerOffsetX = 0;
+        let containerOffsetY = 0;
+        let containerDragStartX = 0;
+        let containerDragStartY = 0;
+        let resizeStartX = 0;
+        let resizeStartY = 0;
+        let resizeStartWidth = 0;
+        let resizeStartHeight = 0;
+        let resizeStartTop = 0;
+        let resizeStartLeft = 0;
+        let resizeTimeout;
+
+        // Markdown container variables
+        let markdownContainerOffsetX = 0;
+        let markdownContainerOffsetY = 0;
+
+        // Function to force plot visibility
+        function forceIframeVisibility() {
+            const iframe = document.getElementById('forecastCenterIframe');
+            if (!iframe) return;
+
+            iframe.style.visibility = 'visible';
+            iframe.style.opacity = '1';
+            iframe.style.display = 'block';
+            iframe.style.width = '100%';
+            iframe.style.height = '100%';
+
+            try {
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                if (iframeDoc) {
+                    const plotlyDiv = iframeDoc.querySelector('.plotly-graph-div');
+                    if (plotlyDiv) {
+                        plotlyDiv.style.visibility = 'visible';
+                        plotlyDiv.style.opacity = '1';
+                        plotlyDiv.style.display = 'block';
+                    }
+
+                    if (iframeDoc.body) {
+                        iframeDoc.body.style.visibility = 'visible';
+                        iframeDoc.body.style.opacity = '1';
+                        iframeDoc.body.style.display = 'block';
+                    }
+                }
+            } catch (e) {
+                // Ignore cross-origin errors
+            }
+        }
+
+        function updateZoomLevel() {
+            // Zoom level display removed from header for space optimization
+            // Zoom functionality still available via keyboard shortcuts and mouse wheel
+        }
+
+        function updateTransform() {
+            const forecastContent = document.getElementById('forecastContent');
+            if (forecastContent) {
+                forecastContent.style.transform = `scale(${currentZoom}) translate(${currentPanX}px, ${currentPanY}px)`;
+            }
+        }
+
+        function updateContainerPosition() {
+            const container = document.getElementById('forecastCenterContainer');
+            if (container) {
+                // Apply offset while maintaining responsive positioning
+                container.style.transform = `translate(${containerOffsetX}px, ${containerOffsetY}px)`;
+            }
+        }
+
+        function resetContainerPosition() {
+            containerOffsetX = 0;
+            containerOffsetY = 0;
+            updateContainerPosition();
+        }
+
+        function startResize(e, direction) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            isResizing = true;
+            resizeDirection = direction;
+            resizeStartX = e.clientX;
+            resizeStartY = e.clientY;
+
+            // Determine which container is being resized
+            const containerType = e.target.getAttribute('data-container') || 'forecast';
+            activeContainer = containerType;
+
+            const containerId = containerType === 'markdown' ? 'markdownCenterContainer' : 'forecastCenterContainer';
+            const iframeId = containerType === 'markdown' ? 'markdownCenterIframe' : 'forecastCenterIframe';
+
+            const container = document.getElementById(containerId);
+            const iframe = document.getElementById(iframeId);
+            const rect = container.getBoundingClientRect();
+
+            resizeStartWidth = rect.width;
+            resizeStartHeight = rect.height;
+            resizeStartTop = rect.top;
+            resizeStartLeft = rect.left;
+
+            container.classList.add('resizing');
+
+            // Add active class to the handle being used
+            const handle = e.target;
+            handle.classList.add('active');
+
+            // Temporarily disable scaling during resize to prevent disappearing
+            if (iframe) {
+                try {
+                    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                    if (iframeDoc) {
+                        let resizeStyle = iframeDoc.getElementById('resize-temp-style');
+                        if (!resizeStyle) {
+                            resizeStyle = iframeDoc.createElement('style');
+                            resizeStyle.id = 'resize-temp-style';
+                            iframeDoc.head.appendChild(resizeStyle);
+                        }
+
+                        // Disable transform scaling during resize
+                        resizeStyle.textContent = `
+                            .plotly-graph-div {
+                                transform: none !important;
+                                width: 100% !important;
+                                height: 100% !important;
+                                min-width: 100% !important;
+                                min-height: 100% !important;
+                                visibility: visible !important;
+                                opacity: 1 !important;
+                                display: block !important;
+                            }
+                        `;
+                    }
+                } catch (e) {
+                    // Ignore cross-origin errors
+                }
+            }
+
+            showPanIndicator();
+        }
+
+        function doResize(e) {
+            if (!isResizing) return;
+
+            const containerId = activeContainer === 'markdown' ? 'markdownCenterContainer' : 'forecastCenterContainer';
+            const iframeId = activeContainer === 'markdown' ? 'markdownCenterIframe' : 'forecastCenterIframe';
+
+            const container = document.getElementById(containerId);
+            const iframe = document.getElementById(iframeId);
+            const deltaX = e.clientX - resizeStartX;
+            const deltaY = e.clientY - resizeStartY;
+
+            let newWidth = resizeStartWidth;
+            let newHeight = resizeStartHeight;
+            let newTop = resizeStartTop;
+            let newLeft = resizeStartLeft;
+
+            // Calculate new dimensions based on resize direction
+            switch (resizeDirection) {
+                case 'se': // Southeast
+                    newWidth = Math.max(200, resizeStartWidth + deltaX);
+                    newHeight = Math.max(120, resizeStartHeight + deltaY);
+                    break;
+                case 'sw': // Southwest
+                    newWidth = Math.max(200, resizeStartWidth - deltaX);
+                    newHeight = Math.max(120, resizeStartHeight + deltaY);
+                    newLeft = resizeStartLeft + deltaX;
+                    break;
+                case 'ne': // Northeast
+                    newWidth = Math.max(200, resizeStartWidth + deltaX);
+                    newHeight = Math.max(120, resizeStartHeight - deltaY);
+                    newTop = resizeStartTop + deltaY;
+                    break;
+                case 'nw': // Northwest
+                    newWidth = Math.max(200, resizeStartWidth - deltaX);
+                    newHeight = Math.max(120, resizeStartHeight - deltaY);
+                    newTop = resizeStartTop + deltaY;
+                    newLeft = resizeStartLeft + deltaX;
+                    break;
+                case 'n': // North
+                    newHeight = Math.max(120, resizeStartHeight - deltaY);
+                    newTop = resizeStartTop + deltaY;
+                    break;
+                case 's': // South
+                    newHeight = Math.max(120, resizeStartHeight + deltaY);
+                    break;
+                case 'w': // West
+                    newWidth = Math.max(200, resizeStartWidth - deltaX);
+                    newLeft = resizeStartLeft + deltaX;
+                    break;
+                case 'e': // East
+                    newWidth = Math.max(200, resizeStartWidth + deltaX);
+                    break;
+            }
+
+            // Apply maximum constraints
+            const maxWidth = window.innerWidth * 0.9;
+            const maxHeight = window.innerHeight * 0.9;
+
+            newWidth = Math.min(newWidth, maxWidth);
+            newHeight = Math.min(newHeight, maxHeight);
+
+            // Apply the new dimensions
+            container.style.width = newWidth + 'px';
+            container.style.height = newHeight + 'px';
+            container.style.top = newTop + 'px';
+            container.style.left = newLeft + 'px';
+            container.style.right = 'auto';
+            container.style.bottom = 'auto';
+
+            // Force iframe and plot visibility during resize
+            forceIframeVisibility();
+
+            // For lateral resizes (w, e), force visibility more aggressively
+            if (resizeDirection === 'w' || resizeDirection === 'e') {
+                setTimeout(() => {
+                    forceIframeVisibility();
+                }, 10);
+            }
+        }
+
+        function stopResize() {
+            if (!isResizing) return;
+
+            isResizing = false;
+            resizeDirection = '';
+
+            const containerId = activeContainer === 'markdown' ? 'markdownCenterContainer' : 'forecastCenterContainer';
+            const iframeId = activeContainer === 'markdown' ? 'markdownCenterIframe' : 'forecastCenterIframe';
+
+            const container = document.getElementById(containerId);
+            const iframe = document.getElementById(iframeId);
+
+            container.classList.remove('resizing');
+
+            // Remove active class from all handles
+            const handles = container.querySelectorAll('.resize-handle');
+            handles.forEach(handle => handle.classList.remove('active'));
+
+            // Remove temporary resize styles and restore scaling
+            if (iframe) {
+                try {
+                    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                    if (iframeDoc) {
+                        // Remove temporary resize style
+                        const resizeStyle = iframeDoc.getElementById('resize-temp-style');
+                        if (resizeStyle) {
+                            resizeStyle.remove();
+                        }
+                    }
+                } catch (e) {
+                    // Ignore cross-origin errors
+                }
+
+                iframe.style.visibility = 'visible';
+                iframe.style.opacity = '1';
+                iframe.style.display = 'block';
+
+                // Restore proper scaling and force plot visibility
+                setTimeout(() => {
+                    // First restore the scaling
+                    resizeForecastPlot();
+
+                    // Then ensure plot is visible
+                    setTimeout(() => {
+                        try {
+                            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                            if (iframeDoc) {
+                                const plotlyDiv = iframeDoc.querySelector('.plotly-graph-div');
+                                if (plotlyDiv) {
+                                    plotlyDiv.style.visibility = 'visible';
+                                    plotlyDiv.style.opacity = '1';
+                                    plotlyDiv.style.display = 'block';
+
+                                    // Force Plotly resize
+                                    if (iframe.contentWindow && iframe.contentWindow.Plotly && iframe.contentWindow.Plotly.Plots) {
+                                        iframe.contentWindow.Plotly.Plots.resize(plotlyDiv);
+                                    }
+                                }
+                            }
+                        } catch (e) {
+                            // Ignore cross-origin errors
+                        }
+                    }, 50);
+                }, 50);
+            }
+
+            showNotification('📐 Window resized successfully', 'success');
+        }
+
+        function zoomForecast(delta) {
+            const minZoom = 0.3;
+            const maxZoom = 4.0;
+
+            currentZoom = Math.max(minZoom, Math.min(maxZoom, currentZoom + delta));
+
+            // Adjust pan to keep content centered when zooming
+            if (currentZoom === 1) {
+                currentPanX = 0;
+                currentPanY = 0;
+            }
+
+            updateTransform();
+            updateZoomLevel();
+            showPanIndicator();
+        }
+
+        function autoFitForecast() {
+            currentZoom = 1;
+            currentPanX = 0;
+            currentPanY = 0;
+            containerOffsetX = 0;
+            containerOffsetY = 0;
+            updateTransform();
+            updateContainerPosition();
+            updateZoomLevel();
+
+            // Trigger iframe resize and auto-scaling
+            resizeForecastPlot();
+
+            showNotification('🎯 Auto-fit applied', 'success');
+        }
+
+        function resizeForecastPlot() {
+            const iframe = document.getElementById('forecastCenterIframe');
+            if (!iframe) return;
+
+            try {
+                // Try to access iframe content and inject auto-scaling
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+
+                // Inject auto-scaling CSS into the iframe
+                let autoScaleStyle = iframeDoc.getElementById('auto-scale-style');
+                if (!autoScaleStyle) {
+                    autoScaleStyle = iframeDoc.createElement('style');
+                    autoScaleStyle.id = 'auto-scale-style';
+                    iframeDoc.head.appendChild(autoScaleStyle);
+                }
+
+                // Update CSS content to ensure plot stays visible during resize
+                autoScaleStyle.textContent = `
+                    body {
+                        margin: 0 !important;
+                        padding: 0 !important;
+                        overflow: hidden !important;
+                        background: transparent !important;
+                        display: flex !important;
+                        align-items: center !important;
+                        justify-content: center !important;
+                        width: 100% !important;
+                        height: 100% !important;
+                        min-width: 100% !important;
+                        min-height: 100% !important;
+                    }
+
+                    .plotly-graph-div {
+                        width: 133.333% !important;
+                        height: 133.333% !important;
+                        min-height: 133.333% !important;
+                        min-width: 133.333% !important;
+                        transform: scale(0.75) !important;
+                        transform-origin: center center !important;
+                        position: relative !important;
+                        display: block !important;
+                        visibility: visible !important;
+                        opacity: 1 !important;
+                        background: transparent !important;
+                    }
+
+                    .js-plotly-plot {
+                        width: 100% !important;
+                        height: 100% !important;
+                        position: relative !important;
+                        display: block !important;
+                        visibility: visible !important;
+                        background: transparent !important;
+                    }
+
+                    /* Make Plotly plot area transparent */
+                    .js-plotly-plot .plotly .bg {
+                        fill: transparent !important;
+                    }
+
+                    .js-plotly-plot .plotly .plot-container {
+                        background: transparent !important;
+                    }
+
+                    .js-plotly-plot .plotly .main-svg {
+                        background: transparent !important;
+                    }
+
+                    /* Override Plotly's dark theme background */
+                    .js-plotly-plot .plotly .plotbg {
+                        fill: transparent !important;
+                    }
+
+                    .js-plotly-plot .plotly .paper {
+                        fill: transparent !important;
+                    }
+
+                    /* Target specific Plotly background elements */
+                    .js-plotly-plot svg rect[fill="#111111"],
+                    .js-plotly-plot svg rect[fill="#1A1A1A"],
+                    .js-plotly-plot svg rect[fill="rgb(17,17,17)"],
+                    .js-plotly-plot svg rect[fill="rgb(26,26,26)"] {
+                        fill: transparent !important;
+                    }
+
+                    /* Override any dark background colors */
+                    .js-plotly-plot .plotly .cartesianlayer .subplot .plot {
+                        background: transparent !important;
+                    }
+
+                    .js-plotly-plot .plotly .cartesianlayer .subplot {
+                        background: transparent !important;
+                    }
+
+                    .js-plotly-plot .plotly .modebar {
+                        background: rgba(0, 0, 0, 0.7) !important;
+                        border-radius: 4px !important;
+                        padding: 2px !important;
+                        transform: scale(1.333) !important;
+                        transform-origin: top right !important;
+                        position: absolute !important;
+                        top: 10px !important;
+                        right: 10px !important;
+                        z-index: 1000 !important;
+                    }
+
+                    .js-plotly-plot .plotly .modebar-btn {
+                        color: #fff !important;
+                        width: 20px !important;
+                        height: 20px !important;
+                    }
+
+                    .js-plotly-plot .plotly .modebar-btn:hover {
+                        background: rgba(255, 255, 255, 0.1) !important;
+                    }
+
+                    /* Hide some modebar buttons to save space */
+                    .js-plotly-plot .plotly .modebar-btn[data-title="Download plot as a png"],
+                    .js-plotly-plot .plotly .modebar-btn[data-title="Zoom"],
+                    .js-plotly-plot .plotly .modebar-btn[data-title="Pan"],
+                    .js-plotly-plot .plotly .modebar-btn[data-title="Box Select"],
+                    .js-plotly-plot .plotly .modebar-btn[data-title="Lasso Select"] {
+                        display: none !important;
+                    }
+
+                    /* Ensure plot container stays visible during resize */
+                    .plot-container {
+                        width: 100% !important;
+                        height: 100% !important;
+                        position: relative !important;
+                        display: block !important;
+                        visibility: visible !important;
+                    }
+                `;
+
+                // Find and resize Plotly plot with additional safety checks
+                const plotlyDiv = iframeDoc.querySelector('.plotly-graph-div');
+                if (plotlyDiv) {
+                    // Ensure the plot div is visible
+                    plotlyDiv.style.visibility = 'visible';
+                    plotlyDiv.style.opacity = '1';
+                    plotlyDiv.style.display = 'block';
+
+                    // Force transparency on SVG elements
+                    const makeTransparent = () => {
+                        const svgElements = plotlyDiv.querySelectorAll('svg');
+                        svgElements.forEach(svg => {
+                            // Make SVG background transparent
+                            svg.style.background = 'transparent';
+
+                            // Find and make background rectangles transparent
+                            const rects = svg.querySelectorAll('rect');
+                            rects.forEach(rect => {
+                                const fill = rect.getAttribute('fill');
+                                if (fill && (
+                                    fill.includes('#111') ||
+                                    fill.includes('#1A1A1A') ||
+                                    fill.includes('rgb(17,17,17)') ||
+                                    fill.includes('rgb(26,26,26)') ||
+                                    fill === '#111111' ||
+                                    fill === 'rgb(17, 17, 17)'
+                                )) {
+                                    rect.setAttribute('fill', 'transparent');
+                                    rect.style.fill = 'transparent';
+                                }
+                            });
+
+                            // Make any background paths transparent
+                            const paths = svg.querySelectorAll('path');
+                            paths.forEach(path => {
+                                const fill = path.getAttribute('fill');
+                                if (fill && (
+                                    fill.includes('#111') ||
+                                    fill.includes('#1A1A1A') ||
+                                    fill.includes('rgb(17,17,17)') ||
+                                    fill.includes('rgb(26,26,26)')
+                                )) {
+                                    path.setAttribute('fill', 'transparent');
+                                    path.style.fill = 'transparent';
+                                }
+                            });
+                        });
+                    };
+
+                    // Apply transparency immediately and after any updates
+                    makeTransparent();
+
+                    // Force Plotly to resize if available
+                    if (iframe.contentWindow && iframe.contentWindow.Plotly && iframe.contentWindow.Plotly.Plots) {
+                        // Use a timeout to ensure the resize happens after CSS changes
+                        setTimeout(() => {
+                            try {
+                                iframe.contentWindow.Plotly.Plots.resize(plotlyDiv);
+                                // Apply transparency again after resize
+                                setTimeout(makeTransparent, 100);
+                            } catch (resizeError) {
+                                console.log('Plotly resize error (non-critical):', resizeError);
+                            }
+                        }, 50);
+                    }
+
+                    // Set up a mutation observer to catch any dynamic changes
+                    if (iframe.contentWindow.MutationObserver) {
+                        const observer = new iframe.contentWindow.MutationObserver(() => {
+                            makeTransparent();
+                        });
+                        observer.observe(plotlyDiv, {
+                            childList: true,
+                            subtree: true,
+                            attributes: true,
+                            attributeFilter: ['fill', 'style']
+                        });
+                    }
+                }
+
+                // Set iframe body styles with additional safety
+                if (iframeDoc.body) {
+                    iframeDoc.body.style.margin = '0';
+                    iframeDoc.body.style.padding = '0';
+                    iframeDoc.body.style.overflow = 'hidden';
+                    iframeDoc.body.style.background = 'transparent';
+                    iframeDoc.body.style.width = '100%';
+                    iframeDoc.body.style.height = '100%';
+                    iframeDoc.body.style.minWidth = '100%';
+                    iframeDoc.body.style.minHeight = '100%';
+                    iframeDoc.body.style.visibility = 'visible';
+                    iframeDoc.body.style.opacity = '1';
+                }
+
+            } catch (e) {
+                // Cross-origin or other access issues - try postMessage approach
+                if (iframe.contentWindow) {
+                    iframe.contentWindow.postMessage({
+                        type: 'resize',
+                        autoScale: true,
+                        containerSize: {
+                            width: iframe.offsetWidth,
+                            height: iframe.offsetHeight
+                        }
+                    }, '*');
+                }
+            }
+        }
+
+        function showPanIndicator() {
+            const indicator = document.getElementById('panIndicator');
+            if (indicator) {
+                indicator.classList.add('visible');
+                clearTimeout(indicator.hideTimeout);
+                indicator.hideTimeout = setTimeout(() => {
+                    indicator.classList.remove('visible');
+                }, 2000);
+            }
+        }
+
+        function handleWindowResize() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                // Reset container position if it goes out of bounds
+                const container = document.getElementById('forecastCenterContainer');
+                if (container) {
+                    const rect = container.getBoundingClientRect();
+                    const windowWidth = window.innerWidth;
+                    const windowHeight = window.innerHeight;
+
+                    // Check if container is mostly out of view and reset if needed
+                    if (rect.right < windowWidth * 0.2 || rect.left > windowWidth * 0.8 ||
+                        rect.bottom < windowHeight * 0.2 || rect.top > windowHeight * 0.8) {
+                        resetContainerPosition();
+                        showNotification('📐 Container repositioned for new window size', 'info');
+                    }
+                }
+
+                // Trigger iframe resize and auto-scaling
+                resizeForecastPlot();
+            }, 250);
+        }
+
+        function setupDragAndZoom() {
+            const container = document.getElementById('forecastCenterContainer');
+            const wrapper = document.getElementById('forecastPlotWrapper');
+            const content = document.getElementById('forecastContent');
+            const header = document.querySelector('.forecast-header');
+            const resizeHandles = container.querySelectorAll('.resize-handle');
+
+            if (!container || !wrapper || !content || !header) return;
+
+            // Setup resize handles
+            resizeHandles.forEach(handle => {
+                handle.addEventListener('mousedown', function(e) {
+                    const direction = handle.getAttribute('data-direction');
+                    startResize(e, direction);
+                });
+
+                // Touch support for resize handles
+                handle.addEventListener('touchstart', function(e) {
+                    if (e.touches.length !== 1) return;
+                    const direction = handle.getAttribute('data-direction');
+                    const touch = e.touches[0];
+                    const fakeEvent = {
+                        clientX: touch.clientX,
+                        clientY: touch.clientY,
+                        preventDefault: () => e.preventDefault(),
+                        stopPropagation: () => e.stopPropagation(),
+                        target: e.target
+                    };
+                    startResize(fakeEvent, direction);
+                }, { passive: false });
+            });
+
+            // Mouse wheel zoom on content area
+            content.addEventListener('wheel', function(e) {
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? -0.1 : 0.1;
+                zoomForecast(delta);
+            }, { passive: false });
+
+            // Header dragging for moving the entire container
+            header.addEventListener('mousedown', function(e) {
+
+                isContainerDragging = true;
+                containerDragStartX = e.clientX;
+                containerDragStartY = e.clientY;
+
+                container.classList.add('dragging');
+                showPanIndicator();
+
+                e.preventDefault();
+            });
+
+            // Content area dragging for panning the plot
+            content.addEventListener('mousedown', function(e) {
+                if (e.target.tagName === 'BUTTON') return;
+
+                isDragging = true;
+                dragStartX = e.clientX;
+                dragStartY = e.clientY;
+                dragStartPanX = currentPanX;
+                dragStartPanY = currentPanY;
+
+                showPanIndicator();
+
+                e.preventDefault();
+            });
+
+            document.addEventListener('mousemove', function(e) {
+                if (isResizing) {
+                    // Resize the container
+                    doResize(e);
+                } else if (isContainerDragging) {
+                    // Move the entire container
+                    const deltaX = e.clientX - containerDragStartX;
+                    const deltaY = e.clientY - containerDragStartY;
+
+                    if (activeContainer === 'markdown') {
+                        markdownContainerOffsetX += deltaX;
+                        markdownContainerOffsetY += deltaY;
+
+                        // Limit container movement to keep it partially visible
+                        const windowWidth = window.innerWidth;
+                        const windowHeight = window.innerHeight;
+                        const maxMoveX = windowWidth * 0.4;
+                        const maxMoveY = windowHeight * 0.4;
+
+                        markdownContainerOffsetX = Math.max(-maxMoveX, Math.min(maxMoveX, markdownContainerOffsetX));
+                        markdownContainerOffsetY = Math.max(-maxMoveY, Math.min(maxMoveY, markdownContainerOffsetY));
+
+                        updateMarkdownContainerPosition();
+                    } else {
+                        containerOffsetX += deltaX;
+                        containerOffsetY += deltaY;
+
+                        // Limit container movement to keep it partially visible
+                        const windowWidth = window.innerWidth;
+                        const windowHeight = window.innerHeight;
+                        const maxMoveX = windowWidth * 0.4;
+                        const maxMoveY = windowHeight * 0.4;
+
+                        containerOffsetX = Math.max(-maxMoveX, Math.min(maxMoveX, containerOffsetX));
+                        containerOffsetY = Math.max(-maxMoveY, Math.min(maxMoveY, containerOffsetY));
+
+                        updateContainerPosition();
+                    }
+
+                    containerDragStartX = e.clientX;
+                    containerDragStartY = e.clientY;
+                } else if (isDragging) {
+                    // Pan the plot content
+                    const deltaX = (e.clientX - dragStartX) / currentZoom;
+                    const deltaY = (e.clientY - dragStartY) / currentZoom;
+
+                    currentPanX = dragStartPanX + deltaX;
+                    currentPanY = dragStartPanY + deltaY;
+
+                    // Limit panning to reasonable bounds
+                    const maxPan = 300;
+                    currentPanX = Math.max(-maxPan, Math.min(maxPan, currentPanX));
+                    currentPanY = Math.max(-maxPan, Math.min(maxPan, currentPanY));
+
+                    updateTransform();
+                }
+            });
+
+            document.addEventListener('mouseup', function() {
+                if (isResizing) {
+                    stopResize();
+                } else if (isContainerDragging) {
+                    isContainerDragging = false;
+
+                    // Remove dragging class from the appropriate container
+                    if (activeContainer === 'markdown') {
+                        const markdownContainer = document.getElementById('markdownCenterContainer');
+                        if (markdownContainer) markdownContainer.classList.remove('dragging');
+                    } else {
+                        const forecastContainer = document.getElementById('forecastCenterContainer');
+                        if (forecastContainer) forecastContainer.classList.remove('dragging');
+                    }
+
+                    activeContainer = '';
+                } else if (isDragging) {
+                    isDragging = false;
+                }
+            });
+
+            // Touch support for mobile
+            header.addEventListener('touchstart', function(e) {
+                if (e.touches.length !== 1) return;
+
+                const touch = e.touches[0];
+                isContainerDragging = true;
+                containerDragStartX = touch.clientX;
+                containerDragStartY = touch.clientY;
+
+                container.classList.add('dragging');
+                showPanIndicator();
+
+                e.preventDefault();
+            }, { passive: false });
+
+            content.addEventListener('touchstart', function(e) {
+                if (e.touches.length !== 1) return;
+
+                const touch = e.touches[0];
+                isDragging = true;
+                dragStartX = touch.clientX;
+                dragStartY = touch.clientY;
+                dragStartPanX = currentPanX;
+                dragStartPanY = currentPanY;
+
+                showPanIndicator();
+
+                e.preventDefault();
+            }, { passive: false });
+
+            document.addEventListener('touchmove', function(e) {
+                if (isResizing && e.touches.length === 1) {
+                    const touch = e.touches[0];
+                    const fakeEvent = {
+                        clientX: touch.clientX,
+                        clientY: touch.clientY
+                    };
+                    doResize(fakeEvent);
+                    e.preventDefault();
+                } else if (isContainerDragging && e.touches.length === 1) {
+                    const touch = e.touches[0];
+                    const deltaX = touch.clientX - containerDragStartX;
+                    const deltaY = touch.clientY - containerDragStartY;
+
+                    containerOffsetX += deltaX;
+                    containerOffsetY += deltaY;
+
+                    const windowWidth = window.innerWidth;
+                    const windowHeight = window.innerHeight;
+                    const maxMoveX = windowWidth * 0.4;
+                    const maxMoveY = windowHeight * 0.4;
+
+                    containerOffsetX = Math.max(-maxMoveX, Math.min(maxMoveX, containerOffsetX));
+                    containerOffsetY = Math.max(-maxMoveY, Math.min(maxMoveY, containerOffsetY));
+
+                    updateContainerPosition();
+
+                    containerDragStartX = touch.clientX;
+                    containerDragStartY = touch.clientY;
+
+                    e.preventDefault();
+                } else if (isDragging && e.touches.length === 1) {
+                    const touch = e.touches[0];
+                    const deltaX = (touch.clientX - dragStartX) / currentZoom;
+                    const deltaY = (touch.clientY - dragStartY) / currentZoom;
+
+                    currentPanX = dragStartPanX + deltaX;
+                    currentPanY = dragStartPanY + deltaY;
+
+                    const maxPan = 300;
+                    currentPanX = Math.max(-maxPan, Math.min(maxPan, currentPanX));
+                    currentPanY = Math.max(-maxPan, Math.min(maxPan, currentPanY));
+
+                    updateTransform();
+                    e.preventDefault();
+                }
+            }, { passive: false });
+
+            document.addEventListener('touchend', function() {
+                if (isResizing) {
+                    stopResize();
+                } else if (isContainerDragging) {
+                    isContainerDragging = false;
+                    container.classList.remove('dragging');
+                } else if (isDragging) {
+                    isDragging = false;
+                }
+            });
+
+            // Double-click to auto-fit
+            container.addEventListener('dblclick', function(e) {
+                autoFitForecast();
+            });
+
+            // Pinch-to-zoom support for mobile
+            let initialDistance = 0;
+            let initialZoom = 1;
+
+            content.addEventListener('touchstart', function(e) {
+                if (e.touches.length === 2) {
+                    const touch1 = e.touches[0];
+                    const touch2 = e.touches[1];
+                    initialDistance = Math.hypot(
+                        touch1.clientX - touch2.clientX,
+                        touch1.clientY - touch2.clientY
+                    );
+                    initialZoom = currentZoom;
+                    e.preventDefault();
+                }
+            }, { passive: false });
+
+            content.addEventListener('touchmove', function(e) {
+                if (e.touches.length === 2) {
+                    const touch1 = e.touches[0];
+                    const touch2 = e.touches[1];
+                    const distance = Math.hypot(
+                        touch1.clientX - touch2.clientX,
+                        touch1.clientY - touch2.clientY
+                    );
+
+                    if (initialDistance > 0) {
+                        const scale = distance / initialDistance;
+                        const newZoom = initialZoom * scale;
+                        const minZoom = 0.3;
+                        const maxZoom = 4.0;
+
+                        currentZoom = Math.max(minZoom, Math.min(maxZoom, newZoom));
+                        updateTransform();
+                        updateZoomLevel();
+                        showPanIndicator();
+                    }
+
+                    e.preventDefault();
+                }
+            }, { passive: false });
+        }
+
+        // Setup markdown container drag and zoom functionality
+        function setupMarkdownDragAndZoom() {
+            const container = document.getElementById('markdownCenterContainer');
+            if (!container) return;
+
+            const wrapper = document.getElementById('markdownPlotWrapper');
+            const content = document.getElementById('markdownContent');
+            const header = document.querySelector('.markdown-header');
+            const resizeHandles = container.querySelectorAll('.resize-handle[data-container="markdown"]');
+
+            if (!wrapper || !content || !header) return;
+
+            // Setup resize handles for markdown container
+            resizeHandles.forEach(handle => {
+                handle.addEventListener('mousedown', function(e) {
+                    const direction = handle.getAttribute('data-direction');
+                    startResize(e, direction);
+                });
+
+                // Touch support for resize handles
+                handle.addEventListener('touchstart', function(e) {
+                    if (e.touches.length !== 1) return;
+                    const direction = handle.getAttribute('data-direction');
+                    const touch = e.touches[0];
+                    const fakeEvent = {
+                        clientX: touch.clientX,
+                        clientY: touch.clientY,
+                        preventDefault: () => e.preventDefault(),
+                        stopPropagation: () => e.stopPropagation(),
+                        target: e.target
+                    };
+                    startResize(fakeEvent, direction);
+                }, { passive: false });
+            });
+
+            // Header dragging for moving the markdown container
+            header.addEventListener('mousedown', function(e) {
+                isContainerDragging = true;
+                activeContainer = 'markdown';
+                containerDragStartX = e.clientX;
+                containerDragStartY = e.clientY;
+
+                container.classList.add('dragging');
+                showMarkdownPanIndicator();
+
+                e.preventDefault();
+            });
+
+            // Touch support for mobile
+            header.addEventListener('touchstart', function(e) {
+                if (e.touches.length !== 1) return;
+
+                const touch = e.touches[0];
+                isContainerDragging = true;
+                activeContainer = 'markdown';
+                containerDragStartX = touch.clientX;
+                containerDragStartY = touch.clientY;
+
+                container.classList.add('dragging');
+                showMarkdownPanIndicator();
+
+                e.preventDefault();
+            }, { passive: false });
+
+            // Double-click to reset position
+            container.addEventListener('dblclick', function(e) {
+                markdownContainerOffsetX = 0;
+                markdownContainerOffsetY = 0;
+                updateMarkdownContainerPosition();
+                showNotification('📄 Markdown container reset', 'success');
+            });
+        }
+
+        function updateMarkdownContainerPosition() {
+            const container = document.getElementById('markdownCenterContainer');
+            if (container) {
+                container.style.transform = `translate(${markdownContainerOffsetX}px, ${markdownContainerOffsetY}px)`;
+            }
+        }
+
+        function showMarkdownPanIndicator() {
+            const indicator = document.getElementById('markdownPanIndicator');
+            if (indicator) {
+                indicator.classList.add('visible');
+                clearTimeout(indicator.hideTimeout);
+                indicator.hideTimeout = setTimeout(() => {
+                    indicator.classList.remove('visible');
+                }, 2000);
+            }
+        }
+
+        // Initialize forecast center on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const forecastIframe = document.getElementById('forecastCenterIframe');
+            const loadingDiv = document.querySelector('.forecast-loading');
+
+            // Setup zoom and drag functionality
+            setupDragAndZoom();
+            setupMarkdownDragAndZoom();
+            updateZoomLevel();
+
+            // Handle window resize
+            window.addEventListener('resize', handleWindowResize);
+            window.addEventListener('orientationchange', function() {
+                setTimeout(handleWindowResize, 100);
+            });
+
+            // Handle iframe loading
+            if (forecastIframe) {
+                forecastIframe.addEventListener('load', function() {
+                    if (loadingDiv) {
+                        loadingDiv.classList.add('hidden');
+                    }
+
+                    // Setup auto-scaling after iframe loads
+                    setTimeout(() => {
+                        resizeForecastPlot();
+                    }, 100);
+
+                    showNotification('📈 Forecast plot loaded! Auto-scaling enabled', 'success');
+                });
+            }
+
+            // Listen for messages from forecast iframe
+            window.addEventListener('message', function(event) {
+                if (event.data && event.data.type === 'plotLoaded') {
+                    if (loadingDiv) {
+                        loadingDiv.classList.add('hidden');
+                    }
+                }
+            });
+
+            // Show initial pan indicator
+            setTimeout(() => {
+                showPanIndicator();
+            }, 1000);
+
+            // Auto-fit on initial load
+            setTimeout(() => {
+                autoFitForecast();
+            }, 500);
+
+            // Setup ResizeObserver for automatic scaling
+            if (window.ResizeObserver) {
+                const container = document.getElementById('forecastCenterContainer');
+                if (container) {
+                    const resizeObserver = new ResizeObserver(entries => {
+                        for (let entry of entries) {
+                            // Debounce resize events
+                            clearTimeout(resizeTimeout);
+                            resizeTimeout = setTimeout(() => {
+                                resizeForecastPlot();
+                            }, 100);
+                        }
+                    });
+                    resizeObserver.observe(container);
+                }
+            }
+        });
+
+        // Keyboard shortcuts for zoom and escape functionality
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                // ESC key - Release all dragging/resizing operations
+                e.preventDefault();
+
+                const forecastContainer = document.getElementById('forecastCenterContainer');
+                const markdownContainer = document.getElementById('markdownCenterContainer');
+                let operationReleased = false;
+
+                if (isResizing) {
+                    // Stop resizing
+                    isResizing = false;
+                    resizeDirection = '';
+
+                    // Remove resizing class from both containers
+                    if (forecastContainer) forecastContainer.classList.remove('resizing');
+                    if (markdownContainer) markdownContainer.classList.remove('resizing');
+
+                    // Remove active class from all handles in both containers
+                    if (forecastContainer) {
+                        const handles = forecastContainer.querySelectorAll('.resize-handle');
+                        handles.forEach(handle => handle.classList.remove('active'));
+                    }
+                    if (markdownContainer) {
+                        const handles = markdownContainer.querySelectorAll('.resize-handle');
+                        handles.forEach(handle => handle.classList.remove('active'));
+                    }
+
+                    showNotification('🔓 Resize operation cancelled', 'info');
+                    operationReleased = true;
+                }
+
+                if (isContainerDragging) {
+                    // Stop container dragging for both containers
+                    isContainerDragging = false;
+
+                    if (forecastContainer) forecastContainer.classList.remove('dragging');
+                    if (markdownContainer) markdownContainer.classList.remove('dragging');
+
+                    // Reset active container
+                    activeContainer = '';
+
+                    showNotification('🔓 Container dragging released', 'info');
+                    operationReleased = true;
+                }
+
+                if (isDragging) {
+                    // Stop content panning
+                    isDragging = false;
+                    showNotification('🔓 Plot panning released', 'info');
+                    operationReleased = true;
+                }
+
+                // If nothing was being dragged, show general escape message
+                if (!operationReleased) {
+                    showNotification('🔓 ESC pressed - All operations released', 'info');
+                }
+            } else if (e.key === '=' || e.key === '+') {
+                e.preventDefault();
+                zoomForecast(0.2);
+            } else if (e.key === '-' || e.key === '_') {
+                e.preventDefault();
+                zoomForecast(-0.2);
+            } else if (e.key === '0') {
+                e.preventDefault();
+                autoFitForecast();
+            } else if (e.key === 'r' || e.key === 'R') {
+                e.preventDefault();
+                autoFitForecast();
+            } else if (e.key === 'f' || e.key === 'F') {
+                e.preventDefault();
+                autoFitForecast();
+            }
+        });
+    </script>
+</body>
+</html>

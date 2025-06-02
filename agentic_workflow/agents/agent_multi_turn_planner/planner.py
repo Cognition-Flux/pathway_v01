@@ -32,6 +32,10 @@ def multi_turn_planner(
             continue
         elif response.what_to_do == "plan":
             next_node = "conduct_plan"
+
+            # Generate step list before the Command
+            step_list = [f"- {s.step}" for idx, s in enumerate(response.steps)]
+
             return Command(
                 goto=next_node,
                 update={
@@ -42,7 +46,7 @@ def multi_turn_planner(
                     else [
                         response.response,
                         "Ejecutaré las siguientes acciones:",
-                        *[f"- {s.step}" for idx, s in enumerate(response.steps)],
+                        *step_list,
                     ],
                     "user_question": state["messages"][-1].content,
                     "reasoning": [
@@ -69,6 +73,10 @@ def conduct_plan(
     state: PathwayGraphState,
 ) -> Command[
     Literal[
+        "rag",
+        "websearch",
+        "tables",
+        "plot_generator",
         "forecast_information_checker",
         END,
     ]
@@ -78,8 +86,16 @@ def conduct_plan(
     This function conducts a plan using the chain_for_planning.
     """
     current_step = state["steps"][0]
-
-    if current_step.agent == "forecast_information_checker":
+    # Map agent types to node names
+    if current_step.agent == "rag":
+        next_node = "rag"
+    elif current_step.agent == "websearch":
+        next_node = "websearch"
+    elif current_step.agent == "tables":
+        next_node = "tables"
+    elif current_step.agent == "plot_generator":
+        next_node = "plot_generator"
+    elif current_step.agent == "forecast_information_checker":
         next_node = "forecast_information_checker"
     else:
         raise ValueError(f"conduct_plan: Expected agent, got '{current_step.agent}'")

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generated Report</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #70B7FF;
+            --secondary-color: #90CAF9;
+            --accent-color: #FFB74D;
+            --success-color: #81C784;
+            --warning-color: #FFB74D;
+            --error-color: #E57373;
+            --text-primary: #FFFFFF;
+            --text-secondary: #E0E0E0;
+            --text-muted: #B0BEC5;
+            --bg-primary: transparent;
+            --bg-secondary: rgba(255, 255, 255, 0.03);
+            --bg-tertiary: rgba(255, 255, 255, 0.08);
+            --border-color: rgba(255, 255, 255, 0.12);
+            --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.15);
+            --shadow-heavy: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            background: var(--bg-primary);
+            margin: 0;
+            padding: 24px;
+            font-size: 14px;
+            font-weight: 400;
+            letter-spacing: 0.01em;
+        }
+
+        .main-title {
+            color: var(--text-primary);
+            font-size: 2.2em;
+            font-weight: 700;
+            margin: 0 0 2em 0;
+            padding: 0 0 0.8em 0;
+            border-bottom: 3px solid var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+        }
+
+        .main-title .icon {
+            font-size: 0.8em;
+            -webkit-text-fill-color: var(--accent-color);
+        }
+
+        h2 {
+            color: var(--text-primary);
+            font-size: 1.6em;
+            font-weight: 600;
+            margin: 2.5em 0 1em 0;
+            padding: 0.5em 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+            position: relative;
+        }
+
+        h2::before {
+            content: '';
+            position: absolute;
+            left: -24px;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
+            border-radius: 2px;
+        }
+
+        .intro-header { color: var(--primary-color); }
+        .method-header { color: var(--secondary-color); }
+        .results-header { color: var(--success-color); }
+        .discussion-header { color: var(--warning-color); }
+        .conclusion-header { color: var(--accent-color); }
+
+        h3 {
+            color: var(--secondary-color);
+            font-size: 1.3em;
+            font-weight: 600;
+            margin: 2em 0 1em 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+        }
+
+        .metrics-header { color: var(--success-color); }
+        .interpretation-header { color: var(--warning-color); }
+
+        .icon {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .content-paragraph {
+            margin-bottom: 1.2em;
+            line-height: 1.8;
+            text-align: justify;
+        }
+
+        .bullet-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8em;
+            margin-bottom: 0.8em;
+            padding: 0.5em 0;
+        }
+
+        .bullet {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-top: 0.1em;
+            flex-shrink: 0;
+        }
+
+        .highlight {
+            color: var(--text-primary);
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--primary-color)20, var(--secondary-color)20);
+            padding: 0.1em 0.3em;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+
+        em {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            background: var(--bg-tertiary);
+            color: var(--accent-color);
+            padding: 0.2em 0.5em;
+            border-radius: 6px;
+            font-size: 0.9em;
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+        }
+
+        .number {
+            color: var(--success-color);
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .percentage {
+            color: var(--accent-color);
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(255, 183, 77, 0.1);
+            padding: 0.1em 0.4em;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 183, 77, 0.2);
+        }
+
+        .table-container {
+            margin: 2em 0;
+            overflow-x: auto;
+            border-radius: 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .styled-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95em;
+        }
+
+        .styled-table thead {
+            background: linear-gradient(135deg, var(--primary-color)15, var(--secondary-color)15);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .styled-table th {
+            padding: 1em 1.5em;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .styled-table td {
+            padding: 1em 1.5em;
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.2s ease;
+        }
+
+        .styled-table tbody tr:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .styled-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .metric-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            color: var(--success-color);
+            text-align: center;
+            background: rgba(129, 199, 132, 0.1);
+            border-radius: 6px;
+            border: 1px solid rgba(129, 199, 132, 0.2);
+        }
+
+        .metric-percentage {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            color: var(--accent-color);
+            text-align: center;
+            background: rgba(255, 183, 77, 0.15);
+            border-radius: 6px;
+            border: 1px solid rgba(255, 183, 77, 0.3);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            body {
+                padding: 16px;
+                font-size: 13px;
+            }
+
+            .main-title {
+                font-size: 1.8em;
+            }
+
+            h2 {
+                font-size: 1.4em;
+                margin: 2em 0 0.8em 0;
+            }
+
+            h3 {
+                font-size: 1.2em;
+            }
+
+            .styled-table th,
+            .styled-table td {
+                padding: 0.8em 1em;
+            }
+
+            h2::before {
+                left: -16px;
+            }
+        }
+
+        /* Smooth scrolling and animations */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .content-paragraph,
+        .bullet-point,
+        .table-container {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Selection styling */
+        ::selection {
+            background: rgba(112, 183, 255, 0.3);
+            color: var(--text-primary);
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <h1 class="main-title"><span class="icon">🔬</span>Reporte de Forecast para Biomarcador</h1>
+<br>
+<h2 class="intro-header"><span class="icon">🎯</span>Introducción</h2>
+<p class="content-paragraph">El presente reporte tiene como objetivo realizar un forecast del biomarcador utilizando los datos históricos de la tabla "patient_time_series". Se utilizaron <span class='number'>15</span> puntos históricos como ventana de contexto y se predijeron 5 puntos futuros.</p>
+<br>
+<h2 class="method-header"><span class="icon">⚙️</span>Metodología</h2>
+<div class="bullet-point"><span class="bullet">▶</span><strong class='highlight'>Ventana de contexto</strong>: 15 puntos históricos.</div>
+<div class="bullet-point"><span class="bullet">▶</span><strong class='highlight'>Ventana de predicción</strong>: 5 puntos futuros.</div>
+<div class="bullet-point"><span class="bullet">▶</span><strong class='highlight'>Métricas de evaluación</strong>: MSE, MAE, RMSE y MAPE.</div>
+<br>
+<h2 class="results-header"><span class="icon">📈</span>Resultados</h2>
+<br>
+<h3 class="metrics-header"><span class="icon">📊</span>Métricas de Evaluación</h3>
+<div class="table-container">
+<table class="styled-table">
+<thead>
+<tr>
+<th>Métrica</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MSE</td>
+<td class="metric-value">0.5984</td>
+</tr>
+<tr>
+<td>MAE</td>
+<td class="metric-value">0.6581</td>
+</tr>
+<tr>
+<td>RMSE</td>
+<td class="metric-value">0.7735</td>
+</tr>
+<tr>
+<td>MAPE</td>
+<td class="metric-percentage">6.83%</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3><span class="icon">📋</span>Predicción</h3>
+<div class="table-container">
+<table class="styled-table">
+<thead>
+<tr>
+<th>Punto en el tiempo</th>
+<th>Valor Predicho</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>t+1</td>
+<td>1.23</td>
+</tr>
+<tr>
+<td>t+2</td>
+<td>1.45</td>
+</tr>
+<tr>
+<td>t+3</td>
+<td>1.67</td>
+</tr>
+<tr>
+<td>t+4</td>
+<td>1.89</td>
+</tr>
+<tr>
+<td>t+5</td>
+<td>2.12</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 class="discussion-header"><span class="icon">💭</span>Discusión</h2>
+<p class="content-paragraph">Las métricas obtenidas indican un buen rendimiento del modelo, con un MAPE del <span class='percentage'><span class='number'>6.83</span>%</span>, lo que sugiere que las predicciones son cercanas a los valores reales. La ventana de contexto de <span class='number'>15</span> puntos históricos parece ser adecuada para capturar el patrón en los datos.</p>
+<br>
+<h2 class="conclusion-header"><span class="icon">✅</span>Conclusión</h2>
+<p class="content-paragraph">El forecast generado utilizando <span class='number'>15</span> puntos históricos y prediciendo 5 puntos futuros muestra una buena precisión, lo que lo hace útil para la toma de decisiones en el análisis del biomarcador.</p>
+<br>
+<h2><span class="icon">📄</span>Referencias</h2>
+<div class="bullet-point"><span class="bullet">•</span>AI Message: Forecast generado exitosamente. Predicción de 5 puntos usando 15 puntos históricos. Métricas: MSE=0.5984, MAE=0.6581, RMSE=0.7735, MAPE=6.83%.</div>
+</body>
+</html>

@@ -302,6 +302,7 @@ def stream_updates_including_subgraphs(
                     default_message_for_node = "gráfico generado"
                 elif node_name_key == "make_forecast":
                     plot_data = node_data.get("plot")
+                    default_message_for_node = "📈 Forecast generado con visualización"
 
                 if isinstance(messages_from_node, str):
                     messages_list_for_yield = [messages_from_node]
@@ -316,6 +317,11 @@ def stream_updates_including_subgraphs(
                     messages_list_for_yield,
                     default_message_for_node,
                     is_plot_type_node,
+                    current_reasoning_content=reasoning_content,
+                    current_reasoning_source_node=reasoning_source_node,
+                    current_agent=current_agent_from_node,
+                    current_llm_model=llm_model_from_node,
+                    current_plot_data_outer=plot_data,
                 )
                 processed_node = True
                 break

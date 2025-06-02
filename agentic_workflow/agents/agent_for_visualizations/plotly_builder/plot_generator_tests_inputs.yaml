@@ -1,0 +1,45 @@
+tests:
+  - name: boxplot_basico
+    input_instructions: |
+      Genera un boxplot de las propinas ("total_bill") por día de la semana usando el dataset de ejemplo de camareros. Colorea cada día con un color diferente y muestra todos los puntos individuales ('points': 'all') para facilitar la inspección de outliers. Los ejes deben llamarse "Día" y "Total de la cuenta".
+  - name: bubble_gapminder
+    input_instructions: |
+      Crea un bubble chart con el dataset gapminder del año 2007.  Eje X: gdpPercap (log) · eje Y: lifeExp.  El tamaño de cada burbuja debe representar la población y el color el continente.  Usa "País" como hover name.  Títulos de ejes: "GDP per capita" y "Esperanza de vida".
+  - name: pie_donut_pattern
+    input_instructions: |
+      Con el dataset de propinas (tips) crea un gráfico de dona que muestre la proporción del importe total de la propina por día de la semana.  • Usa un agujero de 0.4.  • Aplica un patrón diferente a cada sector (., x, +, -) y un color que combine con el patrón.  • Muestra las etiquetas dentro de cada sector con porcentaje y nombre.  • Orden original de los días (Thu, Fri, Sat, Sun).  Títulos de ejes no aplican, pero asegúrate de incluir un título general "Distribución de propinas por día".
+  - name: scatter_basico
+    input_instructions: |-
+      Crea un scatter plot con tres grupos de datos llamados Hueso, Ciruela y Oliva usando datos aleatorios.
+      • Usa los colores #E3DAC9, #8E4585 y #808000 respectivamente.
+      • Mapea una variable de 10-30 al tamaño de los puntos.
+      • Agrega título "Dispersión multivariada" y etiqueta los ejes como "Variable X" y "Variable Y".
+  - name: lineas_basico
+    input_instructions: |-
+      Genera un gráfico de líneas sencillo con dos series: "México" y "Argentina". Usa 12 puntos (horas) para cada una.
+      • México color #1f77b4, Argentina color #ff7f0e con línea discontinua.
+      • Incluye leyenda y título "Serie horaria".
+  - name: histograma_basico
+    input_instructions: |-
+      • Usa 15 bins de 0 a 100.
+      • Colores: Masculino #1f77b4, Femenino #e377c2.
+      • Superpone ambas distribuciones y agrega título "Edades por género".
+  - name: piechart_basico
+    input_instructions: |-
+      • Colores: Ventas #1f77b4, Marketing #ff7f0e, Investigación #2ca02c, Soporte #d62728, Otros #9467bd.
+      • Muestra porcentajes dentro de las porciones y crea un donut (`hole=0.4`).
+      • Agrega título "Presupuesto anual".
+  - name: barras_grouped_simple
+    input_instructions: |-
+      Crea un gráfico de barras agrupadas con dos series: "SF Zoo" y "LA Zoo".
+      • Eje X: giraffes, orangutans, monkeys.
+      • Valores: SF Zoo [20, 14, 23]; LA Zoo [12, 18, 29].
+      • Usa `barmode='group'` y agrega título "Grouped Bar Chart".
+  - name: heatmap_basico
+    input_instructions: |-
+      • Genera una matriz 5×5 de valores aleatorios −1 a 1.
+      • Paleta "RdBu" centrada en 0.
+      • Muestra título "Matriz de correlación".
+  - name: density_plot
+    input_instructions: |-
+      Crea un gráfico de densidad (distplot) que compare tres distribuciones normales centradas en -2, 0 y 2 con sigma=1.  Muestra histograma, curva KDE y rug.  Usa colores diferentes y agrega título "Distribuciones comparadas".

@@ -334,7 +334,13 @@ def stream_updates_including_subgraphs(
 
 # %%
 if __name__ == "__main__":
-    mensaje_del_usuario = "necesito un forecast de la variable biomarcador de la tabla patient_time_series, con contexto de 20 puntos y predicción de 10 puntos"
+    mensaje_del_usuario = (
+        "necesito un forecast de la variable biomarcador de la tabla"
+        "patient_time_series"
+        ",con contexto de 20 puntos y predicción de 10 puntos"
+        # "si"
+        # "no"
+    )
 
     for mensaje in stream_updates_including_subgraphs(mensaje_del_usuario):
         print(mensaje)

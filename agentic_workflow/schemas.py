@@ -210,4 +210,51 @@ class PathwayGraphState(MessagesState):
     ) = None
 
 
+class IfAnotherForecastIsNeeded(BaseModel):
+    """If another forecast is needed."""
+
+    if_another_forecast_is_needed: bool = Field(
+        description=(
+            "Si el usuario pide hacer otro forecast, devuelve True, si no, devuelve False"
+        )
+    )
+    extra_information: str | None = Field(
+        description=(
+            "Si el usuario pide hacer otro forecast, aquí escribe la información adicional que el usuario puede haber proporcionado, si no, devuelve None"
+        )
+    )
+
+
+class ResponseAfterPlan(BaseModel):
+    """Response after plan.
+
+    This class generates a response after plan using the chain_for_plan_response.
+    """
+
+    response: str = Field(
+        description=("La respuesta que debes dar al usuario."),
+    )
+    reasoning: str = Field(
+        description=(
+            "Explica por que la respuesta responde a la pregunta del usuario."
+            "Explica como aseguraste que no hay alucinaciones."
+            "Explica como te basaste exclusivamente en las fuentes "
+            "(documentos, websearch y/o tablas) para generar la respuesta."
+        )
+    )
+
+
+class IfReportIsNeeded(BaseModel):
+    """If report is needed.
+
+    This class defines if the user is asking for a report or not.
+    """
+
+    if_report_is_needed: bool = Field(
+        description=(
+            "Si el usuario pide un reporte, devuelve True, si no, devuelve False"
+        )
+    )
+
+
 # %%

@@ -25,3 +25,12 @@
 build/
 dist/
 *.egg-info/
+
+# Large model files and generated content
+agentic_workflow/agents/agent_for_forecast/forecast_model/forecast/torch_models/
+agentic_workflow/agents/agent_for_forecast/forecast_model/forecast/figures/
+*.png
+*.pt
+*.pth
+*.pkl
+*.model

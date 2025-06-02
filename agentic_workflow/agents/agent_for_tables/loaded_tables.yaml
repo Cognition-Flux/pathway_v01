@@ -1,0 +1,13 @@
+loaded_tables:
+- columns: 13
+  name: food_categories_intake
+  rows: 70
+- columns: 11
+  name: nutrient_summary
+  rows: 70
+- columns: 6
+  name: demographics
+  rows: 10
+- columns: 6
+  name: daily_food_intake
+  rows: 270

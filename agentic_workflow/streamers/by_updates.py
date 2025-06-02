@@ -25,9 +25,7 @@ from collections.abc import Generator
 
 from langgraph.types import Command
 
-from agentic_workflow.agents.agent_multi_turn_planner.planner import (
-    multi_turn_graph as graph,
-)
+from agentic_workflow.workflow import graph
 
 
 def format_reasoning_messages(
@@ -336,7 +334,7 @@ def stream_updates_including_subgraphs(
 
 # %%
 if __name__ == "__main__":
-    mensaje_del_usuario = "hola"
+    mensaje_del_usuario = "necesito un forecast de la variable biomarcador de la tabla patient_time_series, con contexto de 20 puntos y predicción de 10 puntos"
 
     for mensaje in stream_updates_including_subgraphs(mensaje_del_usuario):
         print(mensaje)

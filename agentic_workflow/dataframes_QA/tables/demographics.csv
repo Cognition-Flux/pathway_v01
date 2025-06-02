@@ -1,0 +1,11 @@
+person_id,age,gender,height_cm,weight_kg,bmi
+1,64,Non-binary,180,55,17.0
+2,18,Male,186,61,17.6
+3,41,Male,167,86,30.8
+4,23,Non-binary,183,80,23.9
+5,39,Male,189,85,23.8
+6,39,Male,168,60,21.3
+7,28,Non-binary,166,78,28.3
+8,56,Male,178,69,21.8
+9,19,Non-binary,173,64,21.4
+10,61,Non-binary,178,68,21.5

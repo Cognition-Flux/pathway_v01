@@ -24,6 +24,7 @@ from agentic_workflow.agents.agent_for_visualizations.visualizer import (
 )
 from agentic_workflow.agents.agent_for_websearch.search import websearch
 from agentic_workflow.agents.agent_multi_turn_planner.planner import (
+    approve_plan,
     check_if_plan_is_done,
     conduct_plan,
     multi_turn_planner,
@@ -42,6 +43,7 @@ builder = StateGraph(PathwayGraphState)
 
 ##### Agent for plan #####
 builder.add_node("planner", multi_turn_planner)
+builder.add_node("approve_plan", approve_plan)
 builder.add_node("conduct_plan", conduct_plan)
 builder.add_node("check_if_plan_is_done", check_if_plan_is_done)
 builder.add_node("response_after_plan", response_after_plan)
@@ -83,7 +85,8 @@ if __name__ == "__main__":
     thread_config = {"configurable": {"thread_id": uuid.uuid4()}}
 
     mensaje_del_usuario = (
-        # "necesito un forecast de la variable biomarcador de la tabla patient_time_series, con contexto de 20 puntos y predicción de 10 puntos"
+        # "necesito un forecast de la variable biomarcador de la tabla "
+        # "patient_time_series, con contexto de 20 puntos y predicción de 10 puntos"
         # "busca en internet que es la metformina"
         # "busca en los papersque es el envejecimiento"
         "busca en las tablas si es que hays series temporales"

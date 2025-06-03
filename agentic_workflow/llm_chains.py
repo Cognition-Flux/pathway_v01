@@ -54,9 +54,7 @@ def get_planning_chain():
     planning_chain = (
         format_prompt_with_fewshot
         | prompt_for_planning
-        | get_llm(provider="azure", model="gpt-4.1-mini").with_structured_output(
-            PlanRespond
-        )
+        | get_llm(provider="azure", model="gpt-4.1").with_structured_output(PlanRespond)
     )
 
     return planning_chain

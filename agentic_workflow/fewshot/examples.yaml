@@ -310,19 +310,19 @@ examples:
           what_to_do="plan",
           steps=[
               OneStep(
-                  step="Usar pandas para iterar cada dataframe y aplicar `df.select_dtypes(include=['datetime', 'datetimetz'])` o buscar columnas con nombres como 'fecha', 'timestamp', 'time' y convertirlas con `pd.to_datetime` para comprobar si son válidas",
+                  step="Iterar cada dataframe y  buscar columnas con nombres como, days, weeks, months, years, 'fecha', 'timestamp', 'tiempo', 'time' y variables que indiquen datos temporales",
                   agent="tables",
-                  reasoning="El agente de tablas es necesario para explorar las tablas disponibles y encontrar aquella que incluya la columna relacionada con biomarcadores"
+                  reasoning="El agente de tablas es necesario para explorar las tablas disponibles y encontrar aquella que incluya la columna relacionada con datos temporales"
               ),
               OneStep(
-                  step="Extraer de la tabla identificada los datos en formato de serie temporal (fecha/tiempo vs biomarcador)",
+                  step="Extraer  los datos  de la tabla identificada en formato de serie temporal (fecha/tiempo vs variable)",
                   agent="tables",
-                  reasoning="Una vez localizada la tabla, el agente de tablas puede filtrar y organizar los datos temporales del biomarcador para su posterior visualización"
+                  reasoning="Una vez localizada la tabla, el agente de tablas puede filtrar y organizar los datos temporales para su posterior visualización"
               ),
               OneStep(
-                  step="Generar un gráfico de serie temporal a partir de los datos extraídos del biomarcador",
+                  step="Generar un gráfico de serie temporal a partir de los datos extraídos",
                   agent="plot_generator",
-                  reasoning="El agente plot_generator es el adecuado para crear la visualización que muestre la evolución temporal del biomarcador"
+                  reasoning="El agente plot_generator es el adecuado para crear la visualización que muestre la evolución temporal"
               )
           ],
           response="",
@@ -936,4 +936,103 @@ examples:
           ],
           response="",
           reasoning="El usuario solicita explícitamente una PROYECCIÓN/PRONÓSTICO/PREDICCIÓN/FORECAST, por lo cual se deriva directamente al agente forecast_information_checker quien manejará el proceso completo"
+      )
+  - human: "Busca datos temporales y reporta qué tablas contienen información cronológica"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Reportar las tablas y variables que tienen columnas asociadas a tiempo, como hora, día, semana, mes, time, timestamp, fecha, year, month, week, day, datetime y otros indicadores cronológicos",
+                  agent="tables",
+                  reasoning="El agente de tablas es el especialista en examinar la estructura de datos y puede identificar eficientemente todas las columnas de tipo temporal, proporcionando un inventario completo de las tablas que contienen información cronológica y sus respectivas variables temporales"
+              )
+          ],
+          response="",
+          reasoning="Esta consulta requiere un análisis estructural de las tablas para identificar campos temporales, lo cual se resuelve con un único paso utilizando el agente especializado en datos tabulares"
+      )
+  - human: "Identifica y localiza información temporal (fechas, tiempos, registros cronológicos) en mis datasets tabulares"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Reportar las tablas y variables que tienen columnas asociadas a tiempo, como hora, día, semana, mes, time, timestamp, fecha, year, month, week, day, datetime, created_at, updated_at y demás campos que representen información cronológica o temporal",
+                  agent="tables",
+                  reasoning="El agente de tablas puede realizar un escaneo exhaustivo de todas las estructuras de datos para detectar columnas con patrones temporales, ya sea por nombre, tipo de dato o formato, generando un reporte detallado de la disponibilidad de información cronológica en cada tabla"
+              )
+          ],
+          response="",
+          reasoning="La solicitud demanda un inventario de campos temporales en los datasets, que se puede satisfacer mediante una inspección sistemática de las tablas con el agente especializado"
+      )
+  - human: "Necesito explorar y catalogar las variables de tiempo, fecha y registros históricos disponibles en mi colección de tablas"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Reportar las tablas y variables que tienen columnas asociadas a tiempo, como hora, día, semana, mes, time, timestamp, fecha, year, month, week, day, datetime, date_created, last_modified, event_time, registration_date y cualquier otro campo que contenga información temporal o cronológica",
+                  agent="tables",
+                  reasoning="El agente de tablas está capacitado para analizar metadatos y esquemas de todas las tablas disponibles, identificando automáticamente campos temporales mediante reconocimiento de patrones en nombres de columnas, tipos de datos y formatos, proporcionando así un catálogo completo de variables cronológicas"
+              )
+          ],
+          response="",
+          reasoning="Esta petición busca una catalogación exhaustiva de variables temporales, que se puede resolver eficientemente con una sola operación de análisis estructural realizada por el agente de tablas"
+      )
+  - human: "Quiero visualizar la variable de presión arterial y generar un gráfico."
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Buscar en las tablas disponibles la variable de presión arterial, identificando las columnas que contengan datos sobre presión sistólica, diastólica o mediciones relacionadas",
+                  agent="tables",
+                  reasoning="El agente de tablas es necesario para localizar y extraer los datos específicos de presión arterial de entre todas las variables disponibles en las tablas, asegurando que se identifique correctamente la columna que contiene esta información biomédica"
+              ),
+              OneStep(
+                  step="Generar una visualización gráfica de la distribución de la presión arterial utilizando los datos extraídos",
+                  agent="plot_generator",
+                  reasoning="El agente plot_generator puede crear representaciones visuales efectivas de la distribución de variables continuas como la presión arterial, permitiendo analizar patrones, valores atípicos y características de la población"
+              )
+          ],
+          response="",
+          reasoning="La solicitud requiere primero localizar la variable específica en los datos tabulares y luego crear una representación visual adecuada, necesitando la coordinación secuencial de ambos agentes especializados"
+      )
+  - human: "Haz un gráfico de barras comparativo de los niveles de colesterol entre diferentes grupos etarios de los pacientes"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Localizar en las tablas las variables de colesterol (total, HDL, LDL) y los grupos etarios o rangos de edad de los pacientes para realizar el análisis comparativo",
+                  agent="tables",
+                  reasoning="El agente de tablas debe identificar y organizar tanto los datos de colesterol como las categorías de edad, preparando la información necesaria para crear comparaciones estadísticas entre grupos demográficos"
+              ),
+              OneStep(
+                  step="Crear un gráfico de barras que compare visualmente los niveles de colesterol promedio entre los diferentes grupos etarios identificados",
+                  agent="plot_generator",
+                  reasoning="El agente plot_generator es ideal para generar visualizaciones comparativas tipo barras que permitan contrastar fácilmente las diferencias en los niveles de colesterol entre distintos grupos de edad, facilitando la identificación de tendencias relacionadas con el envejecimiento"
+              )
+          ],
+          response="",
+          reasoning="Esta consulta necesita un enfoque de dos fases: primero organizar los datos por grupos etarios y variables de colesterol, y luego crear una visualización comparativa que revele diferencias entre segmentos poblacionales"
+      )
+  - human: "Necesito crear una representación visual de la evolución temporal de los biomarcadores"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Identificar y extraer de las tablas las variables de biomarcadores inflamatorios (como proteína C reactiva, interleucinas, TNF-alfa) junto con sus correspondientes datos temporales para construir series cronológicas",
+                  agent="tables",
+                  reasoning="El agente de tablas debe buscar específicamente variables relacionadas con inflamación y sus registros temporales, organizando los datos en formato de serie temporal para permitir el análisis de tendencias evolutivas de estos marcadores biológicos"
+              ),
+              OneStep(
+                  step="Generar un diagrama de líneas temporales que visualice la progresión de los biomarcadores inflamatorios a través del tiempo, mostrando patrones y tendencias evolutivas",
+                  agent="plot_generator",
+                  reasoning="El agente plot_generator puede crear gráficos de líneas temporales que muestren claramente la evolución de múltiples biomarcadores inflamatorios, permitiendo identificar patrones de inflamación crónica, picos, declives y correlaciones temporales entre diferentes marcadores"
+              )
+          ],
+          response="",
+          reasoning="La solicitud demanda un análisis temporal específico que requiere primero la identificación y organización de datos cronológicos de biomarcadores inflamatorios, seguido de la creación de una visualización que capture las tendencias evolutivas de estos indicadores biológicos"
       )

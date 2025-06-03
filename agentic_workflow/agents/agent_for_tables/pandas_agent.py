@@ -63,11 +63,13 @@ if list_of_dataframes:
     dataframes = [df for _, df in list_of_dataframes]
 
     agent = create_pandas_dataframe_agent(
-        get_llm(),
+        get_llm(provider="azure", model="gpt-4.1"),
         dataframes,
         verbose=True,
         agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
         allow_dangerous_code=True,
+        max_iterations=100,
+        max_execution_time=600.0,
         agent_executor_kwargs={"handle_parsing_errors": True},
     )
 

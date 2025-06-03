@@ -22,32 +22,26 @@ load_dotenv(override=True)
 
 def multi_turn_planner(
     state: PathwayGraphState,
-) -> Command[Literal["conduct_plan"]]:
+) -> Command[Literal["approve_plan"]]:
     """Entrypoint for the multiturn conversational graph."""
     while True:
-        response = chain_for_planning.invoke({"input": state["messages"]})
+        response = chain_for_planning.invoke(
+            {
+                "input": state["messages"],
+            }
+        )
         if response.what_to_do != "plan":
             user_input = interrupt(value=response.response)
             state["messages"] = add_messages(state["messages"], [user_input])
             continue
         elif response.what_to_do == "plan":
-            next_node = "conduct_plan"
-
-            # Generate step list before the Command
-            step_list = [f"- {s.step}" for idx, s in enumerate(response.steps)]
-
+            next_node = "approve_plan"
             return Command(
                 goto=next_node,
                 update={
-                    "plan_respond": response if next_node == "conduct_plan" else None,
-                    "steps": response.steps if next_node == "conduct_plan" else None,
-                    "messages": [response.response]
-                    if next_node != "conduct_plan"
-                    else [
-                        response.response,
-                        "Ejecutaré las siguientes acciones:",
-                        *step_list,
-                    ],
+                    "plan_respond": response if next_node == "approve_plan" else None,
+                    "steps": response.steps if next_node == "approve_plan" else None,
+                    "messages": [response.response],
                     "user_question": state["messages"][-1].content,
                     "reasoning": [
                         response.reasoning,
@@ -57,7 +51,7 @@ def multi_turn_planner(
                             else []
                         ),
                     ],
-                    "current_agent": "multi_turn_planner",
+                    "current_agent": "planner",
                     "next_node": next_node,
                     "llm_model": "gpt-4.1-mini",
                 },
@@ -67,6 +61,41 @@ def multi_turn_planner(
                 f"multi_turn_planner: Expected valid response.what_to_do, got "
                 f"'{response.what_to_do=}'"
             )
+
+
+def approve_plan(
+    state: PathwayGraphState,
+) -> Command[Literal["conduct_plan", "planner"]]:
+    """Approve plan.
+
+    This function approves the plan.
+    """
+    steps = state["steps"]
+    # Generate step list before the Command
+    step_list = [f"- {s.step}" for idx, s in enumerate(steps)]
+    message_for_interrupt = (
+        "Voy a ejecutar el siguiente plan:\n"
+        + "\n".join(step_list)
+        + "\n\n\n\n¿Continuamos? (si/no)"
+    )
+
+    if_conduct_plan = interrupt(message_for_interrupt)
+    affirmative_responses = [
+        "si",
+        "sí",
+        "yes",
+        "y",
+        "ok",
+        "okay",
+    ]
+    print(f"-------------------if_conduct_plan: {if_conduct_plan}")
+    if if_conduct_plan.strip().lower() in affirmative_responses:
+        next_node = "conduct_plan"
+    else:
+        next_node = "planner"
+    return Command(
+        goto=next_node,
+    )
 
 
 def conduct_plan(
@@ -103,9 +132,9 @@ def conduct_plan(
     return Command(
         goto=next_node,
         update={
+            "messages": [f"Ejecutando: {current_step.step}"],
             "steps": state["steps"][1:],
             "current_step": current_step,
-            "messages": [f"Ejecutando: {current_step.step}"],
             "reasoning": [
                 current_step.reasoning,
                 *(
@@ -192,7 +221,8 @@ def response_after_plan(
             "messages": [response.response],
             "reasoning": [
                 response.reasoning,
-                f"proximo agente: {'ask_if_report_is_needed'.replace('_', ' ').title()}",
+                f"proximo agente: "
+                f"{'ask_if_report_is_needed'.replace('_', ' ').title()}",
             ],
             "current_agent": "response_after_plan",
             "next_node": "ask_if_report_is_needed",

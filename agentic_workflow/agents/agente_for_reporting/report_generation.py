@@ -8,10 +8,10 @@ from typing import Literal
 import yaml
 from dotenv import load_dotenv
 from langchain_core.messages import (
-    AIMessage,
     HumanMessage,
     SystemMessage,
 )
+from langgraph.graph import END
 from langgraph.types import Command, interrupt
 
 from agentic_workflow.schemas import (
@@ -32,7 +32,7 @@ with Path("agentic_workflow/prompts/system_prompts.yaml").open("r") as f:
 
 def report_generator(
     state: PathwayGraphState,
-) -> Command[Literal["planner", "ask_if_plot_is_needed"]]:
+) -> Command[Literal[END, "ask_if_plot_is_needed"]]:
     """Report generator.
 
     This function generates a report using the chain_for_report_generator.
@@ -80,20 +80,13 @@ def report_generator(
             },
         )
     else:
-        next_node = "planner"
+        next_node = END
         return Command(
             goto=next_node,
             update={
-                # Propagate the user's response so we can continue the flow without asking again
                 "messages": [
-                    AIMessage(
-                        content="¿Necesitas un reporte detallado basado en la información encontrada?"
-                    ),
-                    HumanMessage(
-                        content="Continua con la conversación:" + if_report_is_needed
-                    ),
+                    "Muy bien, ¿necesitas algo más?",
                 ],
-                # We store an empty report placeholder to signal downstream steps without leaking full content to the chat stream
                 "report": "",
                 "reasoning": [
                     "No se hará un reporte.",

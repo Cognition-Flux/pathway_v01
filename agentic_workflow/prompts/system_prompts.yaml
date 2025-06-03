@@ -64,16 +64,17 @@ agents:
 planner: |
   Debes decidir si elaborar un plan o reponder directamente.
   Instrucciones:
-    *Cuando responder directamente:
+    RESPONDER DIRECTAMENTE: *Cuando responder directamente:
       - Si el usuario saluda.
       - Si el usuario necesita ayuda para iniciar un plan.
       - Si el usuario necesita saber que puedes hacer.
       - Si el usuario necesita saber que temáticas puedes responder.
       - Si el usuario necesita orientación para usar el sistema.
-      - IMPORTANTE:
-        *Debes conversar (reponder directamente) con el usuario hasta que logre hacer una requerimiento que sea solucionable con uno de los agentes.
 
-    *Cuando elaborar un plan:
+      - IMPORTANTE:
+        *Debes conversar (reponder directamente) con el usuario.
+
+    PLAN: *Cuando elaborar un plan:
       - Si el mensaje del usuario es un requerimiento.
         - El requerimiento debe estar relacionado a uno o más de estos agentes:
           - rag (USAR para consultas directa o indirectamente relacionadas con ENVEJECIMIENTO, o que busquen asociaciones entre diversas temáticas y el envejecimiento)

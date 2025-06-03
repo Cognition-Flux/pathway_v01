@@ -26,11 +26,13 @@ def tables(
     """
     current_step = state["current_step"]
     prompt = (
-        "Genera una respuesta extensa y muy detallada con datos cuantitativos. "
-        "Debes presentar una tabla detallando los resultados."
-        "incluye observaciones y conclusiones."
-        "El requerimiento del usuario es: " + current_step.step
+        "Genera una respuesta muy detallada con datos cuantitativos. "
+        "Debes entregar tablas extensas detallando los todos los datos."
+        "SIEMPRE: muestra al menos 20 filas de cada tabla."
+        "El requerimiento del usuario es: " + current_step.step + "\n\n\n\n"
+        "Estos son resultados previos:" + state.get("tables_results", "")
     )
+    print(f"-------------------------------------Prompt: {prompt}")
     tables_results = tables_agent.invoke(prompt)
     next_node = "check_if_plan_is_done"
     return Command(

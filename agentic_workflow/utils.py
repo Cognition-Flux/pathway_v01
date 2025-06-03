@@ -163,7 +163,6 @@ def reduce_docs(
 
             elif isinstance(item, dict):
                 # Create Document from dict
-                metadata = item.get("metadata", {})
                 doc = Document(**item)
                 sig = metadata_signature(doc)
 

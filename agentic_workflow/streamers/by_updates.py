@@ -296,7 +296,18 @@ def stream_updates_including_subgraphs(
                         f"Se recopilaron {doc_count} documentos..."
                     )
                 elif node_name_key == "report_generator":
-                    messages_from_node = node_data.get("report")
+                    # Check for report content first
+                    report_content = node_data.get("report")
+                    regular_messages = node_data.get("messages")
+
+                    # If there's a report, use that as the main message
+                    if report_content:
+                        messages_from_node = report_content
+                    # If there's no report but there are regular messages, use those
+                    elif regular_messages:
+                        messages_from_node = regular_messages
+                    else:
+                        messages_from_node = None
                 elif node_name_key == "plot_generator":
                     plot_data = node_data.get("plot")
                     default_message_for_node = "gráfico generado"

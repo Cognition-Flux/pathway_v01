@@ -14,6 +14,7 @@ from agentic_workflow.agents.agent_for_visualizations.plotly_builder.plot_genera
     llm_json_to_plot_from_text,
 )
 from agentic_workflow.schemas import PathwayGraphState
+from agentic_workflow.utils import get_llm
 
 
 logger = logging.getLogger(__name__)
@@ -72,13 +73,32 @@ def plot_generator(
     check_if_first_plot = state.get("plot", None) is None
     if check_if_first_plot:
         print("Generando primer gráfico")
-        what_to_plot = interrupt(
-            "¿Qué deseas visualizar? necesito detalles para generar el gráfico"
+
+        ask_what_to_plot = get_llm(provider="azure", model="gpt-4.1-nano").invoke(
+            "a partir de la conversación, redacta una pregunta breve para que el usuario"
+            "confirme o aclare lo que se desea visualizar"
+            "Por ejemplo:"
+            "¿Quieres visualizar...?"
+            "¿Quieres visualizar la correlación entre....?"
+            "¿Quieres visualizar la distribución ...?"
+            "¿Quieres visualizar la evolución de...?"
+            + "\n\n\n\n"
+            + "conversación:\n"
+            + "\n".join(
+                [
+                    f"{m.type.capitalize()}: {m.content}"
+                    for m in state["messages"]
+                    if m.type != "tool"
+                ]
+            )
         )
+        what_to_plot = interrupt(ask_what_to_plot.content)
 
         plot_generator_prompt = prompts["plot_generator"].format(
             current_plot=None,
-            question=what_to_plot,
+            question=f"AI assistant: {ask_what_to_plot.content}"
+            + "\n\n\n\n"
+            + f"Usuario: {what_to_plot}",
             context=state.get("report") or state.get("tables_results", ""),
             tables_results=state.get("tables_results", None),
             scratchpad=state["scratchpad"],

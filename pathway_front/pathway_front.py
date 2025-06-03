@@ -794,8 +794,12 @@ def documents_sidebar() -> rx.Component:
                                 },
                             )
                             for q in [
-                                "Busca datos de biomarcadores en las tablas y genera un gráfico de serie temporal",
-                                "Genera una proyección de los biomarcadores",
+                                "¿Qué puedes hacer?",
+                                "¿Qué información contienen las tablas?",
+                                "Busca datos temporales en las tablas",
+                                "Genera un gráfico de serie temporal con los datos temporales",
+                                "Necesito hacer un pronóstico de los datos temporales",
+                                "¿Qué información contienen los documentos?",
                                 "Impacto de la comida sobre el envejecimiento",
                                 "¿El ejercicio físico puede ralentizar el envejecimiento?",
                                 "¿Dormir bien influye en el envejecimiento celular?",

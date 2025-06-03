@@ -53,7 +53,7 @@ def multi_turn_planner(
                     ],
                     "current_agent": "planner",
                     "next_node": next_node,
-                    "llm_model": "gpt-4.1-mini",
+                    "llm_model": "gemini-2.5-flash",
                 },
             )
         else:
@@ -95,6 +95,13 @@ def approve_plan(
         next_node = "planner"
     return Command(
         goto=next_node,
+        update={
+            "llm_model": "logic",
+            "current_agent": "approve_plan",
+            "reasoning": [
+                "El plan ha sido generado y se presentó al usuario para su aprobación.",
+            ],
+        },
     )
 
 
@@ -205,6 +212,7 @@ def response_after_plan(
         web_search_results=state["web_search_results"],
         tables_results=state.get("tables_results", None),
         scratchpad=state["scratchpad"],
+        forecast_context=state["user_parameters_for_forecast"],
     )
 
     response = chain_for_plan_response.invoke(

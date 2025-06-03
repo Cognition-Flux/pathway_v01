@@ -37,8 +37,8 @@ def report_generator(
 
     This function generates a report using the chain_for_report_generator.
     """
-    provider = "azure"
-    model = "gpt-4.1-mini"
+    provider = "google"
+    model = "gemini-2.5-pro-preview-05-06"
     if_report_is_needed = interrupt(
         "¿Necesitas un reporte detallado basado en la información encontrada?",
     )

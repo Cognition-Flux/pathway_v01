@@ -67,7 +67,9 @@ def get_planning_chain():
     planning_chain = (
         format_prompt_with_fewshot
         | prompt_for_planning
-        | get_llm(provider="azure", model="gpt-4.1").with_structured_output(PlanRespond)
+        | get_llm(
+            provider="google", model="gemini-2.5-flash-preview-05-20"
+        ).with_structured_output(PlanRespond)
     )
 
     return planning_chain
@@ -186,9 +188,9 @@ route_prompt = ChatPromptTemplate.from_messages(
         ("human", "{question}"),
     ]
 )
-chain_for_multi_query_retieval = route_prompt | get_llm().with_structured_output(
-    MultiQueryResponse
-)
+chain_for_multi_query_retieval = route_prompt | get_llm(
+    provider="groq", model="deepseek-r1-distill-llama-70b"
+).with_structured_output(MultiQueryResponse)
 
 ask_what_to_plot_prompt = ChatPromptTemplate.from_messages(
     [("system", prompts["ask_what_to_plot_prompt"]), ("human", "{input}")]

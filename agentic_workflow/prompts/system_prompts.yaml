@@ -123,6 +123,9 @@ multi_query_generator: |
     A continuación está la la pregunta del usuario:
 
 plan_response_generator: |
+  Se finalizo el plan.
+  Ya se han ejecutado las(la) tareas del plan.
+  Debes responder directamente y brevemente al usuario.
   Esta es la pregunta del usuario:
   {question}
 
@@ -140,6 +143,11 @@ plan_response_generator: |
 
   Considerando única y exclusivamente el contexto de los documentos, análisis de tablas, scratchpad y la búsqueda en internet,
   genera una respuesta breve y concisa basada en la pregunta del usuario.
+
+  Si acontinuación está el contexto de forecast significa que ya se le entregó
+  al usuario el resultado del forecast, solo debes responder brevemente al usuario.
+
+  forecast_context: {forecast_context}
 queries_to_websearch: |
   Generate two queries for websearch on the internet.
   Both queries should be in english and related to the user's question.
@@ -230,10 +238,8 @@ extraction_from_tables_prompt: |
   Instrucción específica: {input}
 ask_what_to_plot_prompt: |
   a partir de la conversación, redacta una pregunta breve para que el usuario
-  confirme o aclare lo que se desea visualizar
+  debe preguntar al usuario que se desea visualizar
   Por ejemplo:
-  - ¿Quieres visualizar...?"
-  - ¿Quieres visualizar la correlación entre....?
-  - ¿Quieres visualizar la distribución ...?
-  - ¿Quieres visualizar la evolución de...?
+  - ¿Qué deseas visualizar? Por ejemplo: "la correlación entre....", "la distribución ...", "la evolución de..."
+
   conversación:

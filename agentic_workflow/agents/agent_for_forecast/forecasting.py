@@ -5,8 +5,7 @@ from typing import Literal
 
 import numpy as np
 from dotenv import load_dotenv
-from langchain_core.messages import AIMessage, RemoveMessage
-from langgraph.graph.message import REMOVE_ALL_MESSAGES
+from langchain_core.messages import AIMessage
 from langgraph.types import Command, interrupt
 
 from agentic_workflow.agents.agent_for_forecast.forecast_model.inference import (
@@ -446,7 +445,7 @@ def ask_if_another_forecast_is_needed(
                 "current_agent": "ask_if_another_forecast_is_needed",
                 "next_node": next_node,
                 "llm_model": "gemini-2.5",
-                "user_parameters_for_forecast": [RemoveMessage(id=REMOVE_ALL_MESSAGES)],
+                # "user_parameters_for_forecast": [RemoveMessage(id=REMOVE_ALL_MESSAGES)],
                 "reasoning": [
                     "El usuario no pide hacer otro forecast, por lo que se debe verificar si el plan está completo",
                     "proximo agente: Check If Plan Is Done",

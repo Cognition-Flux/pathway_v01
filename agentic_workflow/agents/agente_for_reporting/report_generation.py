@@ -14,8 +14,8 @@ from langchain_core.messages import (
 from langgraph.graph import END
 from langgraph.types import Command, interrupt
 
+from agentic_workflow.llm_chains import chain_for_if_report_is_needed
 from agentic_workflow.schemas import (
-    IfReportIsNeeded,
     PathwayGraphState,
     ReportGenerator,
 )
@@ -37,10 +37,8 @@ def report_generator(
 
     This function generates a report using the chain_for_report_generator.
     """
-    chain_for_if_report_is_needed = get_llm(
-        model="gpt-4.1-nano"
-    ).with_structured_output(IfReportIsNeeded)
-
+    provider = "azure"
+    model = "gpt-4.1-mini"
     if_report_is_needed = interrupt(
         "¿Necesitas un reporte detallado basado en la información encontrada?",
     )
@@ -55,7 +53,7 @@ def report_generator(
         )
 
         report = (
-            get_llm(provider="azure", model="gpt-4.1-mini")
+            get_llm(provider=provider, model=model)
             .with_structured_output(ReportGenerator)
             .invoke(
                 [
@@ -76,7 +74,7 @@ def report_generator(
                 ],
                 "current_agent": "report_generator",
                 "next_node": next_node,
-                "llm_model": "deepseek-r1",  # Uses get_llm() for main report generation
+                "llm_model": model,  #
             },
         )
     else:
@@ -94,6 +92,6 @@ def report_generator(
                 ],
                 "current_agent": "report_generator",
                 "next_node": next_node,
-                "llm_model": "gpt-4.1-nano",  # Uses nano model for decision logic
+                "llm_model": model,  #
             },
         )

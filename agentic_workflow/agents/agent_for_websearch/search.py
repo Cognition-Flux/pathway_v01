@@ -13,8 +13,8 @@ from langgraph.types import Command
 from agentic_workflow.agents.agent_for_websearch.websearch_tool import (
     search_multiple_queries,
 )
-from agentic_workflow.schemas import PathwayGraphState, QueriesToWebsearch
-from agentic_workflow.utils import get_llm
+from agentic_workflow.llm_chains import chain_for_queries_to_websearch
+from agentic_workflow.schemas import PathwayGraphState
 
 
 with Path("agentic_workflow/prompts/system_prompts.yaml").open("r") as f:
@@ -28,9 +28,6 @@ def websearch(
 
     This function conducts a websearch using the chain_for_websearch.
     """
-    chain_for_queries_to_websearch = get_llm().with_structured_output(
-        QueriesToWebsearch
-    )
     # Pass only the text of the current step to the LLM, not the full `OneStep` object.
     # The model only needs the human-readable instruction contained in `current_step.step`.
     current_step = state["current_step"]
@@ -89,6 +86,6 @@ def websearch(
             ],
             "current_agent": "websearch",
             "next_node": next_node,
-            "llm_model": "gpt-4.1-mini",  # Uses get_llm() default model
+            "llm_model": "gpt-4.1-mini",  #
         },
     )

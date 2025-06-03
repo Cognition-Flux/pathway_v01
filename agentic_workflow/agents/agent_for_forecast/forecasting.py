@@ -18,14 +18,13 @@ from agentic_workflow.agents.agent_for_forecast.visualization.forecast_plot impo
 from agentic_workflow.agents.agent_for_tables.pandas_agent import agent as tables_agent
 from agentic_workflow.llm_chains import (
     chain_for_ask_for_temporal_series_information,
+    chain_for_forecast_input_formatter,
+    chain_for_if_another_forecast_is_needed,
     chain_for_temporal_series_info,
 )
 from agentic_workflow.schemas import (
-    ForecastInput,
-    IfAnotherForecastIsNeeded,
     PathwayGraphState,
 )
-from agentic_workflow.utils import get_llm
 
 
 load_dotenv(override=True)
@@ -211,14 +210,9 @@ def extract_temporal_series_from_tables(
         + state["temporal_series_info"].ventana_prediccion
     )
 
-    # Create detailed extraction prompt for the tables agent
-    extraction_prompt = """Extraer la serie temporal de la tabla.
-    Nombre de la tabla: {nombre_de_la_tabla}
-    Nombre de la serie temporal: {nombre_de_la_serie_temporal}
-    Debes extraer la serie temporal (valores de la variable temporal)
-    IMPORTANTE: Debes entregar/responder al usuario los {total_points} últimos registros de la serie temporal.
-    """
-    extraction_prompt = extraction_prompt.format(
+    # Execute data extraction using tables agent
+    extraction = tables_agent.invoke(
+        input_text="Extraer la serie temporal de la tabla.",
         nombre_de_la_tabla=state["temporal_series_info"].nombre_de_la_tabla,
         nombre_de_la_serie_temporal=state[
             "temporal_series_info"
@@ -226,14 +220,7 @@ def extract_temporal_series_from_tables(
         total_points=total_points_needed,
     )
 
-    # Execute data extraction using tables agent
-    extraction = tables_agent.invoke(extraction_prompt)
-
-    # Format the extracted data into forecast input structure
-    forcast_input_formatter = get_llm(
-        provider="groq", model="deepseek-r1-distill-llama-70b"
-    ).with_structured_output(ForecastInput)
-    forcast_input = forcast_input_formatter.invoke(extraction["output"])
+    forcast_input = chain_for_forecast_input_formatter.invoke(extraction["output"])
 
     return Command(
         goto="make_forecast",
@@ -426,9 +413,6 @@ def ask_if_another_forecast_is_needed(
     """Ask if forecast is needed."""
     if_another_forecast_is_needed = interrupt("¿Necesitas hacer otro forecast?")
 
-    chain_for_if_another_forecast_is_needed = get_llm(
-        provider="azure", model="gpt-4.1-mini"
-    ).with_structured_output(IfAnotherForecastIsNeeded)
     if_another_forecast_is_needed_response = (
         chain_for_if_another_forecast_is_needed.invoke(if_another_forecast_is_needed)
     )

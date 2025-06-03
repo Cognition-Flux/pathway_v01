@@ -45,6 +45,6 @@ def tables(
             ],
             "current_agent": "tables",
             "next_node": next_node,
-            "llm_model": "gpt-4.1-mini",  # pandas_agent uses get_llm() default model
+            "llm_model": "gpt-4.1-mini",
         },
     )

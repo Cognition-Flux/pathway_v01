@@ -8,10 +8,23 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+from langchain.agents.agent_types import AgentType
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_experimental.agents.agent_toolkits import (
+    create_pandas_dataframe_agent,
+)
 
 from agentic_workflow.fewshot.retriever import retriever
-from agentic_workflow.schemas import PlanRespond, TemporalSeriesChecker
+from agentic_workflow.schemas import (
+    ForecastInput,
+    IfAnotherForecastIsNeeded,
+    IfReportIsNeeded,
+    MultiQueryResponse,
+    PlanRespond,
+    QueriesToWebsearch,
+    ResponseAfterPlan,
+    TemporalSeriesChecker,
+)
 from agentic_workflow.utils import get_llm
 
 
@@ -60,7 +73,81 @@ def get_planning_chain():
     return planning_chain
 
 
-# Initialize the planning chain
+class StructuredPandasAgent:
+    """Wrapper class for pandas agent that handles structured parameters."""
+
+    def __init__(self, dataframes_list):
+        """Initialize the structured pandas agent.
+
+        Args:
+            dataframes_list: List of tuples containing (name, dataframe)
+        """
+        self.list_of_dataframes = dataframes_list
+        self.dataframes = [df for _, df in dataframes_list]
+
+        # Create the base pandas agent
+        self.pandas_agent = create_pandas_dataframe_agent(
+            get_llm(provider="azure", model="gpt-4.1"),
+            self.dataframes,
+            verbose=True,
+            agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+            allow_dangerous_code=True,
+            max_iterations=100,
+            max_execution_time=600.0,
+            agent_executor_kwargs={"handle_parsing_errors": True},
+        )
+
+        # Define the extraction prompt template
+        self.extraction_prompt_template = prompts["extraction_from_tables_prompt"]
+
+    def invoke(
+        self,
+        input_text,
+        nombre_de_la_tabla=None,
+        nombre_de_la_serie_temporal=None,
+        total_points=None,
+    ):
+        """Invoke the agent with structured parameters.
+
+        Args:
+            input_text: Required input text/query for the agent
+            nombre_de_la_tabla: Optional table name (default: None)
+            nombre_de_la_serie_temporal: Optional temporal series name (default: None)
+            total_points: Optional number of points to return (default: None)
+
+        Returns:
+            Agent response
+        """
+        # Build the prompt parts conditionally
+        prompt_parts = []
+
+        if nombre_de_la_tabla is not None:
+            prompt_parts.append(f"Nombre de la tabla: {nombre_de_la_tabla}")
+
+        if nombre_de_la_serie_temporal is not None:
+            prompt_parts.append(
+                f"Nombre de la serie temporal: {nombre_de_la_serie_temporal}"
+            )
+
+        if total_points is not None:
+            prompt_parts.append(
+                f"IMPORTANTE: Debes entregar/responder al usuario los {total_points} últimos registros de la serie temporal."
+            )
+
+        # Build the final prompt
+        if prompt_parts:
+            formatted_prompt = (
+                "Extraer la serie temporal de la tabla.\n"
+                + "\n".join(prompt_parts)
+                + f"\n\nInstrucción específica: {input_text}"
+            )
+        else:
+            formatted_prompt = input_text
+
+        # Invoke the pandas agent with the formatted prompt
+        return self.pandas_agent.invoke({"input": formatted_prompt})
+
+
 chain_for_planning = get_planning_chain()
 
 
@@ -82,62 +169,66 @@ chain_for_ask_for_temporal_series_information = (
     | get_llm(provider="anthropic", model="claude-sonnet-4-20250514")
 )
 
-# Example usage
+
+# Format the extracted data into forecast input structure
+chain_for_forecast_input_formatter = get_llm(
+    provider="groq", model="deepseek-r1-distill-llama-70b"
+).with_structured_output(ForecastInput)
+
+
+chain_for_if_another_forecast_is_needed = get_llm(
+    provider="azure", model="gpt-4.1-mini"
+).with_structured_output(IfAnotherForecastIsNeeded)
+
+route_prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", prompts["multi_query_generator"]),
+        ("human", "{question}"),
+    ]
+)
+chain_for_multi_query_retieval = route_prompt | get_llm().with_structured_output(
+    MultiQueryResponse
+)
+
+ask_what_to_plot_prompt = ChatPromptTemplate.from_messages(
+    [("system", prompts["ask_what_to_plot_prompt"]), ("human", "{input}")]
+)
+
+chain_for_ask_what_to_plot = ask_what_to_plot_prompt | get_llm(
+    provider="azure", model="gpt-4.1-mini"
+)
+
+
+chain_for_plan_response = get_llm(
+    provider="azure", model="gpt-4.1-mini"
+).with_structured_output(ResponseAfterPlan)
+
+chain_for_queries_to_websearch = get_llm().with_structured_output(QueriesToWebsearch)
+
+
+chain_for_if_report_is_needed = get_llm(model="gpt-4.1-nano").with_structured_output(
+    IfReportIsNeeded
+)
+
+
 if __name__ == "__main__":
-    from langchain_core.messages import HumanMessage
+    from langchain_core.messages import AIMessage, HumanMessage
 
-    temporal_series_parameters = chain_for_temporal_series_info.invoke(
-        {"input": [HumanMessage(content="forecast de la serie temporal biomarcador")]}
+    state = {
+        "messages": [
+            AIMessage(content="Hola, ¿cómo estás?"),
+            HumanMessage(content="Estoy bien, gracias"),
+        ]
+    }
+    result = chain_for_ask_what_to_plot.invoke(
+        {
+            "input": "\n".join(
+                [
+                    f"{m.type.capitalize()}: {m.content}"
+                    for m in state["messages"]
+                    if m.type != "tool"
+                ]
+            )
+        }
     )
-    print(temporal_series_parameters)
-    missing_fields = []
-    present_fields = []
-    if not temporal_series_parameters.nombre_de_la_serie_temporal:
-        missing_fields.append("nombre de la serie temporal")
-    else:
-        present_fields.append(
-            f"nombre de la serie temporal: "
-            f"{temporal_series_parameters.nombre_de_la_serie_temporal}"
-        )
-    if not temporal_series_parameters.nombre_de_la_tabla:
-        missing_fields.append("nombre de la tabla")
-    else:
-        present_fields.append(
-            f"nombre de la tabla: {temporal_series_parameters.nombre_de_la_tabla}"
-        )
-    if not temporal_series_parameters.ventana_contexto:
-        missing_fields.append("ventana de contexto")
-    else:
-        present_fields.append(
-            f"ventana de contexto: {temporal_series_parameters.ventana_contexto}"
-        )
-    if not temporal_series_parameters.ventana_prediccion:
-        missing_fields.append("ventana de predicción")
-    else:
-        present_fields.append(
-            f"ventana de predicción: {temporal_series_parameters.ventana_prediccion}"
-        )
-
-    missing_fields_str_parts = []
-    if missing_fields:
-        missing_fields_str_parts.append(
-            f"Faltan los siguientes campos: {', '.join(missing_fields)}"
-        )
-    if present_fields:
-        missing_fields_str_parts.append(
-            f"Campos presentes: {', '.join(present_fields)}"
-        )
-
-    if not missing_fields_str_parts:
-        current_fields_state = (
-            "Todos los campos requeridos están presentes y completos."
-        )
-    else:
-        current_fields_state = ". ".join(missing_fields_str_parts)
-
-    ask_for_temporal_series_information = (
-        chain_for_ask_for_temporal_series_information.invoke(
-            {"input": "sigue las instrucciones", "fields_state": current_fields_state}
-        )
-    )
-    print(ask_for_temporal_series_information)
+    print(result.content)

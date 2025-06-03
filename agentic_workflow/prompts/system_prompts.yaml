@@ -219,3 +219,21 @@ ask_for_temporal_series_information: |
 
   Considera el historial de mensajes del usuario para hacer las preguntas de manera conversacional y clara.
   Explica brevemente qué significa cada parámetro para ayudar al usuario a entender qué información necesitas.
+
+extraction_from_tables_prompt: |
+  Extraer la serie temporal de la tabla.
+  Nombre de la tabla: {nombre_de_la_tabla}
+  Nombre de la serie temporal: {nombre_de_la_serie_temporal}
+  Debes extraer la serie temporal (valores de la variable temporal)
+  IMPORTANTE: Debes entregar/responder al usuario los {total_points} últimos registros de la serie temporal.
+
+  Instrucción específica: {input}
+ask_what_to_plot_prompt: |
+  a partir de la conversación, redacta una pregunta breve para que el usuario
+  confirme o aclare lo que se desea visualizar
+  Por ejemplo:
+  - ¿Quieres visualizar...?"
+  - ¿Quieres visualizar la correlación entre....?
+  - ¿Quieres visualizar la distribución ...?
+  - ¿Quieres visualizar la evolución de...?
+  conversación:

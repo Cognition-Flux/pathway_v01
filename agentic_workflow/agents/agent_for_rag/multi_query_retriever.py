@@ -1,56 +1,14 @@
+"""Multi query retriever."""
+
 # %%
-from dataclasses import dataclass
-from pathlib import Path
-from typing import Annotated
 
-import yaml
 from langchain_core.documents import Document
-from langchain_core.prompts import ChatPromptTemplate
-from langgraph.graph import START, MessagesState, StateGraph
+from langgraph.graph import START, StateGraph
 from langgraph.types import Send
-from pydantic import BaseModel
 
-from agentic_workflow.utils import get_llm, merge_reasoning, reduce_docs
+from agentic_workflow.llm_chains import chain_for_multi_query_retieval
+from agentic_workflow.schemas import MultiQueryRetrieverState, QueryState
 from agentic_workflow.vectorstore.retriever import retriever
-
-
-class MultiQueryRetrieverState(MessagesState):
-    """State for the multi-query retriever workflow.
-
-    Contains the essential attributes needed for parallel query retrieval.
-    """
-
-    documents: Annotated[list[Document], reduce_docs]
-    retrieval_query: str
-    queries: list[str]
-    reasoning: Annotated[str | list[str], merge_reasoning] = ""
-
-
-@dataclass(kw_only=True)
-class QueryState:
-    """Private state for the retrieve_documents node in the researcher graph."""
-
-    query: str
-
-
-class MultiQueryResponse(BaseModel):
-    """Response model for structured output from query generation."""
-
-    queries: list[str]
-
-
-with Path("agentic_workflow/prompts/system_prompts.yaml").open() as f:
-    system_prompts = yaml.safe_load(f)
-
-route_prompt = ChatPromptTemplate.from_messages(
-    [
-        ("system", system_prompts["multi_query_generator"]),
-        ("human", "{question}"),
-    ]
-)
-chain_for_multi_query_retieval = route_prompt | get_llm().with_structured_output(
-    MultiQueryResponse
-)
 
 
 def generate_queries(

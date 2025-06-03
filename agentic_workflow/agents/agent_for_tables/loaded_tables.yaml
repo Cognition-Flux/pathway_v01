@@ -2,6 +2,9 @@ loaded_tables:
 - columns: 13
   name: food_categories_intake
   rows: 70
+- columns: 3
+  name: patient_time_series
+  rows: 14400
 - columns: 11
   name: nutrient_summary
   rows: 70
@@ -10,4 +13,4 @@ loaded_tables:
   rows: 10
 - columns: 6
   name: daily_food_intake
-  rows: 270
+  rows: 273

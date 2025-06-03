@@ -3,12 +3,8 @@ import os
 
 import pandas as pd
 import yaml  # Added import
-from langchain.agents.agent_types import AgentType
-from langchain_experimental.agents.agent_toolkits import (
-    create_pandas_dataframe_agent,
-)
 
-from agentic_workflow.utils import get_llm
+from agentic_workflow.llm_chains import StructuredPandasAgent
 
 
 def load_csv_dataframes(directory_path="agentic_workflow/dataframes_QA/tables"):
@@ -57,21 +53,10 @@ def load_csv_dataframes(directory_path="agentic_workflow/dataframes_QA/tables"):
 # Load all dataframes from the tables directory
 list_of_dataframes = load_csv_dataframes()
 
-# Create the pandas dataframe agent
-if list_of_dataframes:
-    # Extract just the dataframes for the agent (without names)
-    dataframes = [df for _, df in list_of_dataframes]
 
-    agent = create_pandas_dataframe_agent(
-        get_llm(provider="azure", model="gpt-4.1"),
-        dataframes,
-        verbose=True,
-        agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
-        allow_dangerous_code=True,
-        max_iterations=100,
-        max_execution_time=600.0,
-        agent_executor_kwargs={"handle_parsing_errors": True},
-    )
+# Create the structured pandas agent
+if list_of_dataframes:
+    agent = StructuredPandasAgent(list_of_dataframes)
 
     # Example of how to use the agent
     if __name__ == "__main__":
@@ -100,10 +85,18 @@ if list_of_dataframes:
         except Exception as e:
             print(f"\nError saving table info to YAML: {e!s}")
 
-        # Example query - uncomment to run
-        # query = "What's the average BMI across all people? And what's the average daily calorie intake?"
-        # print("\nQuery:", query)
-        # result = agent.run(query)
-        # print("\nResult:", result)
 else:
     print("No dataframes loaded. Cannot create agent.")
+
+if __name__ == "__main__":
+    # Solo con input (básico)
+    print(agent.invoke("¿Cuál es el promedio de todas las columnas?"))
+
+    # Con algunos parámetros opcionales
+    print(agent.invoke("dame los datos", nombre_de_la_tabla="df2"))
+
+    # Con todos los parámetros (como antes)
+    print(agent.invoke("dame los ultimos 9 registros.", "df2", "biomarcador", 9))
+
+    # Usando parámetros nombrados
+    print(agent.invoke("dame los datos", total_points=5, nombre_de_la_tabla="df1"))

@@ -283,4 +283,32 @@ class QueriesToWebsearch(BaseModel):
     queries: list[str]
 
 
+class MultiQueryResponse(BaseModel):
+    """Response model for structured output from query generation."""
+
+    queries: list[str]
+
+
+class MultiQueryRetrieverState(MessagesState):
+    """State for the multi-query retriever workflow.
+
+    Contains the essential attributes needed for parallel query retrieval.
+    """
+
+    documents: Annotated[list[Document], reduce_docs]
+    retrieval_query: str
+    queries: list[str]
+    reasoning: Annotated[str | list[str], merge_reasoning] = ""
+
+
+from dataclasses import dataclass
+
+
+@dataclass(kw_only=True)
+class QueryState:
+    """Private state for the retrieve_documents node in the researcher graph."""
+
+    query: str
+
+
 # %%

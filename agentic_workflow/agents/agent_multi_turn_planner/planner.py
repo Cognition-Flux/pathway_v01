@@ -11,10 +11,10 @@ from langgraph.graph import END, add_messages
 from langgraph.types import Command, interrupt
 
 from agentic_workflow.llm_chains import (
+    chain_for_plan_response,
     chain_for_planning,
 )
-from agentic_workflow.schemas import PathwayGraphState, ResponseAfterPlan
-from agentic_workflow.utils import get_llm
+from agentic_workflow.schemas import PathwayGraphState
 
 
 load_dotenv(override=True)
@@ -206,9 +206,7 @@ def response_after_plan(
         tables_results=state.get("tables_results", None),
         scratchpad=state["scratchpad"],
     )
-    chain_for_plan_response = get_llm(
-        provider="azure", model="gpt-4.1-mini"
-    ).with_structured_output(ResponseAfterPlan)
+
     response = chain_for_plan_response.invoke(
         [
             SystemMessage(content=plan_response_prompt),
@@ -226,6 +224,6 @@ def response_after_plan(
             ],
             "current_agent": "response_after_plan",
             "next_node": "ask_if_report_is_needed",
-            "llm_model": "llama-3.3-70b",  # Uses get_llm() default model
+            "llm_model": "llama-3.3-70b",  #
         },
     )

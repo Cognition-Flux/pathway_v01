@@ -24,13 +24,14 @@ import optuna
 import pandas as pd
 import torch
 from optuna.samplers import TPESampler
-from pathway.agent_for_forecast.forecaster import (
+from sklearn.preprocessing import StandardScaler
+
+from agentic_workflow.agents.agent_for_forecast.forecast_model.forecaster import (
     TransformerForecaster,
     create_dataloaders,
     generate_ts,
     sliding_window,
 )
-from sklearn.preprocessing import StandardScaler
 
 
 __all__ = [

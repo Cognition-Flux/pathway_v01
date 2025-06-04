@@ -18,9 +18,11 @@ Las secciones principales son:
 # %%
 import logging
 import math
+import os
 import random
 import time
 from datetime import datetime, timedelta
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -47,6 +49,11 @@ if not logger.handlers:
     )
     ch.setFormatter(formatter)
     logger.addHandler(ch)
+
+# Define Project Root
+PROJECT_ROOT = Path(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".."))
+)
 
 torch.cuda.init()
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -595,26 +602,47 @@ def main():
         epochs=epochs,
         lr=best_params["learning_rate"],
         ts_target_len=ts_target_len,
-        save_path=f"agentic_workflow/agents/agent_for_forecast/forecast_model/forecast/torch_models/best_model_{study_name}",
+        save_path=str(
+            PROJECT_ROOT
+            / "agentic_workflow"
+            / "agents"
+            / "agent_for_forecast"
+            / "forecast_model"
+            / "forecast"
+            / "torch_models"
+            / f"best_model_{study_name}"
+        ),
         trial=None,
     )
     log_elapsed_time(training_start, "Model training in main")
 
     # Visualización de las predicciones
-    visualize_predictions(
-        best_model_path,
-        test_loader,
-        ts_target_len,
-        main_title=study_name,
-        MSE=test_losses[-1],
-        entropy=(
-            round(ent.shannon_entropy(ts), 3),
-            round(ent.permutation_entropy(ts), 3),
-        ),
-        save_path=f"agentic_workflow/agents/agent_for_forecast/forecast_model/forecast/figures/{study_name}.png",
-        num_samples=5,
-        full_length_ts=ts,
-    )
+    if best_model_path:
+        visualize_predictions(
+            best_model_path,
+            test_loader,
+            ts_target_len,
+            main_title=study_name,
+            MSE=test_losses[-1],
+            entropy=(
+                round(ent.shannon_entropy(ts), 3),
+                round(ent.permutation_entropy(ts), 3),
+            ),
+            save_path=str(
+                PROJECT_ROOT
+                / "agentic_workflow"
+                / "agents"
+                / "agent_for_forecast"
+                / "forecast_model"
+                / "forecast"
+                / "figures"
+                / f"{study_name}.png"
+            ),
+            num_samples=5,
+            full_length_ts=ts,
+        )
+    else:
+        logger.warning("Best model path was not set. Skipping visualization.")
 
 
 if __name__ == "__main__":

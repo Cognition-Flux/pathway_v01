@@ -1,5 +1,6 @@
 # %%
 import logging
+import os
 import time
 import warnings
 from typing import Any
@@ -8,7 +9,11 @@ import numpy as np
 import optuna
 import pandas as pd
 from optuna.samplers import TPESampler
-from pathway.agent_for_forecast.forecaster import (
+from pyentrp import entropy as ent
+from sklearn.preprocessing import StandardScaler
+from torch.utils.data import DataLoader
+
+from agentic_workflow.agents.agent_for_forecast.forecast_model.forecaster import (
     TransformerForecaster,
     create_dataloaders,
     device,
@@ -18,12 +23,8 @@ from pathway.agent_for_forecast.forecaster import (
     sliding_window,
     visualize_predictions,
 )
-from pyentrp import entropy as ent
-from sklearn.preprocessing import StandardScaler
-from torch.utils.data import DataLoader
 
 
-# %%
 # Configuración de logging
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s", level=logging.INFO
@@ -31,6 +32,13 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 warnings.filterwarnings("ignore")
+
+# Define Project Root
+# Assuming this script is in agentic_workflow/agents/agent_for_forecast/forecast_model/
+# Adjust the number of ".." based on the actual location relative to the project root.
+PROJECT_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..", "..", "..")
+)
 
 # Parámetros clave para la optimización y entrenamiento
 
@@ -167,18 +175,43 @@ def train_and_evaluate_model(
     # Entrenar el modelo.
     training_start: float = time.time()
     model.train()
+
+    # Construct save path and ensure directory exists
+    model_save_path = os.path.join(
+        PROJECT_ROOT,
+        "agentic_workflow",
+        "agents",
+        "agent_for_forecast",
+        "forecast",
+        "torch_models",
+        f"best_model_{series_name}",
+    )
+    os.makedirs(os.path.dirname(model_save_path), exist_ok=True)
+
     train_losses, test_losses, best_model_path, best_test_loss = model.train_model(
         train_loader=train_loader,
         test_loader=test_loader,
         epochs=epochs,
         lr=best_params["learning_rate"],
         ts_target_len=ts_target_len,
-        save_path=f"pathway/agent_for_forecast/forecast/torch_models/best_model_{series_name}",
+        save_path=model_save_path,
         trial=None,
     )
     log_elapsed_time(training_start, "Model training")
 
     # Visualizar las predicciones.
+    # Construct figure save path and ensure directory exists
+    figure_save_path = os.path.join(
+        PROJECT_ROOT,
+        "agentic_workflow",
+        "agents",
+        "agent_for_forecast",
+        "forecast",
+        "figures",
+        f"{series_name}.png",
+    )
+    os.makedirs(os.path.dirname(figure_save_path), exist_ok=True)
+
     visualize_predictions(
         best_model_path,
         test_loader,
@@ -189,7 +222,7 @@ def train_and_evaluate_model(
             round(ent.shannon_entropy(ts), 3),
             round(ent.permutation_entropy(ts), 3),
         ),
-        save_path=f"pathway/agent_for_forecast/forecast/figures/{series_name}.png",
+        save_path=figure_save_path,
         num_samples=5,
         full_length_ts=ts,
     )
@@ -201,7 +234,21 @@ def main() -> None:
         7 * 24 * 60, add_trend=True, add_noise=True
     ).reset_index(drop=False, names=["time"])
     series_list: list[pd.DataFrame] = [sim]
-    storage: str = "sqlite:///pathway/agent_for_forecast/forecast/optuna_dbs/Transformer_hyperparams_opt.sqlite3"
+    # Construct the absolute path for the SQLite database
+    db_path = os.path.join(
+        PROJECT_ROOT,
+        "agentic_workflow",
+        "agents",
+        "agent_for_forecast",
+        "forecast",
+        "optuna_dbs",
+        "Transformer_hyperparams_opt.sqlite3",
+    )
+
+    # Ensure the directory exists before creating the database
+    os.makedirs(os.path.dirname(db_path), exist_ok=True)
+
+    storage: str = f"sqlite:///{db_path}"
     for series_index, series_df in enumerate(series_list):
         series_name: str = series_df.columns[1]
         logger.info(f"Processing series: {series_name}")
@@ -240,3 +287,5 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+# %%

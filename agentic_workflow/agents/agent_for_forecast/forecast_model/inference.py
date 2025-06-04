@@ -345,11 +345,13 @@ def build_plotly_forecast_figure(
     # Save the plot as PNG image and HTML file to the absolute path
     try:
         # Use the absolute path /home/alejandro/Pictures/pathway_plots/
-        plots_abs_dir = Path("/home/alejandro/Pictures/pathway_plots")
-        plots_abs_dir.mkdir(parents=True, exist_ok=True)
+        plots_output_dir = (
+            Path(__file__).parent / "forecast" / "figures" / "inference_outputs"
+        )
+        plots_output_dir.mkdir(parents=True, exist_ok=True)
 
         # Save the figure as PNG (overwrites existing file)
-        output_png_path = plots_abs_dir / "forecast_plot.png"
+        output_png_path = plots_output_dir / "forecast_plot.png"
         fig.write_image(
             str(output_png_path),
             width=1200,
@@ -360,7 +362,7 @@ def build_plotly_forecast_figure(
         logger.info(f"Forecast plot PNG saved successfully to: {output_png_path}")
 
         # Save the figure as interactive HTML (overwrites existing file)
-        output_html_path = plots_abs_dir / "forecast_plot.html"
+        output_html_path = plots_output_dir / "forecast_plot.html"
         fig.write_html(
             str(output_html_path),
             include_plotlyjs="cdn",  # Use CDN to keep file size smaller
@@ -454,9 +456,7 @@ def forecast_series_no_plot(
     *,
     history_len: int = TS_HISTORY_LEN,
     target_len: int = TS_TARGET_LEN,
-    model_path=Path(
-        "agentic_workflow/agents/agent_for_forecast/forecast_model/forecast/torch_models/best_model_simulation_best_test_loss"
-    ),
+    model_path: Path = DEFAULT_MODEL_PATH,
 ) -> np.ndarray:
     """Run inference on series and return the forecast without plotting."""
     # Normalize input
@@ -504,3 +504,13 @@ if __name__ == "__main__":
     main()
 
 # %%
+
+# ---------------------------------------------------------------------------
+# Exportable functions
+# ---------------------------------------------------------------------------
+__all__ = [
+    "build_plotly_forecast_figure",
+    "forecast_series",
+    "forecast_series_no_plot",
+    "load_model",
+]

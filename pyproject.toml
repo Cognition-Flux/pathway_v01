@@ -105,7 +105,7 @@ select = [
 ]
 
 # Ignore rules that conflict with the formatter
-ignore = ["COM812", "RUF001", "RUF003", "RUF012"]
+ignore = ["COM812", "D100", "D104", "D107", "RUF001", "RUF003", "RUF012"]
 
 # Allow autofix for all enabled and fixable rules
 fixable = ["ALL"]
@@ -116,7 +116,7 @@ unfixable = []
 
 [tool.ruff.lint.isort]
 # Configure isort rules for import organization
-known-first-party = ["agentic_workflow"]
+known-first-party = ["agentic_workflow", "dev"]
 section-order = [
     "future",
     "standard-library",
@@ -141,3 +141,7 @@ line-ending = "auto"
 docstring-code-format = true
 # Always add trailing commas in multi-line comma-separated structures
 skip-magic-trailing-comma = false
+
+[tool.ruff.lint.unreachable-code]
+# Ignore unreachable code in try/except blocks
+ignore-unreachable-code = true

@@ -21,7 +21,9 @@ serializarla correctamente al JSON que espera el componente `rx.plotly`.
 """
 
 import json
+import os
 import time
+import uuid
 from collections.abc import AsyncGenerator
 from pathlib import Path
 
@@ -30,10 +32,35 @@ import plotly.io as pio
 import reflex as rx
 import yaml
 from dotenv import load_dotenv
+from starlette.websockets import WebSocketDisconnect
 
-from agentic_workflow.streamers.by_updates import stream_updates_including_subgraphs
+# ---------------------------------------------------------------------------
+# Guardar y restaurar el **working directory**
+# ---------------------------------------------------------------------------
+# Algunos sub-módulos de ``agentic_workflow`` realizan ``os.chdir`` en tiempo
+# de importación, lo que interfiere con Reflex al cambiar la ruta donde se
+# genera la carpeta ``.web``.  Para evitarlo preservamos el directorio actual
+# y lo restauramos inmediatamente después de completar la importación.
+# ---------------------------------------------------------------------------
 
+_ORIGINAL_CWD = os.getcwd()
 
+from agentic_workflow.streamers.by_updates import (  # noqa: E402  module-level import
+    stream_updates_including_subgraphs,
+)
+
+# Restaurar **si** algún sub-módulo ha cambiado el cwd.
+try:
+    os.chdir(_ORIGINAL_CWD)
+except FileNotFoundError:  # pragma: no cover – improbable, pero por seguridad
+    # Si el directorio original desaparece (p.ej. borrado temporal), no
+    # interrumpimos la ejecución; simplemente avisamos en consola.
+    print(
+        "[State] Advertencia: no se pudo restaurar el directorio de trabajo",
+        _ORIGINAL_CWD,
+    )
+
+# %%
 load_dotenv(override=True)
 
 
@@ -70,8 +97,31 @@ class State(rx.State):
     # Estado para animación del botón de actualización
     is_refreshing: bool = False
 
+    # Configuración específica de la sesión (1 pestaña = 1 hilo)
+    thread_config: dict = {}
+
+    # START_EDIT: Add method to clear chat and reasoning histories
+    def clear_history(self) -> None:
+        """Borra por completo el historial de chat y razonamiento.
+
+        Este método se utiliza desde la interfaz para restablecer la conversación
+        a un estado vacío sin recargar la página.  No devuelve ningún valor ni
+        requiere *yield*, ya que la actualización del estado es suficiente para
+        que Reflex vuelva a renderizar el componente `chat()`.
+        """
+        self.chat_history = []
+        self.reasoning_history = []
+        # Detener cualquier spinner en curso
+        self.is_loading = False
+        # Crear un nuevo identificador de hilo para iniciar una conversación limpia
+        self.thread_config = {"configurable": {"thread_id": str(uuid.uuid4())}}
+
+    # END_EDIT
+
     def on_mount(self) -> None:
         """Se ejecuta cuando el componente se monta."""
+        # Generar un nuevo `thread_id` único para esta pestaña (nueva sesión)
+        self.thread_config = {"configurable": {"thread_id": str(uuid.uuid4())}}
         self.update_docs_files()
         self.update_tables()
 
@@ -241,9 +291,14 @@ class State(rx.State):
         chunk_received = False
 
         try:
+            # Asegurar que la configuración del hilo exista (por robustez)
+            if not self.thread_config:
+                self.thread_config = {"configurable": {"thread_id": str(uuid.uuid4())}}
+
             # Procesar cada chunk como un mensaje separado
             for chunk, reasoning, plot in stream_updates_including_subgraphs(
-                input_question
+                input_question,
+                self.thread_config,
             ):
                 # Solo procesar chunks no vacíos
                 if chunk and chunk.strip():
@@ -320,6 +375,16 @@ class State(rx.State):
                                 yield
                                 yield rx.scroll_to("reasoning-bottom-anchor")
 
+        except WebSocketDisconnect:  # pragma: no cover – cliente cerró la pestaña
+            # Detener procesamiento silenciosamente para evitar warnings.
+            return
+        except (
+            RuntimeError
+        ) as exc:  # Swallow ASGI flow errors when trying to send on closed WS
+            if "ASGI flow error" in str(exc):
+                # Client already disconnected; quietly abort the generator.
+                return
+            raise  # Re-raise other unexpected RuntimeError instances
         except Exception as exc:  # pragma: no cover – catch-all to avoid WS crash
             # Registrar el error en consola para depuración.
             print(f"[State.answer] Error inesperado: {exc}")
@@ -342,6 +407,11 @@ class State(rx.State):
         self.is_loading = False
         # Asegurar desplazamiento al final después de ocultar el spinner
         yield rx.scroll_to("chat-bottom-anchor")
+
+    @rx.var
+    def has_reasoning_messages(self) -> bool:
+        """Indica si existen mensajes de razonamiento para mostrar."""
+        return len(self.reasoning_history) > 0
 
 
 # %%

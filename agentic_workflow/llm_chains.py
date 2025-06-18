@@ -22,11 +22,11 @@ from agentic_workflow.schemas import (
     MultiQueryResponse,
     PlanRespond,
     QueriesToWebsearch,
+    ReportGenerator,
     ResponseAfterPlan,
     TemporalSeriesChecker,
 )
 from agentic_workflow.utils import get_llm
-
 
 with Path("agentic_workflow/prompts/system_prompts.yaml").open("r") as f:
     prompts = yaml.safe_load(f)
@@ -212,6 +212,13 @@ chain_for_if_report_is_needed = get_llm(model="gpt-4.1-nano").with_structured_ou
     IfReportIsNeeded
 )
 
+report_generator_prompt = ChatPromptTemplate.from_messages(
+    [("system", prompts["report_generator"]), ("human", "{input}")]
+)
+
+chain_for_report_generator = report_generator_prompt | get_llm(
+    provider="google", model="gemini-2.5-pro-preview-05-06"
+).with_structured_output(ReportGenerator)
 
 if __name__ == "__main__":
     from langchain_core.messages import AIMessage, HumanMessage
@@ -233,4 +240,15 @@ if __name__ == "__main__":
             )
         }
     )
-    print(result.content)
+    # print(result.content)
+    result = chain_for_report_generator.invoke(
+        {
+            "input": "sigue las instrucciones",
+            "question": "¿Cuál es el promedio de ventas de los últimos 12 meses? y como se ven las ventas en el ultimo mes?",
+            "documents": "El ultimo mes tuvimos un incendio en la empresa",
+            "web_search_results": "el ultimo mes de ventas fue de 7",
+            "tables_results": "ultimos 3 meses: 100, 101, 102",
+            "scratchpad": "el nombre de la empresa es Cerveceria del Norte",
+        }
+    )
+    print(result.report)

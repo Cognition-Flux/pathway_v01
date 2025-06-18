@@ -43,8 +43,11 @@ De esta forma mantenemos un único _source of truth_ que sincroniza la interfaz
 con las emisiones del *back-end* (LangGraph streamer).
 """
 
+from pathlib import Path as _Path
+
 import plotly.graph_objects as go
 import reflex as rx
+import yaml
 
 from pathway_front import style
 from pathway_front.state import State
@@ -119,16 +122,16 @@ def sidebar_message(message: str | rx.Var[str]) -> rx.Component:
             },
         )
 
-    # Verificar si es un encabezado (comienza con ####)
     is_header = False
     if isinstance(message, rx.Var):
         condition = message.startswith("####")
     else:
         msg_str = str(message).strip()
         is_header = msg_str.startswith("####")
+        condition = is_header
 
     return rx.cond(
-        condition if isinstance(message, rx.Var) else is_header,
+        condition,
         _header(message),
         _bubble(message),
     )
@@ -278,30 +281,22 @@ def sidebar() -> rx.Component:
         rx.box(
             rx.hstack(
                 rx.icon(
-                    "brain-circuit",
-                    size=20,
+                    "brain_circuit",
+                    size=40,
                     style={
                         "color": "rgba(160, 174, 245, 0.85)",
                         "filter": "drop-shadow(0 0 6px rgba(99, 102, 241, 0.4))",
                         "margin_right": "8px",
-                        "transform": "translateY(1px)",
+                        "transform": "translateY(2px)",
                         "transition": "all 0.3s ease",
+                        "flex_shrink": "0",  # Evita que el icono se encoja u oculte
                     },
                 ),
                 rx.heading(
                     "Razonamiento y acciones",
                     size="4",
                     id="sidebar-title-heading",
-                    style={
-                        "background": "linear-gradient(135deg, rgba(235, 240, 255, 0.9) 0%, rgba(160, 174, 245, 0.8) 100%)",
-                        "background_clip": "text",
-                        "webkit_background_clip": "text",
-                        "color": "transparent",
-                        "font_weight": "500",
-                        "letter_spacing": "1px",
-                        "text_shadow": "0 1px 2px rgba(0, 0, 0, 0.2)",
-                        "transition": "all 0.3s ease",
-                    },
+                    style=style.sidebar_title_style,
                 ),
                 rx.spacer(),
                 width="100%",
@@ -310,15 +305,12 @@ def sidebar() -> rx.Component:
                 padding_y="0.1em",
                 spacing="0",
             ),
-            width="100%",
-            padding="0.3em",
-            margin_bottom="0.5em",
-            # Fondo más transparente
-            background="linear-gradient(135deg, rgba(30, 41, 59, 0.08) 0%, rgba(51, 65, 85, 0.08) 100%)",
-            backdrop_filter="blur(10px)",
-            # Esquinas curvas
-            border_radius="12px",
-            box_shadow="none",  # Sin sombra
+            style=style.header_bar_style
+            | {
+                "padding": "0.3em",
+                "margin_bottom": "0.5em",
+                "border_left": "4px solid rgba(20, 83, 45, 0.55)",
+            },
         ),
         # Resizer handle en el borde izquierdo (para arrastrar y cambiar ancho).
         rx.box(
@@ -367,45 +359,28 @@ def sidebar() -> rx.Component:
                 },
             },
         ),
-        # Contenedor para los mensajes
+        # Contenedor para los mensajes (renderiza sólo si existen, pero el ancla está siempre presente)
         rx.box(
-            # Mostrar los mensajes de razonamiento del agente
-            rx.foreach(
-                State.reasoning_history,
-                lambda reasoning: sidebar_message(reasoning),
+            rx.cond(
+                State.has_reasoning_messages,
+                rx.foreach(
+                    State.reasoning_history,
+                    lambda reasoning: sidebar_message(reasoning),
+                ),
+                rx.fragment(),
             ),
-            # Ancla para auto-scroll lateral.
-            rx.box(id="reasoning-bottom-anchor", height="1px"),
+            rx.box(id="reasoning-bottom-anchor", height="1px"),  # Ancla permanente
             width="100%",
-            height="calc(100vh - 70px)",  # Ajustado para compensar el título más pequeño
+            height="calc(100vh - 70px)",
             overflow_y="auto",
             padding_y="0.5em",
             padding_x="0.3em",
-            # Scroll suave
             style={
                 "scrollBehavior": "smooth",
-                "::-webkit-scrollbar": {
-                    "width": "8px",
-                },
-                "::-webkit-scrollbar-track": {
-                    "background": "rgba(30, 41, 59, 0.05)",
-                    "borderRadius": "8px",
-                },
-                "::-webkit-scrollbar-thumb": {
-                    "background": "linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(79, 70, 229, 0.15) 100%)",
-                    "borderRadius": "8px",
-                    "border": "2px solid transparent",
-                    "backgroundClip": "padding-box",
-                },
-                "::-webkit-scrollbar-thumb:hover": {
-                    "background": "linear-gradient(135deg, rgba(99, 102, 241, 0.4) 0%, rgba(79, 70, 229, 0.3) 100%)",
-                    "boxShadow": "0 0 10px rgba(99, 102, 241, 0.5)",
-                    "border": "1px solid rgba(255, 255, 255, 0.2)",
-                },
             },
-            background="rgba(15, 23, 42, 0.3)",
-            backdrop_filter="blur(8px)",
-            border_radius="20px",
+            background="transparent",
+            backdrop_filter="none",
+            border_radius="0",
         ),
         style=style.sidebar_style,
         id="right-sidebar",
@@ -413,422 +388,85 @@ def sidebar() -> rx.Component:
 
 
 def documents_sidebar() -> rx.Component:
-    """Renderiza la barra lateral izquierda para documentos."""
-    return rx.box(
-        # Contenedor con pestañas
-        rx.vstack(
-            # Selector de pestañas
-            rx.cond(
-                State.sidebar_tab == "documentos",
-                rx.vstack(
-                    rx.button(
-                        "Preguntas frecuentes",
-                        variant="ghost",
-                        size="1",
-                        on_click=State.set_sidebar_tab("faq"),
-                        style={
-                            "color": rx.cond(
-                                State.sidebar_tab == "faq",
-                                "rgba(255, 255, 255, 0.97)",
-                                "rgba(180, 190, 255, 0.5)",
-                            ),
-                            "font_weight": rx.cond(
-                                State.sidebar_tab == "faq", "700", "500"
-                            ),
-                            "padding": "0.35em 0.8em",
-                            "border_radius": "8px",
-                            "background": rx.cond(
-                                State.sidebar_tab == "faq",
-                                "linear-gradient(135deg, rgba(25,110,185,0.45) 0%, rgba(55,140,205,0.40) 50%, rgba(95,175,230,0.35) 100%)",
-                                "linear-gradient(135deg, rgba(25,110,185,0.12) 0%, rgba(55,140,205,0.10) 50%, rgba(95,175,230,0.08) 100%)",
-                            ),
-                            "box_shadow": rx.cond(
-                                State.sidebar_tab == "faq",
-                                "0 4px 12px rgba(135, 206, 250, 0.35)",
-                                "none",
-                            ),
-                            "backdrop_filter": rx.cond(
-                                State.sidebar_tab == "faq", "blur(4px)", "none"
-                            ),
-                            "transform": rx.cond(
-                                State.sidebar_tab == "faq", "translateY(-2px)", "none"
-                            ),
-                            "_hover": {
-                                "background": "linear-gradient(135deg, rgba(25,110,185,0.25) 0%, rgba(55,140,205,0.20) 50%, rgba(95,175,230,0.15) 100%)",
-                                "box_shadow": "0 2px 6px rgba(135, 206, 250, 0.2)",
-                                "backdrop_filter": "blur(4px)",
-                                "transform": "translateY(-2px)",
-                            },
-                            "_active": {
-                                "transform": "scale(0.96)",
-                                "opacity": "0.9",
-                            },
-                            "transition": "all 0.2s ease",
-                            "animation": "0.3s cubic-bezier(0.25, 0.1, 0.25, 1) 0s 1 slideIn",
-                        },
-                    ),
-                    rx.button(
-                        "Base de conocimientos",
-                        variant="ghost",
-                        size="1",
-                        on_click=State.set_sidebar_tab("documentos"),
-                        style={
-                            "color": "rgba(255, 255, 255, 0.97)",
-                            "font_weight": "700",
-                            "padding": "0.35em 0.8em",
-                            "border_radius": "8px",
-                            "background": "linear-gradient(135deg, rgba(25,110,185,0.45) 0%, rgba(55,140,205,0.40) 50%, rgba(95,175,230,0.35) 100%)",
-                            "box_shadow": "0 4px 12px rgba(135, 206, 250, 0.35)",
-                            "backdrop_filter": "blur(4px)",
-                            "transform": "translateY(-2px)",
-                            "animation": "0.3s cubic-bezier(0.25, 0.1, 0.25, 1) 0s 1 slideIn",
-                        },
-                    ),
-                    spacing="4",
-                    align="start",
-                ),
-                rx.vstack(
-                    rx.button(
-                        "Base de conocimientos",
-                        variant="ghost",
-                        size="1",
-                        on_click=State.set_sidebar_tab("documentos"),
-                        style={
-                            "color": rx.cond(
-                                State.sidebar_tab == "documentos",
-                                "rgba(255, 255, 255, 0.97)",
-                                "rgba(180, 190, 255, 0.5)",
-                            ),
-                            "font_weight": rx.cond(
-                                State.sidebar_tab == "documentos", "700", "500"
-                            ),
-                            "padding": "0.35em 0.8em",
-                            "border_radius": "8px",
-                            "background": rx.cond(
-                                State.sidebar_tab == "documentos",
-                                "linear-gradient(135deg, rgba(25,110,185,0.45) 0%, rgba(55,140,205,0.40) 50%, rgba(95,175,230,0.35) 100%)",
-                                "linear-gradient(135deg, rgba(25,110,185,0.12) 0%, rgba(55,140,205,0.10) 50%, rgba(95,175,230,0.08) 100%)",
-                            ),
-                            "box_shadow": rx.cond(
-                                State.sidebar_tab == "documentos",
-                                "0 4px 12px rgba(135, 206, 250, 0.35)",
-                                "none",
-                            ),
-                            "backdrop_filter": rx.cond(
-                                State.sidebar_tab == "documentos", "blur(4px)", "none"
-                            ),
-                            "transform": rx.cond(
-                                State.sidebar_tab == "documentos",
-                                "translateY(-2px)",
-                                "none",
-                            ),
-                            "_hover": {
-                                "background": "linear-gradient(135deg, rgba(25,110,185,0.25) 0%, rgba(55,140,205,0.20) 50%, rgba(95,175,230,0.15) 100%)",
-                                "box_shadow": "0 2px 6px rgba(135, 206, 250, 0.2)",
-                                "backdrop_filter": "blur(4px)",
-                                "transform": "translateY(-2px)",
-                            },
-                            "_active": {
-                                "transform": "scale(0.96)",
-                                "opacity": "0.9",
-                            },
-                            "transition": "all 0.2s ease",
-                            "animation": "0.3s cubic-bezier(0.25, 0.1, 0.25, 1) 0s 1 slideIn",
-                        },
-                    ),
-                    rx.button(
-                        "Preguntas frecuentes",
-                        variant="ghost",
-                        size="1",
-                        on_click=State.set_sidebar_tab("faq"),
-                        style={
-                            "color": "rgba(255, 255, 255, 0.97)",
-                            "font_weight": "700",
-                            "padding": "0.35em 0.8em",
-                            "border_radius": "8px",
-                            "background": "linear-gradient(135deg, rgba(25,110,185,0.45) 0%, rgba(55,140,205,0.40) 50%, rgba(95,175,230,0.35) 100%)",
-                            "box_shadow": "0 4px 12px rgba(135, 206, 250, 0.35)",
-                            "backdrop_filter": "blur(4px)",
-                            "transform": "translateY(-2px)",
-                            "animation": "0.3s cubic-bezier(0.25, 0.1, 0.25, 1) 0s 1 slideIn",
-                        },
-                    ),
-                    spacing="4",
-                    align="start",
-                ),
+    """Renderiza la barra lateral izquierda **solo** con preguntas frecuentes, eliminando la pestaña *Base de conocimientos*."""
+
+    # ---------------------------------------------------------------------
+    # FAQ ONLY  ░  Early-return para ocultar completamente la antigua pestaña
+    # "Base de conocimientos" y su encabezado.  El resto de la lógica
+    # original queda intacta (pero no se ejecuta) tras este *return* para
+    # minimizar el `diff` y evitar refactors extensos.
+    # ---------------------------------------------------------------------
+    # Encabezado con apariencia de pestaña
+    header_tab = rx.box(
+        rx.hstack(
+            rx.icon(
+                "message_circle_question",
+                size=40,
+                style={
+                    "color": "rgba(160, 174, 245, 0.85)",
+                    "margin_right": "8px",
+                    "transform": "translateY(2px)",
+                    "transition": "all 0.3s ease",
+                    "flex_shrink": "0",  # Evita que el icono se encoja u oculte
+                },
             ),
-            rx.cond(
-                State.sidebar_tab == "documentos",
-                # Contenido Documentos
-                rx.box(
-                    # Subencabezado Documentos
-                    rx.hstack(
-                        rx.icon(
-                            "file-text",
-                            size=20,
-                            style={
-                                "color": "rgba(160, 174, 245, 0.85)",
-                                "margin_right": "8px",
-                                "transform": "translateY(1px)",
-                                "transition": "all 0.3s ease",
-                            },
-                        ),
-                        rx.heading(
-                            "Documentos",
-                            size="4",
-                            style=style.sidebar_title_style,
-                        ),
-                        spacing="0",
-                        width="100%",
-                        justify="start",
-                        align="center",
-                    ),
-                    # Lista de PDFs
-                    rx.foreach(
-                        State.get_docs_files,
-                        lambda filename: rx.box(
-                            rx.hstack(
-                                rx.icon(
-                                    "file-text",
-                                    size=16,
-                                    style={
-                                        "color": "rgba(220, 220, 255, 0.9)",
-                                        "margin_right": "8px",
-                                        "width": "16px",
-                                        "height": "16px",
-                                        "flex": "0 0 16px",
-                                        "display": "flex",
-                                        "align_items": "center",
-                                        "justify_content": "center",
-                                    },
-                                ),
-                                rx.text(
-                                    filename,
-                                    size="2",
-                                    style={
-                                        "color": "rgba(220, 220, 255, 0.9)",
-                                        "font_size": "0.8em",
-                                        "white_space": "normal",
-                                        "overflow": "visible",
-                                        "text_overflow": "unset",
-                                        "max_width": "calc(var(--left-sidebar-width, 200px) - 40px)",
-                                        "line_height": "1",
-                                    },
-                                ),
-                                width="100%",
-                                justify="start",
-                                align="center",
-                                spacing="1",
-                            ),
-                            padding="0.25em 0.5em",
-                            margin_bottom="0.05em",
-                            border_radius="8px",
-                            background="rgba(30, 41, 59, 0.2)",
-                            cursor="pointer",
-                            on_click=lambda f=filename: [
-                                rx.set_clipboard(f),
-                                rx.toast.success("Copiado", duration=1500),
-                            ],
-                            _hover={
-                                "background": "linear-gradient(to bottom, rgba(25, 110, 185, 0.45) 0%, rgba(55, 140, 205, 0.40) 50%, rgba(95, 175, 230, 0.35) 100%)",
-                                "box_shadow": "0 4px 12px rgba(135, 206, 250, 0.35)",
-                                "backdrop_filter": "blur(4px)",
-                                "border": "none",
-                                "transform": "translateY(-2px)",
-                                "transition": "all 0.25s ease",
-                            },
-                            animation="glow 3s ease-in-out infinite alternate",
-                            animationPlayState="paused",
-                        ),
-                    ),
-                    # Tabla
-                    rx.box(
-                        rx.hstack(
-                            rx.icon(
-                                "table",
-                                size=20,
-                                style={
-                                    "color": "rgba(160, 174, 245, 0.85)",
-                                    "margin_right": "8px",
-                                    "transform": "translateY(1px)",
-                                    "transition": "all 0.3s ease",
-                                },
-                            ),
-                            rx.heading(
-                                "Tablas",
-                                size="4",
-                                style=style.sidebar_title_style,
-                            ),
-                            spacing="0",
-                            width="100%",
-                            justify="start",
-                            align="center",
-                        ),
-                        width="100%",
-                        padding="0.1em",
-                        margin_top="0.5em",
-                        margin_bottom="0.05em",
-                        background="linear-gradient(135deg, rgba(30, 41, 59, 0.08) 0%, rgba(51, 65, 85, 0.08) 100%)",
-                        backdrop_filter="blur(10px)",
-                        border_radius="12px",
-                        box_shadow="none",
-                    ),
-                    rx.foreach(
-                        State.get_tables,
-                        lambda table_name: rx.box(
-                            rx.hstack(
-                                rx.icon(
-                                    "database",
-                                    size=16,
-                                    style={
-                                        "color": "rgba(220, 220, 255, 0.9)",
-                                        "margin_right": "8px",
-                                        "width": "16px",
-                                        "height": "16px",
-                                        "flex": "0 0 16px",
-                                        "display": "flex",
-                                        "align_items": "center",
-                                        "justify_content": "center",
-                                    },
-                                ),
-                                rx.text(
-                                    table_name,
-                                    size="2",
-                                    style={
-                                        "color": "rgba(220, 220, 255, 0.9)",
-                                        "font_size": "0.8em",
-                                        "white_space": "normal",
-                                        "overflow": "visible",
-                                        "text_overflow": "unset",
-                                        "max_width": "calc(var(--left-sidebar-width, 200px) - 40px)",
-                                        "line_height": "1",
-                                    },
-                                ),
-                                width="100%",
-                                justify="start",
-                                align="center",
-                                spacing="1",
-                            ),
-                            padding="0.25em 0.5em",
-                            margin_bottom="0.05em",
-                            border_radius="8px",
-                            background="rgba(30, 41, 59, 0.2)",
-                            cursor="pointer",
-                            on_click=lambda t=table_name: [
-                                rx.set_clipboard(t),
-                                rx.toast.success("Copiado", duration=1500),
-                            ],
-                            _hover={
-                                "background": "linear-gradient(to bottom, rgba(25, 110, 185, 0.45) 0%, rgba(55, 140, 205, 0.40) 50%, rgba(95, 175, 230, 0.35) 100%)",
-                                "box_shadow": "0 4px 12px rgba(135, 206, 250, 0.35)",
-                                "backdrop_filter": "blur(4px)",
-                                "border": "none",
-                                "transform": "translateY(-2px)",
-                                "transition": "all 0.25s ease",
-                            },
-                            animation="glow 3s ease-in-out infinite alternate",
-                            animationPlayState="paused",
-                        ),
-                    ),
-                    width="100%",
-                    height="calc(100vh - 100px)",
-                    overflow_y="auto",
-                    padding_top="0.1em",
-                    padding_bottom="0em",
-                    padding_x="0.2em",
-                    style={
-                        "scrollBehavior": "smooth",
-                        "::-webkit-scrollbar": {"width": "8px"},
-                        "::-webkit-scrollbar-track": {
-                            "background": "rgba(30, 41, 59, 0.05)",
-                            "borderRadius": "8px",
-                        },
-                        "::-webkit-scrollbar-thumb": {
-                            "background": "linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(79, 70, 229, 0.15) 100%)",
-                            "borderRadius": "8px",
-                            "border": "2px solid transparent",
-                            "backgroundClip": "padding-box",
-                        },
-                        "::-webkit-scrollbar-thumb:hover": {
-                            "background": "linear-gradient(135deg, rgba(99, 102, 241, 0.4) 0%, rgba(79, 70, 229, 0.3) 100%)",
-                            "boxShadow": "0 0 10px rgba(99, 102, 241, 0.5)",
-                            "border": "1px solid rgba(255, 255, 255, 0.2)",
-                        },
-                    },
-                    background="rgba(15, 23, 42, 0.3)",
-                    backdrop_filter="blur(8px)",
-                    border_radius="20px",
-                ),
-                # Contenido FAQ
-                rx.box(
-                    rx.vstack(
-                        *[
-                            rx.box(
-                                q,
-                                on_click=lambda q=q: [
-                                    State.set_question(q),
-                                    State.answer,
-                                ],
-                                cursor="pointer",
-                                style={
-                                    "padding": "0.4em 0.6em",
-                                    "border_radius": "8px",
-                                    "margin_y": "0.05em",
-                                    "background": "rgba(30, 41, 59, 0.2)",
-                                    "color": "#F8FAFC",
-                                    "font_size": "0.85em",
-                                    "box_shadow": "rgba(0, 0, 0, 0.35) 0px 4px 12px",
-                                    "transition": "all 0.25s ease",
-                                    "_hover": {
-                                        "background": "linear-gradient(to bottom, rgba(25, 110, 185, 0.45) 0%, rgba(55, 140, 205, 0.40) 50%, rgba(95, 175, 230, 0.35) 100%)",
-                                        "box_shadow": "0 4px 12px rgba(135, 206, 250, 0.35)",
-                                        "backdrop_filter": "blur(4px)",
-                                        "border": "none",
-                                        "transform": "translateY(-2px)",
-                                    },
-                                    "_active": {
-                                        "transform": "scale(0.96)",
-                                        "opacity": "0.9",
-                                    },
-                                    "animation": "0.3s cubic-bezier(0.25, 0.1, 0.25, 1) 0s 1 slideIn",
-                                },
-                            )
-                            for q in [
-                                "¿Qué puedes hacer?",
-                                "¿Qué información contienen las tablas?",
-                                "Busca datos temporales en las tablas",
-                                "Genera un gráfico de serie temporal con los datos temporales",
-                                "Necesito hacer un pronóstico de los datos temporales",
-                                "¿Qué información contienen los documentos?",
-                                "Impacto de la comida sobre el envejecimiento",
-                                "¿El ejercicio físico puede ralentizar el envejecimiento?",
-                                "¿Dormir bien influye en el envejecimiento celular?",
-                                "¿El estrés acelera el envejecimiento?",
-                                "¿Fumar envejece más rápido el cuerpo?",
-                                "¿Dónde viven las personas más longevas del mundo?",
-                                "¿La soledad afecta el envejecimiento?",
-                                "¿Hay diferencia entre envejecer en la ciudad o en el campo?",
-                                "¿Qué rol tiene la comunidad en un envejecimiento saludable?",
-                                "¿La contaminación ambiental envejece más rápido?",
-                            ]
-                        ],
-                        spacing="2",
-                        width="100%",
-                    ),
-                    width="100%",
-                    height="calc(100vh - 100px)",
-                    padding_top="0.3em",
-                    padding_bottom="0em",
-                    overflow_y="auto",
-                    background="rgba(15, 23, 42, 0.3)",
-                    backdrop_filter="blur(8px)",
-                    border_radius="20px",
-                ),
+            rx.heading(
+                "Preguntas frecuentes",
+                size="4",
+                style=style.sidebar_title_style,
             ),
-            spacing="1",
+            spacing="0",
             width="100%",
+            justify="start",
+            align="center",
         ),
-        # Resizer handle en el borde derecho para arrastrar y cambiar el ancho.
+        # Aplica el mismo diseño que las burbujas principales mediante el token
+        # ``header_bar_style`` definido en ``style.py``.
+        style=style.header_bar_style
+        | {"border_left": "4px solid rgba(68, 28, 135, 0.6)"},
+    )
+
+    faq_content = (
+        rx.box(
+            rx.vstack(
+                *[
+                    rx.box(
+                        q,
+                        on_click=lambda q=q: [
+                            State.set_question(q),
+                            State.answer,
+                        ],
+                        cursor="pointer",
+                        style=style.faq_message_style
+                        | {
+                            "font_size": "0.85em",
+                            "margin_y": "0.05em",
+                            "width": "100%",
+                            "max_width": "100%",
+                        },
+                    )
+                    for q in _FAQ_QUESTIONS
+                ],
+                spacing="2",
+                width="100%",
+            ),
+            width="100%",
+            height="calc(100vh - 100px)",
+            padding_top="0.3em",
+            padding_bottom="0em",
+            overflow_y="auto",
+            background="transparent",
+            backdrop_filter="none",
+            border_radius="0",
+        )
+        if _FAQ_QUESTIONS
+        else rx.fragment()
+    )
+
+    return rx.box(
+        header_tab,
+        faq_content,
+        # Resizer para arrastrar el ancho
         rx.box(
             id="left-sidebar-resizer",
             width="6px",
@@ -840,6 +478,7 @@ def documents_sidebar() -> rx.Component:
             background="transparent",
             z_index="10",
         ),
+        # Botón de *toggle* (plegar / desplegar)
         rx.box(
             ">",
             id="left-sidebar-toggle",
@@ -1087,28 +726,6 @@ def chat() -> rx.Component:
         gap="0.1em",  # Añadido para reducir espacio entre mensajes
         style={
             "scrollBehavior": "auto",
-            "::-webkit-scrollbar": {
-                "width": "12px",
-            },
-            "::-webkit-scrollbar-track": {
-                "background": "rgba(30, 41, 59, 0.05)",
-                "borderRadius": "10px",
-                "backdropFilter": "blur(12px)",
-            },
-            "::-webkit-scrollbar-thumb": {
-                "background": "linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(79, 70, 229, 0.15) 100%)",
-                "borderRadius": "10px",
-                "border": "2px solid transparent",
-                "backgroundClip": "padding-box",
-                "backdropFilter": "blur(8px)",
-                "boxShadow": "inset 0 0 6px rgba(99, 102, 241, 0.1)",
-            },
-            "::-webkit-scrollbar-thumb:hover": {
-                "background": "linear-gradient(135deg, rgba(99, 102, 241, 0.5) 0%, rgba(79, 70, 229, 0.4) 100%)",
-                "boxShadow": "0 0 10px rgba(99, 102, 241, 0.5)",
-                "border": "1px solid rgba(255, 255, 255, 0.2)",
-                "backdropFilter": "blur(12px)",
-            },
         },
     )
 
@@ -1326,10 +943,11 @@ def index() -> rx.Component:
                                     "margin_right": "7px",
                                     "transform": "translateY(1px)",
                                     "transition": "all 0.3s ease",
+                                    "flex_shrink": "0",  # Evita que el icono se encoja u oculte
                                 },
                             ),
                             rx.heading(
-                                "Pathway™ v0.0 (Proof-of-Concept)",
+                                "Multi-Agent Workflow - Dev.",
                                 size="4",
                                 style={
                                     "background": "linear-gradient(135deg, rgba(235, 240, 255, 0.9) 0%, rgba(160, 174, 245, 0.8) 100%)",
@@ -1342,6 +960,55 @@ def index() -> rx.Component:
                                     "transition": "all 0.3s ease",
                                 },
                             ),
+                            # START_EDIT: Botón para borrar historial
+                            rx.button(
+                                rx.icon(
+                                    "trash",
+                                    size=18,
+                                    style={
+                                        "pointer_events": "none",  # Evita capturar clics en el icono
+                                    },
+                                ),
+                                aria_label="Borrar historial",
+                                # Al hacer clic se fuerza la recarga completa de la página
+                                # para reiniciar la app y detener cualquier bucle infinito.
+                                on_click=lambda: [
+                                    State.clear_history,
+                                    rx.toast.success(
+                                        "Mensajes borrados", duration=1000
+                                    ),
+                                    rx.scroll_to("chat-bottom-anchor"),
+                                ],
+                                is_disabled=State.is_loading,
+                                style={
+                                    **style.button_style,
+                                    "height": "26px",
+                                    "padding": "0 12px",
+                                    "margin_left": "auto",
+                                    "display": "flex",
+                                    "align_items": "center",
+                                    "justify_content": "center",
+                                    "background": "linear-gradient(135deg, rgba(185, 40, 40, 0.5) 0%, rgba(205, 55, 55, 0.4) 100%)",
+                                    "backdrop_filter": "blur(8px)",
+                                    "border": "none",
+                                    "box_shadow": "none",
+                                    "transition": "all 0.25s ease",
+                                    "cursor": "pointer",
+                                    "border_radius": "8px",
+                                    ":hover": {
+                                        "background": "linear-gradient(to bottom, rgba(220, 80, 80, 0.6) 0%, rgba(230, 95, 95, 0.55) 50%, rgba(245, 120, 120, 0.5) 100%)",
+                                        "box_shadow": "0 4px 12px rgba(245, 95, 95, 0.35)",
+                                        "transform": "translateY(-2px) scale(1.02)",
+                                    },
+                                    "active": {
+                                        "transform": "translateY(1px) scale(0.97)",
+                                        "background": "linear-gradient(135deg, rgba(185, 40, 40, 0.7) 0%, rgba(205, 55, 55, 0.6) 100%)",
+                                        "box_shadow": "inset 0 2px 4px rgba(0, 0, 0, 0.1)",
+                                    },
+                                },
+                                size="1",
+                            ),
+                            # END_EDIT
                             width="100%",
                             justify="start",
                             align="center",
@@ -1361,7 +1028,7 @@ def index() -> rx.Component:
                     chat(),
                     action_bar(),
                     width="100%",
-                    max_width="100vw",
+                    max_width="100%",
                     height="100vh",
                     align="stretch",
                     spacing="0",
@@ -1388,14 +1055,19 @@ def index() -> rx.Component:
                   const resizer = document.getElementById('sidebar-resizer');
                   if (!sidebar || !resizer) return;
 
-                  // Asegurar que existan los custom properties por defecto.
+                  // Asegurar que existan los custom properties por defecto con el ancho MÍNIMO.
                   const root = document.documentElement;
-                  if (!root.style.getPropertyValue('--sidebar-width')) {
-                    root.style.setProperty('--sidebar-width', sidebar.offsetWidth + 'px');
-                  }
-
                   const MIN = 220;
                   const MAX = 600;
+                  if (!root.style.getPropertyValue('--sidebar-width')) {
+                    root.style.setProperty('--sidebar-width', MIN + 'px');
+                  }
+
+                  // Orientar correctamente el botón toggle según el ancho inicial (colapsado).
+                  const initToggle = document.getElementById('right-sidebar-toggle');
+                  if (initToggle) {
+                    initToggle.style.transform = 'translateY(-50%) rotate(0deg)';
+                  }
 
                   resizer.addEventListener('pointerdown', (ev) => {
                     ev.preventDefault();
@@ -1561,13 +1233,13 @@ def index() -> rx.Component:
                 })();
                 """,
             ),
-            width="100vw",
+            width="100%",
             height="100vh",
             spacing="0",
             align="start",
             overflow="hidden",
         ),
-        width="100vw",
+        width="100%",
         height="100vh",
         padding="0",
         margin="0",
@@ -1580,12 +1252,15 @@ app = rx.App(
     style={
         "body": {
             "background": "#030712",
-            "min_height": "100vh",
+            "min_height": "100dvh",
             "margin": "0",
+            "overflow": "hidden",
             "font_family": '"Inter", system-ui, sans-serif',
             "color": "white",
         },
         **style.animations,
+        **style.responsive_styles,
+        **style.global_scrollbar_style,
         "@keyframes buttonGlow": {
             "0%": {"box-shadow": "0 0 5px rgba(99, 102, 241, 0.4)"},
             "50%": {
@@ -1608,3 +1283,18 @@ app = rx.App(
     },
 )
 app.add_page(index)
+
+# Cargar preguntas FAQ desde examples.yaml en agentic_workflow/fewshot
+try:
+    _examples_path = _Path("agentic_workflow/fewshot/examples.yaml")
+    if _examples_path.exists():
+        _examples_data = yaml.safe_load(_examples_path.read_text()) or {}
+        _FAQ_QUESTIONS: list[str] = [
+            item.get("human", "")
+            for item in _examples_data.get("examples", [])
+            if isinstance(item, dict) and item.get("human")
+        ]
+    else:
+        _FAQ_QUESTIONS = []
+except Exception:  # pragma: no cover – fallback en caso de error de lectura
+    _FAQ_QUESTIONS = []

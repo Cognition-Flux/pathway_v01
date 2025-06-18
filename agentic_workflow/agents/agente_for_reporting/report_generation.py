@@ -7,20 +7,16 @@ from typing import Literal
 
 import yaml
 from dotenv import load_dotenv
-from langchain_core.messages import (
-    HumanMessage,
-    SystemMessage,
-)
 from langgraph.graph import END
 from langgraph.types import Command, interrupt
 
-from agentic_workflow.llm_chains import chain_for_if_report_is_needed
+from agentic_workflow.llm_chains import (
+    chain_for_if_report_is_needed,
+    chain_for_report_generator,
+)
 from agentic_workflow.schemas import (
     PathwayGraphState,
-    ReportGenerator,
 )
-from agentic_workflow.utils import get_llm
-
 
 logger = logging.getLogger(__name__)
 
@@ -37,32 +33,22 @@ def report_generator(
 
     This function generates a report using the chain_for_report_generator.
     """
-    provider = "google"
     model = "gemini-2.5-pro-preview-05-06"
     if_report_is_needed = interrupt(
         "¿Necesitas un reporte detallado basado en la información encontrada?",
     )
     response = chain_for_if_report_is_needed.invoke(if_report_is_needed)
     if response.if_report_is_needed:
-        report_generator_prompt = prompts["report_generator"].format(
-            question=state["user_question"],
-            documents=state["documents"],
-            web_search_results=state["web_search_results"],
-            tables_results=state.get("tables_results", None),
-            scratchpad=state.get("scratchpad", None),
+        report = chain_for_report_generator.invoke(
+            {
+                "input": "sigue las instrucciones",
+                "question": state["user_question"],
+                "documents": state["documents"],
+                "web_search_results": state["web_search_results"],
+                "tables_results": state.get("tables_results", None),
+                "scratchpad": state.get("scratchpad", None),
+            }
         )
-
-        report = (
-            get_llm(provider=provider, model=model)
-            .with_structured_output(ReportGenerator)
-            .invoke(
-                [
-                    SystemMessage(content=report_generator_prompt),
-                    HumanMessage(content="Sigue las instrucciones."),
-                ]
-            )
-        )
-
         next_node = "ask_if_plot_is_needed"
         return Command(
             goto=next_node,

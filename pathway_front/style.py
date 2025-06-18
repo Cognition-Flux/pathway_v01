@@ -37,13 +37,26 @@ glass_effect = {
 }
 
 # ---------------------------------------------------------------------------
+# EFECTO DE REFLEJO PARA VIDRIO
+# ---------------------------------------------------------------------------
+# Versión más sutil (baja opacidades) del reflejo de vidrio.
+glass_reflection = (
+    "linear-gradient(140deg, "
+    "rgba(255,255,255,0.12) 0%, "  # Destello inicial tenue
+    "rgba(255,255,255,0.06) 20%, "  # Transición suave
+    "rgba(255,255,255,0.015) 50%, "  # Zona difusa casi imperceptible
+    "rgba(255,255,255,0.04) 80%, "  # Segundo reflejo muy leve
+    "rgba(255,255,255,0.01) 100%)"  # Desvanecido final
+)
+
+# ---------------------------------------------------------------------------
 # ESTILOS PARA MENSAJES DE CHAT
 # ---------------------------------------------------------------------------
 # "message_style" funciona como base común para preguntas y respuestas.  No
 # incluye propiedades específicas de alineación o color, que se definen en los
 # diccionarios derivados ``question_style`` y ``answer_style``.
 message_style = {
-    "padding": "0.4em 0.6em",
+    "padding": "clamp(0.35em, 1.5vw, 0.6em) clamp(0.5em, 2vw, 0.8em)",  # Escala con viewport
     "border_radius": "8px",
     "margin_y": "0.3em",
     "box_shadow": shadow,
@@ -131,15 +144,16 @@ markdown_style = {
 # Set specific styles for questions and answers.
 question_style = message_style | {
     "margin_left": "auto",
-    "background": "linear-gradient(135deg, rgba(42, 48, 66, 0.15) 0%, rgba(62, 74, 102, 0.15) 100%)",
+    # Capa de reflejo + capa base ligeramente oscura
+    "background": f"{glass_reflection}, linear-gradient(135deg, rgba(42, 48, 66, 0.015) 0%, rgba(62, 74, 102, 0.015) 100%)",
     "color": "#F8FAFC",
     "transform_origin": "right",
     # Barra vertical tipo vidrio anaranjado oscuro (transparente)
-    "border_left": "4px solid rgba(220, 110, 40, 0.4)",
+    "border_left": "4px solid rgba(220, 110, 40, 0.25)",
     "letter_spacing": "0.3px",
     "_hover": {
-        # 👇 Los valores alfa (0.45, 0.40, 0.35) controlan la TRANSPARENCIA del gradiente.
-        "background": "linear-gradient(to bottom, rgba(25, 110, 185, 0.45) 0%, rgba(55, 140, 205, 0.40) 50%, rgba(95, 175, 230, 0.35) 100%)",
+        # 👇 Los valores alfa (0.25, 0.20, 0.15) controlan la TRANSPARENCIA del gradiente.
+        "background": "linear-gradient(to bottom, rgba(25, 110, 185, 0.12) 0%, rgba(55, 140, 205, 0.07) 50%, rgba(95, 175, 230, 0.04) 100%)",
         "box_shadow": "0 4px 12px rgba(135, 206, 250, 0.35)",
         "backdrop_filter": "blur(4px)",
         "border": "none",
@@ -151,15 +165,15 @@ question_style = message_style | {
 }
 answer_style = message_style | {
     "margin_right": "auto",
-    "background": "linear-gradient(135deg, rgba(30, 41, 59, 0.15) 0%, rgba(51, 65, 85, 0.15) 100%)",
+    "background": f"{glass_reflection}, linear-gradient(135deg, rgba(30, 41, 59, 0.015) 0%, rgba(51, 65, 85, 0.015) 100%)",
     "color": "#F8FAFC",
     "transform_origin": "left",
     # Barra vertical tipo vidrio anaranjado oscuro (transparente)
-    "border_left": "4px solid rgba(220, 110, 40, 0.4)",
+    "border_left": "4px solid rgba(220, 110, 40, 0.25)",
     "letter_spacing": "0.3px",
     "_hover": {
-        # 👇 Los valores alfa (0.45, 0.40, 0.35) controlan la TRANSPARENCIA del gradiente.
-        "background": "linear-gradient(to bottom, rgba(25, 110, 185, 0.45) 0%, rgba(55, 140, 205, 0.40) 50%, rgba(95, 175, 230, 0.35) 100%)",
+        # 👇 Los valores alfa (0.25, 0.20, 0.15) controlan la TRANSPARENCIA del gradiente.
+        "background": "linear-gradient(to bottom, rgba(25, 110, 185, 0.12) 0%, rgba(55, 140, 205, 0.07) 50%, rgba(95, 175, 230, 0.04) 100%)",
         "box_shadow": "0 4px 12px rgba(135, 206, 250, 0.35)",
         "backdrop_filter": "blur(4px)",
         "border": "none",
@@ -177,6 +191,7 @@ heading_gradient_style = {
     "webkit_background_clip": "text",
     "color": "transparent",
     "font_weight": "500",
+    "font_size": "clamp(0.95rem, 1vw + 0.6rem, 1.4rem)",  # Escala fluida
     "letter_spacing": "1px",
     "text_shadow": "0 1px 2px rgba(0, 0, 0, 0.2)",
     "transition": "all 0.3s ease",
@@ -233,6 +248,9 @@ left_sidebar_style = {
     "overflow_y": "auto",
     "animation": "fadeIn 0.5s ease",
     "min_width": "200px",
+    # Bordes redondeados para simular una pestaña de navegador
+    "border_top_right_radius": "16px",
+    "border_bottom_right_radius": "16px",
 }
 
 # Estilo para el título del sidebar que coincide con Multi-Agentic Workflow
@@ -251,27 +269,30 @@ sidebar_title_style = {
     "line_height": "1.1",  # Altura de línea más compacta
 }
 
-# Estilo mejorado para mensajes en la barra lateral
-sidebar_message_style = message_style | {
+# Estilo unificado para mensajes en la barra lateral utilizando la misma
+# paleta y bordes que las burbujas del chat principal.
+# Se parte de ``answer_style`` para heredar el mismo "look & feel" y se
+# ajustan únicamente propiedades de tamaño/márgenes que son específicas del
+# contenedor lateral.
+sidebar_message_style = answer_style | {
+    # Ajustes propios del sidebar (no afectan colores ni efecto vidrio)
     "margin": "0.5em 0",
     "width": "95%",
     "max_width": "100%",
-    "background": "linear-gradient(135deg, rgba(30, 41, 59, 0.15) 0%, rgba(51, 65, 85, 0.15) 100%)",
-    "border_left": "4px solid rgba(16, 185, 129, 0.5)",
+    # Borde verde oscuro para el sidebar de Razonamiento y acciones
+    "border_left": "4px solid rgba(20, 83, 45, 0.55)",
     "font_size": "0.8rem",  # Reducido un 20% del tamaño estándar
     "animation": "0.5s cubic-bezier(0.25, 0.1, 0.25, 1) 0s 1 slideIn",
     "backdrop_filter": "blur(10px)",
     "box_shadow": "0 2px 10px rgba(0, 0, 0, 0.15)",
-    "color": "#F8FAFC",
-    "letter_spacing": "0.3px",
-    "_hover": {
-        "background": "linear-gradient(to bottom, rgba(25, 110, 185, 0.45) 0%, rgba(55, 140, 205, 0.40) 50%, rgba(95, 175, 230, 0.35) 100%)",
-        "box_shadow": "0 4px 12px rgba(135, 206, 250, 0.35)",
-        "backdrop_filter": "blur(4px)",
-        "border": "none",
-        "transform": "translateY(-2px)",
-        "transition": "all 0.25s ease",
-        "_after": {"opacity": "1"},
+}
+
+# Estilo específico para ítems de "Preguntas frecuentes" con borde morado
+faq_message_style = sidebar_message_style | {
+    "border_left": "4px solid rgba(68, 28, 135, 0.6)",  # Morado oscuro
+    "_after": {
+        **message_style["_after"],  # Hereda posición y estilos base
+        "content": "'Preguntar'",
     },
 }
 
@@ -280,7 +301,7 @@ responsive_styles = {
     "@media (max-width: 768px)": {
         "message_style": {
             "max_width": "85%",
-            "padding": "0.5em 0.7em",
+            "padding": "clamp(0.4em, 1.8vw, 0.7em)",
         },
         "input_container": {
             "width": "95%",
@@ -289,7 +310,20 @@ responsive_styles = {
     "@media (max-width: 480px)": {
         "message_style": {
             "max_width": "95%",
-            "padding": "0.4em 0.6em",
+            "padding": "clamp(0.35em, 2vw, 0.6em)",
+        },
+    },
+    "@media (max-width: 600px)": {
+        "#right-sidebar": {"display": "none"},
+        "#left-sidebar": {"display": "none"},
+        ":root": {
+            "--sidebar-width": "0px",
+            "--left-sidebar-width": "0px",
+        },
+        "main_container_with_sidebar": {
+            "margin_left": "0",
+            "margin_right": "0",
+            "width": "100%",
         },
     },
 }
@@ -350,7 +384,7 @@ container_style = {
     "max_width": "1200px",
     "margin": "0 auto",
     "padding": "0",
-    "height": "100vh",
+    "height": "100dvh",
     "display": "flex",
     "flex_direction": "column",
     "background": "radial-gradient(circle at top right, #111827 0%, #030712 100%)",
@@ -362,4 +396,55 @@ main_container_with_sidebar = {
     "margin_left": "var(--left-sidebar-width, 266px)",
     "width": "calc(100% - var(--sidebar-width, 300px) - var(--left-sidebar-width, 266px))",
     "transition": "none",
+}
+
+# ---------------------------------------------------------------------------
+# BARRAS DE ENCABEZADO (FAQ y Razonamiento)
+# ---------------------------------------------------------------------------
+# Para que los encabezados de "Preguntas frecuentes" y "Razonamiento y
+# acciones" compartan el mismo estilo base de las burbujas, creamos un token
+# reutilizable que solo modifica aspectos de tamaño y layout respecto a
+# ``answer_style``.
+
+header_bar_style = answer_style | {
+    "width": "100%",
+    "max_width": "100%",  # Garantiza que el encabezado use todo el ancho disponible
+    "overflow": "visible",  # Evita que iconos o texto sean recortados
+    "border_radius": "12px",
+    "padding": "0.2em 0.3em",
+    "margin_bottom": "0.4em",
+    # Un header no debería tener el efecto de copia ni hover tan marcado.
+    "_after": {"content": "''"},
+    "_hover": answer_style["_hover"] | {"transform": "none"},
+}
+
+# ---------------------------------------------------------------------------
+# ESTILO GLOBAL PARA SCROLLBARS (consistencia en toda la app)
+# ---------------------------------------------------------------------------
+global_scrollbar_style = {
+    "html": {
+        # Para Firefox – color del pulgar y del track
+        "scrollbarColor": "rgba(99, 102, 241, 0.4) transparent",
+        "scrollbarWidth": "thin",
+    },
+    "::-webkit-scrollbar": {
+        "width": "8px",
+        "height": "8px",
+    },
+    "::-webkit-scrollbar-track": {
+        "background": "rgba(30, 41, 59, 0.05)",
+        "borderRadius": "8px",
+        "backdropFilter": "blur(12px)",
+    },
+    "::-webkit-scrollbar-thumb": {
+        "background": "linear-gradient(135deg, rgba(99, 102, 241, 0.3) 0%, rgba(79, 70, 229, 0.25) 100%)",
+        "borderRadius": "8px",
+        "border": "2px solid transparent",
+        "backgroundClip": "padding-box",
+    },
+    "::-webkit-scrollbar-thumb:hover": {
+        "background": "linear-gradient(135deg, rgba(99, 102, 241, 0.5) 0%, rgba(79, 70, 229, 0.4) 100%)",
+        "boxShadow": "0 0 10px rgba(99, 102, 241, 0.5)",
+        "border": "1px solid rgba(255, 255, 255, 0.2)",
+    },
 }

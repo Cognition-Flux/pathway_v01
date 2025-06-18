@@ -1,1 +1,322 @@
-test: "test"
+agents:
+  rag: |
+    rag: Se encarga de buscar información en documentos/papers en vectorstore.
+    Las temáticas de la vectorstore son: {vectorstore_theme}.
+    IMPORTANTE: Este agente debe aplicarse cuando la consulta:
+    1. Está directamente relacionada con la vectorstore.
+    2. Busca relaciones o asociaciones entre diversas temáticas de la vectorstore.
+    3. Explora temas relacionados indirectamente con la vectorstore.
+
+  websearch: |
+    websearch: Se encarga de buscar información en la web/internet.
+    Todas las preguntas asociadas a la web/internet deben aplicarse a este agente.
+    Aplicar este agente cuando ususario use términos como:
+    - "internet"
+    - "web"
+    - "internet"
+    - "google"
+    - "busca"
+    - "buscar"
+    - "encontrar"
+    - "información"
+    - "noticias"
+    - "actualidad"
+    - "Últimas/recientes noticias"
+    - "Últimas/recientes investigaciones"
+    - "Últimas/recientes publicaciones"
+    - "Últimas/recientes actualizaciones"
+    - "Últimas/recientes investigaciones"
+    - "Últimas/recientes publicaciones"
+
+  forecast_information_checker: |
+    forecast_information_checker: Se encarga de generar predicciones, pronósticos y proyecciones de series temporales.
+      Aplicar este agente cuando el usuario:
+      - Solicite explícitamente predicciones, pronósticos, forecast o proyecciones.
+      - Mencione términos como "predecir", "pronosticar", "forecast", "proyección", "futuro", "tendencia".
+      - Necesite análisis predictivo de datos temporales o series de tiempo.
+
+      Ejemplos de consultas apropiadas:
+      - "Predice las ventas del próximo mes."
+      - "Genera un forecast de la serie temporal."
+      - "¿Cuál será la tendencia futura de estos datos?"
+      - "Haz una proyección de para el próximo mes."
+
+  reasoner: |
+    reasoner: Se encarga de razonar, analizar, pensar,  tomar decisiones y generar una respuesta en base a la pregunta del usuario y la información disponible.
+
+  plot_generator: |
+    plot_generator: Se encarga de generar o editar gráficos, visualizaciones, plots, diagramas o charts.
+    Aplicar este agente cuando el usuario:
+    - Solicite explícitamente crear o modificar un gráfico, visualización, plot o diagrama.
+    - Mencione términos como "gráfico", "gráfica", "plot", "visualización", "chart", "diagrama".
+    - Necesite representar datos de forma visual a partir de información o tablas existentes.
+
+planner: |
+  Debes decidir si elaborar un plan o reponder directamente.
+  Instrucciones:
+    RESPONDER DIRECTAMENTE: *Cuando responder directamente:
+      - Si el usuario saluda.
+      - Si el usuario necesita ayuda para iniciar un plan.
+      - Si el usuario necesita saber que puedes hacer.
+      - Si el usuario necesita saber que temáticas puedes responder.
+      - Si el usuario necesita orientación para usar el sistema.
+
+      - IMPORTANTE:
+        *Debes conversar (reponder directamente) con el usuario.
+
+    PLAN: *Cuando elaborar un plan:
+      - Si el mensaje del usuario es un requerimiento.
+        - El requerimiento debe estar relacionado a uno o más de estos agentes:
+          - rag (USAR para consultas directa o indirectamente relacionadas con la vectorstore, o que busquen asociaciones entre diversas temáticas y la vectorstore)
+          - websearch (para búsquedas en internet o temas no relacionados con la vectorstore).
+
+    *Formato de las respuestas:
+      - SIEMPRE utiliza formato Markdown para formatear tus respuestas.
+      - Usa encabezados (# ## ###) para estructurar la información.
+      - Utiliza listas con viñetas o numeradas para información secuencial.
+      - ESPECIALMENTE IMPORTANTE: usa SIEMPRE tablas en formato Markdown:
+        ```
+        | Encabezado1 | Encabezado2 | Encabezado3 |
+        |-------------|-------------|-------------|
+        | Dato1       | Dato2       | Dato3       |
+        | Dato4       | Dato5       | Dato6       |
+        ```
+      - Usa formato para resaltar información importante: **negrita**, *cursiva*, `código`.
+      - Para números o estadísticas importantes, usa negrita para destacarlos.
+
+  Aqui hay ejemplos de resoluciones a requerimientos del usuario:
+  {examples}
+
+  A continuación está la conversación con el usuario, en base a la (historia de mensajes) conversación debes decidir si elaborar un plan o reponder directamente.
+
+multi_query_generator: |
+    En base a la query del usuario, genera una lista de tres (3) consultas aumentadas/enriquecidas y
+    complementarias adecuadas para hacer búsquedas semánticas en la vectorstore.
+    Estas dos consultas de búsqueda deben ser complementarias - no generes queries
+    repetitivas, ni redundantes.
+
+    A continuación está la la pregunta del usuario:
+
+plan_response_generator: |
+  Se finalizó el plan.
+  Ya se han ejecutado las(la) tareas del plan.
+  Debes responder directamente y brevemente al usuario.
+  Esta es la pregunta del usuario:
+  {question}
+
+  Estos fueron los pasos que se ejecutaron para responder la pregunta del usuario:
+  {executed_steps}
+
+  A continuación este es el resumen de los resultados de los pasos que se ejecutaron para responder la pregunta del usuario:
+  {scratchpad}
+
+  Considerando única y exclusivamente el contexto de los pasos (y sus resultados) que se ejecutaron para responder la pregunta del usuario,
+  genera una respuesta breve y concisa basada en la pregunta del usuario.
+
+
+queries_to_websearch: |
+  Genera dos (2) consultas breves para búsqueda en internet.
+  Ambas consultas deben estar relacionadas con la pregunta del usuario.
+  Las consultas deben ser específicas y enfocadas en los temas o temáticas que el usuario está buscando.
+  Las consultas deben ser complementarias - no generes consultas repetitivas o redundantes.
+
+  A continuación está la pregunta del usuario:
+
+report_generator: |
+  Debes escribir un reporte extenso y detallado con datos que puedan ser visualizados en un gráfico y tablas en base a esta pregunta del usuario:
+  {question}
+
+  A continuación están las secciones del reporte que debes hacer: 
+  SIEMPRE debes hacer exactamente las secciones que se te indican.
+  {report_sections}
+
+  IMPORTANTE:Debes usar unica y exclusivamente el contexto de los documentos, análisis de tablas y la búsqueda en internet para generar el reporte.
+
+  A continuación está el contexto de los documentos encontrados para responder la pregunta del usuario (solo si hay):
+  {documents}
+
+  A continuación está el resultado de la búsqueda en internet (solo si hay):
+  {web_search_results}
+
+  A continuación está el resultado de la búsqueda en tablas (solo si hay):
+  {tables_results}
+
+  A continuación hay anotaciones sobre otros resultados (solo si hay):
+
+  {scratchpad}
+
+  Genera un reporte extenso y detalladoestructurado en formato markdown.
+  El reporte debe ser detallado, con datos cuantitativos y tablas, citando todas las fuentes y referencias.
+
+  IMPORTANTE:Debes usar unica y exclusivamente el contexto de los documentos, análisis de tablas y la búsqueda en internet para generar el reporte.
+
+plot_generator: |
+  Debes generar un gráfico en base al siguiente requerimiento del usuario:
+  {question}
+
+  A continuación está el contexto que contiene la información para generar el gráfico:
+  (Solo debes extraer la información necesaria para generar el gráfico, si es que hay información relevante)
+  {context}
+
+  A continuación está el resultado de la búsqueda en internet (solo si hay):
+  {web_search_results}
+
+  A continuación está el contexto de los documentos encontrados para responder la pregunta del usuario (solo si hay):
+  {documents}
+
+  A continuación está el gráfico existente:
+  {current_plot}
+  En este caso, debes editar el gráfico existente en base al requerimiento indicado al principio.
+forecast_input_generator: |
+  aqui están los timestamps: {time}
+  aqui están los valores: {values}
+  Genera unica y exclusivamente el output estructurado
+
+temporal_info_series_checker: |
+    Tu tarea es extraer información específica de los últimos mensajes del usuario para un posible análisis de series temporales (forecast).
+    Analiza cuidadosamente el mensaje y extrae los siguientes detalles SI ESTÁN PRESENTES explícitamente.
+    Si alguna pieza de información no se menciona o no está clara, debes establecer el valor correspondiente como nulo (None) en la estructura de datos de salida. No inventes información.
+
+    Información a extraer:
+    1.  **nombre_de_la_serie_temporal**: El nombre específico de la serie temporal mencionada (ej: "ventas_mensuales", "temperatura_diaria").
+    2.  **nombre_de_la_tabla**: El nombre de la tabla de datos donde se podría encontrar esta serie temporal.
+    3.  **ventana_contexto**: El número de puntos de datos históricos que se usarían para el análisis o predicción (un entero).
+    4.  **ventana_prediccion**: El número de puntos de datos futuros que se deben predecir (un entero).
+
+    Asegúrate de que tu salida se adhiera estrictamente al esquema proporcionado. Para campos numéricos como ventana_contexto y ventana_prediccion, si no se especifican, deben ser nulos, no cero ni una cadena vacía.
+ask_for_temporal_series_information: |
+  Debes recolectar toda la información necesaria para realizar el forecast de la serie temporal:
+  1. El nombre de la serie temporal
+  2. El nombre de la tabla donde se encuentra
+  3. El largo de la ventana de contexto (cuántos puntos históricos usar para la predicción)
+  4. El largo de la ventana de predicción (cuántos puntos predecir hacia el futuro)
+
+  Actualmente:
+  {fields_state}
+
+  Considera el historial de mensajes del usuario para hacer las preguntas de manera conversacional y clara.
+  Explica brevemente qué significa cada parámetro para ayudar al usuario a entender qué información necesitas.
+
+extraction_from_tables_prompt: |
+  Extraer la serie temporal de la tabla.
+  Nombre de la tabla: {nombre_de_la_tabla}
+  Nombre de la serie temporal: {nombre_de_la_serie_temporal}
+  Debes extraer la serie temporal (valores de la variable temporal)
+  IMPORTANTE: Debes entregar/responder al usuario los {total_points} últimos registros de la serie temporal.
+
+  Instrucción específica: {input}
+ask_what_to_plot_prompt: |
+  a partir de la conversación y del reporte de contexto, redacta una pregunta breve para que el usuario
+  debe preguntar al usuario que se desea visualizar.
+  Debes proponer como ejemplos visualizaciones/plots que se pueden hacer con el reporte de contexto.
+  Por ejemplo:
+  - ¿Qué deseas visualizar? Por ejemplo: "la correlación entre....", "la distribución ...", "la evolución de..."
+  Reporte de contexto:
+  {report}
+  Conversación:
+  {conversation}
+
+report_sections_making_prompt: |
+  Debes generar todas las secciones de un completo, extenso y detallado informe/reporte intentanto responder al requerimiento del usuario:
+  Solamente desde generar las secciones con sus nombres y breves descripciones.
+  Usuario/Humano: {question}.
+
+  IMPORTANTE: Puede ser posible que previamente ya existan secciones, y el usuario desee hacer modificaciones, eliminar o añadir secciones sobre lo que ya existe.
+              A continuación se muestran las secciones que ya existen (si están vacíos, no existen todavía):
+              estas son las secciones que ya existen previamente: {report_sections}.
+              Este es el feedback del usuario/humano sobre las secciones: {sections_user_feedback}
+              Solo si existe desde aplicar exclusivamente las modificación que pide el usuario/humano.
+              Debes mantener intactas las secciones que no se solicita modificar.
+  
+  SIEMPRE: Debes usar unica y exclusivamente el contexto de los documentos, análisis de tablas y la búsqueda en internet para generar el reporte.
+
+  A continuación está el contexto para responder la pregunta del usuario:
+    A continuación está el contexto de los documentos encontrados para responder la pregunta del usuario (solo si hay):
+    {documents}
+
+    A continuación está el resultado de la búsqueda en internet (solo si hay):
+    {web_search_results}
+
+    A continuación está el resultado de la búsqueda en tablas (solo si hay):
+    {tables_results}
+
+    A continuación hay anotaciones sobre otros resultados (solo si hay):
+
+    {scratchpad}
+
+if_sections_are_approved_prompt: |
+  Debes determinar si el usuario aprueba las secciones propuestas,
+  o si desea hacer modificaciones, eliminar o añadir secciones sobre lo que ya existe.
+  Debes decidir entre: 'approved' o 'not_approved'.
+  Tambien debes generar una breve explicación sobré cual es el requerimiento del usuario/humano.
+  Estas son las secciones propuestas: {report_sections}
+  Esta es la respuesta del usuario/humano: {user_input}
+
+replan_next_step_prompt: |
+  Debes considerar actualizar/refinar/acotar/enfocar los proximos pasos del plan en base a los resultados parciales que se han obtenido.
+  Debes tener en mente la pregunta original del usuario/humano para lograr los pasos necesarios para responder la pregunta.
+  IMPORTANTE: puedes eliminar/remover pasos o acortar el plan si consideras que ya hay suficiente información para responder la pregunta.
+  Pregunta del usuario/humano: {question}
+  Los pasos que ya se han ejecutado son: {executed_steps}
+  Los resultados de la ejecución de los pasos son (usalos para actualizar/refinar/acotar/enfocar los proximos pasos del plan): {scratchpad}
+
+  Los pasos restantes que debes actualizar/refinar/acotar/enfocar en base a los resultados parciales que se han obtenido son: {remaining_steps}
+
+
+
+  Las fuentes de información (usalos para actualizar/refinar/acotar/enfocar los proximos pasos del plan):
+    {scratchpad}
+
+
+
+  Recuerda siempre tener en mente la pregunta original del usuario/humano para lograr los pasos necesarios para responder la pregunta.
+  IMPORTANTE: puedes eliminar/remover pasos o acortar el plan si consideras que ya hay suficiente información para responder la pregunta.
+  Ejemplos:
+    ### *Pasos en estado original (NO actualizados/refinados/enfocados)*:
+          PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Hacer una proyección de atenciones",
+                  agent="forecast_information_checker",
+                  reasoning="El agente forecast_information_checker se encarga de hacer una proyección de atenciones"
+              ),
+              OneStep(
+                  step="Resumir los resultados.",
+                  agent="reasoner",
+                  reasoning="Reasoner puede razonar sobre los resultados de la proyección de atenciones"
+              )
+          ],
+          response="",
+          reasoning="Es necesario llamar al agente de forecast_information_checker para verificar si hay información disponible para hacer una proyeccion de atenciones y luego resumir los resultados"
+      )
+
+    ### *Pasos actualizados/refinados/enfocados*:
+
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="llamar al agente de forecast_information_checker.",
+                  agent="forecast_information_checker",
+                  reasoning="El agente forecast_information_checker se encarga de verificar si hay información disponible para hacer una proyeccion de atenciones"
+              ),
+              OneStep(
+                  step="Presentas los resultados al agente reasoner para resumirlos.",
+                  agent="reasoner",
+                  reasoning="Reasoner puede razonar sobre los resultados del forecast"
+              )
+          ],
+          response="",
+          reasoning="Es necesario llamar al agente de forecast_information_checker para verificar si hay información disponible para hacer una proyeccion de atenciones y luego resumir los resultados"
+      )
+
+reasoner_prompt: |
+  Debes razonar, analizar, pensar, reflexionar, hacer elecciones ,tomar decisiones y generar una respuesta breve, sintetica, analítica  en base a la pregunta del usuario y la información disponible.
+    Aqui está el requerimiento del usuario: {question}
+    Información disponible:
+    Aqui están los resultados parciales: {scratchpad}
+
+  Genera una respuesta breve, sintetica, analítica  en base a la pregunta del usuario y la información disponible.
+  La respuesta podría ser alguna elección entre diferentes opciones.
+  También podría ser extraer información y ordenarla de manera lógica.
+  También puede ser la indentificación de conceptos, ideas, temas, etc. y presentarlos agrupados o enlistados

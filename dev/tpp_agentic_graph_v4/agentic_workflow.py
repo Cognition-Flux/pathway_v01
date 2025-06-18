@@ -27,9 +27,9 @@ if __package__ in (None, ""):
     # Añadimos el directorio `dev` a `sys.path`.
     sys.path.insert(0, str(package_root.parent))
 
-from tpp_agentic_graph_v4.chains import HOLA  # noqa: E402
+from tpp_agentic_graph_v4.llm_chains import chain_for_planning  # noqa: E402
 
 if __name__ == "__main__":
-    print(HOLA)
+    print(chain_for_planning)
 
 # %%

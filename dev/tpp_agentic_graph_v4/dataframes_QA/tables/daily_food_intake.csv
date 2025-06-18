@@ -1,0 +1,274 @@
+person_id,day_of_week,meal_type,food_item,quantity,unit
+1,Monday,Dinner,Chicken,1.3,serving
+1,Monday,Snack,Blueberries,1.0,serving
+1,Monday,Lunch,Yogurt,2.3,slice
+1,Monday,Snack,Tomatoes,1.9,serving
+1,Tuesday,Breakfast,Rice,2.0,cup
+1,Tuesday,Lunch,Nuts,1.4,serving
+1,Tuesday,Snack,Cottage Cheese,1.3,oz
+1,Wednesday,Breakfast,Cake,2.3,piece
+1,Wednesday,Dinner,Chicken,2.5,cup
+1,Wednesday,Snack,Bell Peppers,1.7,serving
+1,Thursday,Lunch,Beef,2.9,oz
+1,Thursday,Dinner,Pasta,0.6,oz
+1,Thursday,Breakfast,Tortilla,1.9,cup
+1,Thursday,Lunch,Broccoli,1.5,cup
+1,Thursday,Lunch,Quinoa,2.7,cup
+1,Friday,Lunch,Beef,1.8,oz
+1,Friday,Lunch,Yogurt,3.0,cup
+1,Friday,Snack,Strawberries,1.5,cup
+1,Saturday,Breakfast,Bell Peppers,2.1,oz
+1,Saturday,Breakfast,Bread,1.3,slice
+1,Saturday,Lunch,Cottage Cheese,2.7,slice
+1,Sunday,Dinner,Tofu,2.8,oz
+1,Sunday,Dinner,Tomatoes,2.6,serving
+1,Sunday,Dinner,Grapes,1.8,piece
+1,Sunday,Breakfast,Cottage Cheese,2.3,cup
+2,Monday,Snack,Milk,2.7,serving
+2,Monday,Breakfast,Cereal,1.3,slice
+2,Monday,Lunch,Candy,2.0,oz
+2,Monday,Lunch,Fish,0.7,cup
+2,Monday,Dinner,Cheese,3.0,slice
+2,Tuesday,Dinner,Quinoa,1.6,serving
+2,Tuesday,Dinner,Tortilla,2.8,oz
+2,Tuesday,Breakfast,Rice,1.4,oz
+2,Tuesday,Snack,Lettuce,1.8,cup
+2,Tuesday,Breakfast,Cheese,2.7,cup
+2,Wednesday,Breakfast,Blueberries,1.8,piece
+2,Wednesday,Snack,Quinoa,1.5,cup
+2,Wednesday,Breakfast,Strawberries,2.2,cup
+2,Wednesday,Dinner,Blueberries,1.3,cup
+2,Thursday,Snack,Lettuce,1.4,cup
+2,Thursday,Dinner,Pasta,0.7,cup
+2,Thursday,Snack,Lettuce,2.4,serving
+2,Thursday,Dinner,Rice,1.9,serving
+2,Thursday,Lunch,Watermelon,0.8,serving
+2,Friday,Dinner,Ice Cream,1.2,oz
+2,Friday,Lunch,Ice Cream,2.0,serving
+2,Friday,Dinner,Yogurt,0.8,cup
+2,Friday,Lunch,Spinach,1.6,serving
+2,Saturday,Lunch,Quinoa,2.5,slice
+2,Saturday,Lunch,Water,2.0,oz
+2,Saturday,Dinner,Cake,1.2,piece
+2,Sunday,Snack,Milk,1.5,oz
+2,Sunday,Snack,Cake,1.8,oz
+2,Sunday,Snack,Nuts,0.8,cup
+3,Monday,Snack,Blueberries,2.9,cup
+3,Monday,Breakfast,Milk,2.1,serving
+3,Monday,Dinner,Nuts,1.8,cup
+3,Monday,Breakfast,Yogurt,1.2,serving
+3,Monday,Snack,Bell Peppers,2.6,serving
+3,Tuesday,Dinner,Rice,1.9,oz
+3,Tuesday,Snack,Cheese,2.5,slice
+3,Tuesday,Dinner,Ice Cream,3.0,serving
+3,Tuesday,Breakfast,Cookies,1.3,piece
+3,Wednesday,Dinner,Bread,2.0,slice
+3,Wednesday,Lunch,Ice Cream,1.0,serving
+3,Wednesday,Lunch,Bread,1.3,serving
+3,Thursday,Snack,Rice,0.9,cup
+3,Thursday,Lunch,Cereal,0.6,serving
+3,Thursday,Snack,Tea,3.0,bottle
+3,Friday,Snack,Cottage Cheese,1.4,cup
+3,Friday,Dinner,Coffee,2.6,cup
+3,Friday,Lunch,Cake,1.5,oz
+3,Saturday,Snack,Banana,1.8,serving
+3,Saturday,Breakfast,Yogurt,0.6,slice
+3,Saturday,Dinner,Carrots,2.1,oz
+3,Saturday,Dinner,Grapes,2.9,cup
+3,Saturday,Breakfast,Nuts,1.7,serving
+3,Sunday,Breakfast,Cookies,2.1,piece
+3,Sunday,Breakfast,Lettuce,2.0,serving
+3,Sunday,Dinner,Energy Drink,2.2,can
+3,Sunday,Snack,Watermelon,2.9,serving
+4,Monday,Snack,Tofu,1.1,cup
+4,Monday,Snack,Banana,1.5,piece
+4,Monday,Dinner,Banana,2.5,cup
+4,Tuesday,Breakfast,Soda,3.0,cup
+4,Tuesday,Dinner,Cereal,1.0,oz
+4,Tuesday,Dinner,Ice Cream,0.6,oz
+4,Tuesday,Breakfast,Ice Cream,2.5,piece
+4,Tuesday,Lunch,Milk,2.5,serving
+4,Wednesday,Dinner,Beef,1.3,serving
+4,Wednesday,Breakfast,Banana,1.1,cup
+4,Wednesday,Breakfast,Banana,1.6,cup
+4,Thursday,Breakfast,Blueberries,2.9,piece
+4,Thursday,Lunch,Bread,2.0,serving
+4,Thursday,Breakfast,Beans,1.0,cup
+4,Friday,Snack,Coffee,2.9,bottle
+4,Friday,Lunch,Juice,2.7,cup
+4,Friday,Dinner,Beef,1.0,oz
+4,Friday,Lunch,Quinoa,2.3,oz
+4,Saturday,Dinner,Coffee,1.6,bottle
+4,Saturday,Snack,Pasta,0.8,serving
+4,Saturday,Snack,Chocolate,2.3,oz
+4,Sunday,Breakfast,Orange,1.5,serving
+4,Sunday,Snack,Nuts,2.8,oz
+4,Sunday,Lunch,Cottage Cheese,1.4,oz
+4,Sunday,Snack,Apple,0.6,serving
+4,Sunday,Dinner,Energy Drink,1.3,cup
+5,Monday,Dinner,Blueberries,1.2,piece
+5,Monday,Breakfast,Fish,2.5,oz
+5,Monday,Dinner,Grapes,2.3,serving
+5,Tuesday,Breakfast,Energy Drink,2.9,bottle
+5,Tuesday,Lunch,Energy Drink,2.7,can
+5,Tuesday,Dinner,Ice Cream,2.6,serving
+5,Tuesday,Breakfast,Chicken,0.8,oz
+5,Wednesday,Snack,Fish,1.1,cup
+5,Wednesday,Lunch,Broccoli,2.4,cup
+5,Wednesday,Breakfast,Candy,0.8,oz
+5,Wednesday,Lunch,Quinoa,1.0,cup
+5,Thursday,Lunch,Donut,2.8,serving
+5,Thursday,Snack,Banana,2.6,serving
+5,Thursday,Dinner,Cheese,0.8,serving
+5,Thursday,Lunch,Tortilla,1.2,slice
+5,Thursday,Dinner,Eggs,1.1,serving
+5,Friday,Lunch,Ice Cream,2.4,cup
+5,Friday,Dinner,Cheese,1.8,oz
+5,Friday,Dinner,Ice Cream,2.4,piece
+5,Friday,Snack,Cereal,1.6,oz
+5,Friday,Snack,Pasta,1.9,cup
+5,Saturday,Snack,Pasta,1.9,oz
+5,Saturday,Dinner,Bread,2.4,cup
+5,Saturday,Dinner,Quinoa,1.8,serving
+5,Sunday,Dinner,Yogurt,2.0,slice
+5,Sunday,Lunch,Broccoli,2.4,oz
+5,Sunday,Breakfast,Ice Cream,1.7,serving
+6,Monday,Snack,Coffee,1.6,can
+6,Monday,Snack,Blueberries,2.9,piece
+6,Monday,Dinner,Orange,1.8,piece
+6,Monday,Dinner,Cereal,0.8,cup
+6,Monday,Dinner,Beef,1.3,serving
+6,Tuesday,Breakfast,Watermelon,2.9,piece
+6,Tuesday,Dinner,Juice,0.6,oz
+6,Tuesday,Snack,Coffee,2.4,bottle
+6,Wednesday,Snack,Yogurt,2.6,cup
+6,Wednesday,Breakfast,Grapes,1.6,cup
+6,Wednesday,Snack,Strawberries,0.6,piece
+6,Wednesday,Breakfast,Chocolate,1.8,oz
+6,Wednesday,Lunch,Yogurt,0.8,slice
+6,Thursday,Breakfast,Yogurt,1.4,serving
+6,Thursday,Lunch,Soda,1.9,oz
+6,Thursday,Dinner,Cucumber,1.5,serving
+6,Thursday,Lunch,Ice Cream,1.5,oz
+6,Friday,Snack,Candy,2.1,oz
+6,Friday,Snack,Carrots,2.0,cup
+6,Friday,Dinner,Oatmeal,1.7,cup
+6,Friday,Breakfast,Broccoli,1.4,serving
+6,Friday,Dinner,Cheese,0.7,oz
+6,Saturday,Snack,Cucumber,1.0,oz
+6,Saturday,Dinner,Chicken,2.6,oz
+6,Saturday,Breakfast,Candy,1.2,piece
+6,Saturday,Dinner,Grapes,1.7,serving
+6,Saturday,Dinner,Yogurt,2.5,slice
+6,Sunday,Lunch,Candy,1.3,piece
+6,Sunday,Dinner,Candy,1.4,piece
+6,Sunday,Snack,Tortilla,0.7,oz
+6,Sunday,Lunch,Soda,2.6,cup
+6,Sunday,Breakfast,Candy,2.2,piece
+7,Monday,Lunch,Apple,1.3,piece
+7,Monday,Dinner,Rice,1.7,cup
+7,Monday,Dinner,Orange,2.9,cup
+7,Monday,Dinner,Tofu,0.9,serving
+7,Tuesday,Dinner,Banana,2.9,serving
+7,Tuesday,Lunch,Cereal,2.5,cup
+7,Tuesday,Snack,Coffee,1.5,oz
+7,Wednesday,Breakfast,Ice Cream,1.8,serving
+7,Wednesday,Dinner,Rice,1.3,oz
+7,Wednesday,Breakfast,Milk,2.1,cup
+7,Wednesday,Lunch,Chocolate,0.6,piece
+7,Wednesday,Lunch,Yogurt,1.2,cup
+7,Thursday,Breakfast,Grapes,2.4,piece
+7,Thursday,Snack,Ice Cream,1.1,serving
+7,Thursday,Breakfast,Bread,2.9,serving
+7,Thursday,Breakfast,Quinoa,0.6,cup
+7,Thursday,Dinner,Tofu,1.2,oz
+7,Friday,Snack,Yogurt,3.0,oz
+7,Friday,Snack,Tomatoes,0.6,oz
+7,Friday,Breakfast,Tea,2.9,bottle
+7,Saturday,Lunch,Tea,2.5,oz
+7,Saturday,Breakfast,Fish,2.8,oz
+7,Saturday,Breakfast,Cookies,2.2,serving
+7,Sunday,Lunch,Strawberries,1.6,cup
+7,Sunday,Snack,Yogurt,1.0,cup
+7,Sunday,Snack,Watermelon,1.2,cup
+7,Sunday,Snack,Orange,2.6,piece
+8,Monday,Snack,Chicken,1.7,cup
+8,Monday,Snack,Apple,0.9,cup
+8,Monday,Breakfast,Milk,2.6,serving
+8,Tuesday,Lunch,Yogurt,2.6,slice
+8,Tuesday,Breakfast,Quinoa,1.2,serving
+8,Tuesday,Breakfast,Spinach,1.1,cup
+8,Tuesday,Breakfast,Pasta,2.2,cup
+8,Tuesday,Snack,Milk,2.2,cup
+8,Wednesday,Lunch,Fish,2.1,oz
+8,Wednesday,Dinner,Juice,1.0,can
+8,Wednesday,Snack,Cucumber,2.7,cup
+8,Thursday,Snack,Beans,1.1,cup
+8,Thursday,Dinner,Candy,2.7,serving
+8,Thursday,Lunch,Strawberries,0.7,cup
+8,Friday,Dinner,Milk,2.7,slice
+8,Friday,Snack,Chicken,1.6,cup
+8,Friday,Lunch,Coffee,1.4,can
+8,Friday,Snack,Bell Peppers,2.9,cup
+8,Friday,Lunch,Tea,1.7,can
+8,Saturday,Dinner,Nuts,2.8,oz
+8,Saturday,Dinner,Watermelon,0.7,serving
+8,Saturday,Lunch,Rice,0.6,slice
+8,Sunday,Lunch,Cereal,1.2,cup
+8,Sunday,Breakfast,Tortilla,2.0,slice
+8,Sunday,Lunch,Chocolate,1.6,oz
+8,Sunday,Snack,Orange,1.8,serving
+8,Sunday,Breakfast,Fish,0.7,cup
+9,Monday,Dinner,Tortilla,1.3,slice
+9,Monday,Dinner,Grapes,1.2,serving
+9,Monday,Breakfast,Pasta,1.5,cup
+9,Monday,Breakfast,Quinoa,2.0,slice
+9,Monday,Dinner,Cucumber,2.2,cup
+9,Tuesday,Lunch,Oatmeal,2.8,serving
+9,Tuesday,Dinner,Bread,0.9,cup
+9,Tuesday,Breakfast,Chicken,2.6,cup
+9,Wednesday,Snack,Lettuce,1.5,cup
+9,Wednesday,Dinner,Tofu,2.8,oz
+9,Wednesday,Breakfast,Cucumber,0.7,cup
+9,Wednesday,Snack,Cucumber,2.3,cup
+9,Thursday,Snack,Rice,1.2,slice
+9,Thursday,Breakfast,Ice Cream,1.6,oz
+9,Thursday,Snack,Yogurt,1.0,oz
+9,Friday,Lunch,Rice,1.3,slice
+9,Friday,Lunch,Milk,2.9,oz
+9,Friday,Lunch,Strawberries,1.4,piece
+9,Friday,Breakfast,Quinoa,0.8,slice
+9,Friday,Breakfast,Ice Cream,1.4,piece
+9,Saturday,Breakfast,Fish,2.0,serving
+9,Saturday,Lunch,Banana,2.9,piece
+9,Saturday,Snack,Milk,1.6,slice
+9,Sunday,Lunch,Lettuce,0.7,oz
+9,Sunday,Dinner,Rice,0.8,serving
+9,Sunday,Dinner,Energy Drink,1.5,oz
+9,Sunday,Lunch,Blueberries,2.6,piece
+10,Monday,Breakfast,Grapes,0.9,serving
+10,Monday,Dinner,Quinoa,1.6,oz
+10,Monday,Lunch,Lettuce,2.0,cup
+10,Monday,Lunch,Quinoa,2.3,oz
+10,Monday,Snack,Banana,1.2,serving
+10,Tuesday,Lunch,Donut,1.0,piece
+10,Tuesday,Lunch,Coffee,1.5,cup
+10,Tuesday,Lunch,Cheese,0.7,slice
+10,Tuesday,Dinner,Tofu,1.8,cup
+10,Wednesday,Dinner,Bread,2.0,cup
+10,Wednesday,Snack,Eggs,1.8,cup
+10,Wednesday,Breakfast,Spinach,1.8,cup
+10,Thursday,Lunch,Orange,1.6,serving
+10,Thursday,Dinner,Ice Cream,1.9,serving
+10,Thursday,Lunch,Eggs,2.6,oz
+10,Thursday,Snack,Donut,1.5,serving
+10,Friday,Lunch,Apple,1.1,serving
+10,Friday,Lunch,Watermelon,1.1,serving
+10,Friday,Dinner,Tea,2.0,can
+10,Saturday,Lunch,Beans,0.7,cup
+10,Saturday,Lunch,Cereal,0.8,slice
+10,Saturday,Breakfast,Bell Peppers,0.7,oz
+10,Sunday,Snack,Soda,1.5,can
+10,Sunday,Snack,Lettuce,1.3,oz
+10,Sunday,Snack,Orange,2.0,piece
+10,Sunday,Breakfast,Pasta,1.5,cup

@@ -1284,9 +1284,9 @@ app = rx.App(
 )
 app.add_page(index)
 
-# Cargar preguntas FAQ desde examples.yaml en agentic_workflow/fewshot
+# Cargar preguntas FAQ desde examples.yaml en dev/tpp_agentic_graph_v4/fewshot
 try:
-    _examples_path = _Path("agentic_workflow/fewshot/examples.yaml")
+    _examples_path = _Path("dev/tpp_agentic_graph_v4/fewshot/examples.yaml")
     if _examples_path.exists():
         _examples_data = yaml.safe_load(_examples_path.read_text()) or {}
         _FAQ_QUESTIONS: list[str] = [

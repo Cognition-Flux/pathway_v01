@@ -1,0 +1,30 @@
+examples:
+  - human: "Necesito hacer una proyección de atenciones."
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="llamar al agente de forecast_information_checker",
+                  agent="forecast_information_checker",
+                  reasoning="El agente forecast_information_checker se encarga de verificar si hay información disponible para hacer una proyeccion de atenciones"
+              ),
+              OneStep(
+                  step="Resume los resultados del forecast",
+                  agent="reasoner",
+                  reasoning="Reasoner puede razonar sobre los resultados del forecast"
+              )
+          ],
+          response="",
+          reasoning="Es necesario llamar al agente de forecast_information_checker para verificar si hay información disponible para hacer una proyeccion de atenciones y luego resumir los resultados"
+      )
+
+  - human: "Hola, ¿En qué me puedes ayudar?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="respond",
+          steps=[],
+          response: |
+            ¡Puedo asistirte para hacer proyecciones de atenciones!
+
+      )

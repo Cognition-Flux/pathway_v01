@@ -1,0 +1,727 @@
+examples:
+  - human: "¿Qué es una declaración de impacto ambiental?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Buscar información sobre las declaraciones de impacto ambiental y sus definiciones",
+                  agent="rag",
+                  reasoning="El agente RAG es el adecuado ya que la consulta está DIRECTAMENTE relacionada con las DECLARACIONES DE IMPACTO AMBIENTAL, que es precisamente la temática central de los documentos en nuestra vectorstore especializada"
+              )
+          ],
+          response="",
+          reasoning="Esta es una pregunta directa sobre un concepto fundamental de impacto ambiental que puede ser respondida adecuadamente consultando nuestra base de documentos especializada"
+      )
+  - human: "¿Qué es un estudio de flora y fauna y qué factores se analizan en un impacto ambiental?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Buscar información sobre la definición y metodologías de los estudios de flora y fauna",
+                  agent="rag",
+                  reasoning="El agente RAG es el indicado ya que la consulta sobre ESTUDIOS DE FLORA Y FAUNA está explícitamente relacionada con la evaluación ambiental, tema principal de nuestra vectorstore especializada"
+              ),
+              OneStep(
+                  step="Buscar información sobre los factores analizados en un estudio de impacto ambiental",
+                  agent="rag",
+                  reasoning="El agente RAG debe usarse porque los FACTORES DE IMPACTO AMBIENTAL son un tema central en los estudios presentes en nuestra base de conocimiento"
+              )
+          ],
+          response="",
+          reasoning="Esta pregunta tiene dos componentes distintos que requieren búsquedas específicas: primero entender qué es un estudio de flora y fauna y luego identificar los factores que se analizan en un impacto ambiental"
+      )
+  - human: "¿Cuáles son tus capacidades y cómo puedes ayudarme con la evaluación de impacto ambiental? ¿qué preguntas puedes responder? ¿qué puedes hacer? ¿qué puedes hacer para ayudarme?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="respond",
+          steps=[],
+          response: |
+            Puedo ayudarte con la evaluación de impacto ambiental de varias maneras: buscar información en declaraciones de impacto ambiental, realizar búsquedas web para encontrar normativa reciente y analizar datos para identificar patrones relevantes.
+
+            | Capacidad | Descripción | Tipo de consultas |
+            |-----------|-------------|-------------------|
+            | **Búsqueda en documentos de impacto ambiental** | Acceso a estudios y declaraciones de impacto ambiental | Líneas de base, análisis de flora y fauna, normativa ambiental |
+            | **Búsqueda web** | Obtención de información actualizada de internet | Normativas recientes, noticias, avances técnicos no incluidos en la base de datos |
+            | **Análisis de datos** | Procesamiento de datos estructurados en tablas | Correlaciones, tendencias, comparativas entre variables ambientales |
+            | **Visualizaciones** | Creación de gráficos y representaciones visuales | Tendencias temporales, comparativas, distribuciones geoespaciales |
+            | **Reportes** | Generación de informes detallados y estructurados | Resúmenes de estudios de impacto, análisis comparativos, revisiones de líneas de base |
+          reasoning: "Esta pregunta solicita directamente información sobre mis capacidades relacionadas con la evaluación de impacto ambiental, puedo responder sin necesidad de generar un plan de investigación ya que tengo esta información disponible"
+      )
+
+  - human: "¿Cómo se evalúa el impacto ambiental de un proyecto? ¿qué metodologías se usan? ¿cuáles son los pasos a seguir?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Buscar información científica sobre metodologías y procedimientos para la evaluación de impacto ambiental",
+                  agent="rag",
+                  reasoning="El agente RAG es el más apropiado porque la consulta sobre EVALUACIÓN DE IMPACTO AMBIENTAL está directamente relacionada con la temática de nuestra vectorstore que contiene estudios de impacto ambiental y metodologías de evaluación"
+              ),
+              OneStep(
+                  step="Complementar con una búsqueda web de normativas y guías metodológicas vigentes sobre evaluación de impacto ambiental",
+                  agent="websearch",
+                  reasoning="Se añade la búsqueda web para obtener versiones actualizadas de guías y normas oficiales que no estén en la vectorstore, garantizando información reciente y completa"
+              )
+          ],
+          response="",
+          reasoning="Esta pregunta está directamente relacionada con el campo de la evaluación de impacto ambiental, por lo que puede ser respondida consultando la base de conocimiento especializada en estudios de impacto ambiental"
+      )
+  - human: "¿Qué es la línea de base de un proyecto y qué es un plan de manejo ambiental?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Buscar información general sobre la línea de base en evaluación de impacto ambiental, sus componentes y su propósito",
+                  agent="websearch",
+                  reasoning="El agente de búsqueda web es necesario porque la consulta solicita información GENERAL sobre la LÍNEA DE BASE como concepto técnico, NO ENFOCADA ESPECÍFICAMENTE en un proyecto. La vectorstore especializada contendría información limitada sobre los aspectos generales y definiciones de este concepto"
+              ),
+              OneStep(
+                  step="Buscar información general sobre el plan de manejo ambiental, sus objetivos y sus componentes",
+                  agent="websearch",
+                  reasoning="El agente de búsqueda web debe usarse porque la consulta busca información GENERAL sobre el PLAN DE MANEJO AMBIENTAL como instrumento de gestión, NO CENTRADA en un proyecto específico. Nuestra vectorstore especializada en estudios de impacto no contiene información completa sobre la estructura general de estos planes"
+              )
+          ],
+          response="",
+          reasoning="Esta pregunta solicita información general sobre dos conceptos técnicos. Aunque tienen relación con la evaluación ambiental, la pregunta no está enfocada en un proyecto específico, sino en qué son estos conceptos desde un punto de vista técnico, por lo que es mejor buscar información general en la web"
+      )
+  - human: "hola"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="respond",
+          steps=[],
+          response: "¡Hola! ¿En qué puedo ayudarte hoy con información sobre evaluación de impacto ambiental?",
+          reasoning: "El usuario está saludando, por lo que debo responder directamente con un saludo breve y ofrecer ayuda relacionada con el tema de la aplicación"
+      )
+  - human: "gracias, chao."
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="respond",
+          steps=[],
+          response: "¡De nada! Hasta pronto. Si necesitas más información sobre evaluación de impacto ambiental en el futuro, estaré aquí para ayudarte.",
+          reasoning: "El usuario se está despidiendo y agradeciendo, por lo que debo responder directamente con una despedida cordial sin necesidad de elaborar un plan"
+      )
+
+
+  - human: "¿Es posible generar gráficos, visualizaciones o representaciones visuales de datos para entender mejor los patrones de impacto ambiental? Me gustaría poder ver diagramas, plots o imágenes que ilustren la información."
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="respond",
+          steps=[],
+          response: |
+            ¡Sí, es posible generar gráficos, visualizaciones y representaciones visuales de datos! Para crear estas visualizaciones necesitamos primero obtener la información relevante sobre la cual construir los gráficos. Esta información puede provenir de diferentes fuentes: documentos de impacto ambiental en nuestra base de conocimiento, análisis de datos estructurados en tablas, o mediante búsquedas web para obtener datos actualizados.
+
+            | Tipo de visualización | Aplicación | Fuente de datos requerida |
+            |------------------------|------------|---------------------------|
+            | **Gráficos de barras** | Comparación de factores de impacto entre proyectos | Análisis de tablas, documentos de impacto ambiental |
+            | **Gráficos de líneas** | Tendencias temporales en variables ambientales | Series temporales de datos estructurados |
+            | **Diagramas de dispersión** | Correlaciones entre variables (ej: emisiones y calidad del aire) | Datos numéricos de múltiples variables |
+            | **Mapas de calor** | Distribución de impactos por zonas geográficas | Datos categóricos y numéricos |
+            | **Diagramas de flujo** | Procesos de evaluación de impacto ambiental | Documentos de impacto, búsqueda web |
+
+            Una vez recopilada la información necesaria, podemos crear estos diversos tipos de visualizaciones que te ayudarán a comprender mejor los patrones de impacto ambiental que te interesen.
+
+            Para obtener información actualizada desde la web, mi búsqueda está restringida a estos dominios científicos y gubernamentales:
+
+            - sea.gob.cl
+            - sinia.mma.gob.cl
+            - bcn.cl/leychile
+            - sciencedirect.com
+            - journals.plos.org
+            - nature.com
+            - frontiersin.org/journals
+            - mdpi.com
+          reasoning: "El usuario pregunta directamente sobre la capacidad de generar visualizaciones, por lo que puedo responder inmediatamente sin necesidad de elaborar un plan, explicando que sí es posible pero que primero debemos obtener la información necesaria de nuestras fuentes disponibles"
+      )
+  - human: "Necesito crear representaciones gráficas para mi investigación sobre impacto ambiental. ¿Puedes ayudarme a producir diagramas, charts, plots o cualquier tipo de visualización de datos para ilustrar tendencias sobre factores que afectan el medio ambiente? Estoy especialmente interesado en ver correlaciones visuales entre diferentes variables."
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="respond",
+          steps=[],
+          response: |
+            ¡Definitivamente puedo ayudarte a crear representaciones gráficas para tu investigación sobre impacto ambiental! Para generar visualizaciones efectivas, primero necesitamos recopilar la información relevante sobre la cual construir estas representaciones visuales.
+
+            | Tipo de visualización | Mejor para visualizar | Ejemplos de aplicación en impacto ambiental |
+            |------------------------|----------------------|--------------------------------------|
+            | **Gráficos de dispersión** | Correlaciones entre variables | Relación entre emisiones industriales y niveles de contaminantes |
+            | **Gráficos de líneas** | Tendencias a lo largo del tiempo | Cambios en la calidad del agua durante un proyecto |
+            | **Gráficos de barras** | Comparaciones entre zonas | Diferencias en riqueza de especies según el uso del suelo |
+            | **Gráficos de caja** | Distribuciones y valores atípicos | Variabilidad en la calidad del aire por estación del año |
+            | **Mapas de calor** | Patrones complejos multivariables | Interacciones entre contaminantes, clima y efectos en la salud |
+            | **Gráficos circulares** | Composiciones proporcionales | Distribución de fuentes de emisión de gases de efecto invernadero |
+
+            Esta información puede obtenerse a través de: 1) análisis de estudios de impacto ambiental en nuestra base de conocimiento especializada, 2) procesamiento y análisis de datos estructurados en tablas que contengan variables ambientales, o 3) búsquedas web (limitadas a los dominios listados abajo) para complementar con datos actualizados o normativa reciente.
+
+            - sea.gob.cl
+            - sinia.mma.gob.cl
+            - bcn.cl/leychile
+            - sciencedirect.com
+            - journals.plos.org
+            - nature.com
+            - frontiersin.org/journals
+            - mdpi.com
+
+            Una vez que tengamos estos datos, podemos crear visualizaciones que muestren claramente las correlaciones entre diferentes variables y factores que afectan el medio ambiente, lo que te permitirá identificar patrones y tendencias significativas para tu investigación.
+          reasoning: "El usuario solicita específicamente información sobre la capacidad de crear visualizaciones para su investigación, por lo que puedo responder directamente sin necesidad de elaborar un plan, explicando el proceso para generar visualizaciones a partir de diferentes fuentes de datos"
+      )
+  - human: "¿Puedes generar reportes, informes o documentos de análisis sobre temas de impacto ambiental? Me interesa saber si es posible obtener documentación detallada, resúmenes ejecutivos o informes que sinteticen información relevante."
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="respond",
+          steps=[],
+          response: |
+            ¡Sí, puedo generar reportes, informes y documentos de análisis sobre temas de impacto ambiental! Para crear documentación de alta calidad, primero necesitamos recopilar la información pertinente que servirá como base para el reporte.
+
+            | Tipo de documento | Características | Aplicaciones en investigación de impacto ambiental |
+            |-------------------|-----------------|---------------------------------------------|
+            | **Informes técnicos** | Detallados, con análisis en profundidad | Revisión exhaustiva de la línea de base de un proyecto |
+            | **Resúmenes ejecutivos** | Concisos, destacan puntos clave | Síntesis de hallazgos principales sobre los impactos de un proyecto |
+            | **White papers** | Informativos, enfoque en soluciones | Propuestas de medidas de mitigación y compensación |
+            | **Revisiones bibliográficas** | Compilación de literatura científica | Estado actual del conocimiento sobre los efectos de un contaminante |
+            | **Análisis comparativos** | Contraste entre estudios o proyectos | Comparación de diferentes tecnologías y su impacto ambiental |
+            | **Presentaciones estructuradas** | Formato visual con puntos clave | Material didáctico sobre hallazgos en la evaluación de un proyecto |
+
+            Esta información puede obtenerse de tres fuentes principales: 1) estudios de impacto ambiental y declaraciones de nuestra base de conocimiento especializada, 2) análisis de datos estructurados en tablas que contengan métricas y estadísticas relevantes, o 3) búsquedas web dentro de los siguientes dominios para incorporar normativa reciente y datos actualizados.
+
+            - sea.gob.cl
+            - sinia.mma.gob.cl
+            - bcn.cl/leychile
+            - sciencedirect.com
+            - journals.plos.org
+            - nature.com
+            - frontiersin.org/journals
+            - mdpi.com
+
+            Los reportes pueden incluir secciones como introducción, metodología, resultados, discusión y conclusiones, adaptados específicamente a tus requerimientos y nivel de detalle deseado.
+          reasoning: "El usuario pregunta directamente sobre la capacidad de generar reportes e informes, por lo que puedo responder inmediatamente sin necesidad de elaborar un plan, explicando que sí es posible pero que primero debemos obtener la información necesaria de nuestras fuentes disponibles"
+      )
+
+  - human: "¿Cuál es la temática de los estudios de impacto ambiental?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Obtener un panorama/visión general/clasificación temática de todos los estudios (declaraciones, análisis, informes) recopilados, identificando áreas de impacto, componentes ambientales, y líneas de base principales",
+                  agent="rag",
+                  reasoning="El agente RAG es el apropiado para analizar el corpus de estudios y extraer la TEMÁTICA, ASUNTO, ENFOQUE o COMPONENTE AMBIENTAL predominante, así como los objetivos y conclusiones generales"
+              ),
+              OneStep(
+                  step="Complementar con una búsqueda web de literatura reciente y artículos académicos que amplíen la visión temática de los estudios de impacto ambiental",
+                  agent="websearch",
+                  reasoning="Se añade la búsqueda web para incorporar publicaciones recientes y compararlas con los hallazgos de la vectorstore"
+              )
+          ],
+          response="",
+          reasoning="El usuario desea conocer la TEMÁTICA global (asunto, orientación, disciplina) de los estudios; se resuelve con un único paso mediante el agente RAG"
+      )
+  - human: "Necesito una visión global sobre el enfoque de los estudios de impacto ambiental: ¿de qué tratan y qué hallazgos reportan?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Analizar los estudios/declaraciones/informes para resumir su enfoque, componentes ambientales, metodologías, y hallazgos/resultados principales",
+                  agent="rag",
+                  reasoning="El agente RAG puede compilar un RESUMEN temático y de conclusiones, identificando ÁREAS DE ESTUDIO, OBJETIVOS, METAS, RESULTADOS y CONCLUSIONES de las publicaciones"
+              ),
+              OneStep(
+                  step="Complementar con búsqueda web de revisiones y meta-análisis recientes que aporten contexto externo a los hallazgos de la vectorstore",
+                  agent="websearch",
+                  reasoning="Se añade la búsqueda web para recopilar literatura científica de última fecha que complemente y contraste la información interna"
+              )
+          ],
+          response="",
+          reasoning="La petición requiere un único paso de análisis con el agente RAG para generar una VISIÓN global del enfoque temático y hallazgos de los estudios"
+      )
+  - human: "¿De qué tratan los documentos a los que tienes acceso?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Revisar los documentos/archivos/textos/fuentes disponibles para generar un resumen temático (panorama, sinopsis, clasificación de tópicos), incluyendo componentes ambientales y principales impactos",
+                  agent="rag",
+                  reasoning="El agente RAG es el más adecuado para examinar el corpus de DOCUMENTOS (archivos, textos, materiales, fuentes) y extraer su CONTENIDO, TEMÁTICA, PROPÓSITO y CONCLUSIONES principales en un único paso"
+              ),
+              OneStep(
+                  step="Realizar una búsqueda web para encontrar documentos y estudios externos recientes que amplíen o actualicen la información resumida",
+                  agent="websearch",
+                  reasoning="Se añade la búsqueda web para enriquecer el resumen con información de fuentes que no están en la vectorstore"
+              )
+          ],
+          response="",
+          reasoning="El usuario solicita conocer de qué TRATAN los DOCUMENTOS; basta un único paso usando el agente RAG para ofrecer un resumen temático"
+      )
+  - human: "Proporcióname una visión temática de los documentos disponibles: ¿qué temas abordan, qué objetivos persiguen y qué resultados presentan?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Analizar el conjunto de documentos/fuentes/publicaciones para identificar temas/tópicos, objetivos/propósitos e insights/resultados clave, creando una clasificación o mapa temático",
+                  agent="rag",
+                  reasoning="El agente RAG puede sintetizar la INFORMACIÓN TEMÁTICA de los DOCUMENTOS (fuentes, publicaciones, archivos) y presentar los principales tópicos, objetivos y hallazgos en un solo paso"
+              ),
+              OneStep(
+                  step="Complementar con una búsqueda web de literatura y reportes gubernamentales recientes que amplíen la visión temática",
+                  agent="websearch",
+                  reasoning="Se añade la búsqueda web para integrar documentos externos recientes sobre las mismas temáticas"
+              )
+          ],
+          response="",
+          reasoning="Se requiere un único paso con el agente RAG para brindar una VISIÓN temático-conceptual de los documentos disponibles"
+      )
+  - human: "¿En qué sitios web, portales o páginas de internet puedes realizar tus búsquedas?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="respond",
+          steps=[],
+          response: |
+            Puedo buscar información en una selección de dominios científicos y gubernamentales, incluyendo:
+
+            - sea.gob.cl
+            - sinia.mma.gob.cl
+            - bcn.cl/leychile
+            - sciencedirect.com
+            - journals.plos.org
+            - nature.com
+            - frontiersin.org/journals
+            - mdpi.com
+          reasoning: "El usuario pregunta directamente por los SITIOS WEB donde realizo búsquedas; puedo responder de forma inmediata listando los DOMINIOS configurados"
+      )
+  - human: "¿Qué páginas o dominios consultas en la web cuando necesitas normativa ambiental o estudios científicos?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="respond",
+          steps=[],
+          response: |
+            Para búsquedas de normativa y estudios suelo consultar los siguientes dominios/plataformas:
+
+            - sea.gob.cl
+            - sinia.mma.gob.cl
+            - bcn.cl/leychile
+            - sciencedirect.com
+            - journals.plos.org
+            - nature.com
+            - frontiersin.org/journals
+            - mdpi.com
+          reasoning: "La consulta solicita saber QUÉ PÁGINAS uso para obtener información ambiental; respondo listando los DOMINIOS predefinidos"
+      )
+  - human: "Indícame los sitios, portales o websites que abarcas al explorar la información en línea (buscador web)."
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="respond",
+          steps=[],
+          response: |
+            Mi herramienta de búsqueda está configurada para filtrar resultados dentro de estos dominios especializados:
+
+            - sea.gob.cl
+            - sinia.mma.gob.cl
+            - bcn.cl/leychile
+            - sciencedirect.com
+            - journals.plos.org
+            - nature.com
+            - frontiersin.org/journals
+            - mdpi.com
+          reasoning: "El usuario requiere una VISIÓN de los DOMINIOS que manejo; puedo responder de inmediato enumerando la lista de portales"
+      )
+  - human: "¿Qué puedes hacer? ¿Qué haces? ¿Cómo puedes ayudar?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="respond",
+          steps=[],
+          response: |
+            ¡Puedo asistirte de muchas formas! A continuación encontrarás un desglose exhaustivo–y rico en sinónimos–de mis **competencias, facultades, funciones, habilidades y utilidades** dentro de la plataforma:
+
+            1. **Consulta de documentos de impacto ambiental**
+                • Recuperación, búsqueda, extracción y revisión de *estudios*, declaraciones, informes y literatura técnica almacenada en nuestra vectorstore especializada en evaluación ambiental.
+                • Síntesis, resumen y elaboración de respuestas basadas en evidencia.
+
+            2. **Exploración web**
+                • Localizo estudios recientes, noticias, normativas y avances que aún no figuran en la base interna.
+                • Mis búsquedas están filtradas a dominios científicos y gubernamentales confiables para maximizar la relevancia y la calidad de la información:
+
+                - sea.gob.cl
+                - sinia.mma.gob.cl
+                - bcn.cl/leychile
+                - sciencedirect.com
+                - journals.plos.org
+                - nature.com
+                - frontiersin.org/journals
+                - mdpi.com
+
+            3. **Análisis de datos tabulares (tablas, datasets, hojas de cálculo, dataframes)**
+                • Genero estadísticas descriptivas, correlaciones, comparativas y perfiles de datos.
+                • Identifico patrones, tendencias y anomalías relevantes.
+
+            4. **Visualización y representación gráfica (gráficos, diagramas, plots, charts, mapas de calor)**
+                • Transformo datos numéricos en imágenes claras para facilitar la interpretación.
+                • Admito gráficas de barras, líneas, dispersión, cajas, circulares y flujos.
+
+            5. **Generación de reportes, informes, resúmenes ejecutivos y white papers**
+                • Compilo hallazgos, metodologías y conclusiones en documentos estructurados y listos para compartir.
+                • Adapto el nivel de detalle según la audiencia (técnico, ejecutivo, divulgativo).
+
+            6. **Asistencia general y conceptual**
+                • Explico conceptos, defino términos, clarifico dudas y proporciono contexto técnico o científico.
+                • Sugiero estrategias, metodologías y próximos pasos de análisis.
+
+            En resumen, soy un **asistente integral** que combina capacidades de *information retrieval*, *web crawling*, análisis de datos y generación de conocimiento para apoyar tu análisis de impacto ambiental.
+          reasoning: "El usuario formula preguntas abiertas sobre mis capacidades; respondo directamente con una descripción VERBOSA y repleta de sinónimos para mejorar la búsqueda semántica, incluyendo la lista de dominios utilizados en la búsqueda web"
+      )
+  - human: "¿Puedes buscar en internet?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="respond",
+          steps=[],
+          response: |
+            Sí, dispongo de capacidad para *navegar y consultar* información en la web. No obstante, mi acceso está **restringido y optimizado** a un conjunto de dominios científicos y gubernamentales de alta fiabilidad para garantizar rigor técnico:
+
+            - sea.gob.cl
+            - sinia.mma.gob.cl
+            - bcn.cl/leychile
+            - sciencedirect.com
+            - journals.plos.org
+            - nature.com
+            - frontiersin.org/journals
+            - mdpi.com
+
+            De esta forma aseguro que los resultados provengan de fuentes reconocidas y pertinentes para temas de evaluación de impacto ambiental.
+          reasoning: "El usuario pregunta si puedo buscar en internet; respondo afirmativamente pero aclaro la LIMITACIÓN a dominios científicos y gubernamentales concretos"
+      )
+  - human: "¿Tienes conexión a internet o acceso online?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="respond",
+          steps=[],
+          response: |
+            Efectivamente, cuento con *conectividad en línea* para realizar búsquedas. Sin embargo, mi motor de búsqueda está **acotado a portales gubernamentales y bases de datos científicas** para preservar la calidad de las referencias:
+
+            - sea.gob.cl
+            - sinia.mma.gob.cl
+            - bcn.cl/leychile
+            - sciencedirect.com
+            - journals.plos.org
+            - nature.com
+            - frontiersin.org/journals
+            - mdpi.com
+          reasoning: "Aclaro que sí hay conexión online, pero está circunscrita a los dominios listados para asegurar la pertinencia técnica"
+      )
+  - human: "¿Puedes acceder a internet para obtener información externa?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="respond",
+          steps=[],
+          response: |
+            Sí, puedo *acceder, consultar y recuperar* información externa. No obstante, mi alcance está **deliberadamente limitado** a los siguientes sitios especializados, lo que me permite ofrecer resultados confiables y enfocados en evaluación ambiental:
+
+            - sea.gob.cl
+            - sinia.mma.gob.cl
+            - bcn.cl/leychile
+            - sciencedirect.com
+            - journals.plos.org
+            - nature.com
+            - frontiersin.org/journals
+            - mdpi.com
+          reasoning: "Indico que el acceso a internet existe pero se restringe a la lista de dominios por motivos de calidad y relevancia"
+      )
+  - human: "Necesito saber la relación, correlación o asociación entre la construcción de una carretera y la fragmentación de hábitats."
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Interrogar la base vectorial para recuperar estudios, informes y revisiones sobre INFRAESTRUCTURA VIAL, FRAGMENTACIÓN DE HÁBITATS y su vínculo con la BIODIVERSIDAD y ECOLOGÍA DEL PAISAJE",
+                  agent="rag",
+                  reasoning="El agente RAG es idóneo para indagar en la vectorstore y extraer conocimiento consolidado acerca de cómo las carreteras (infraestructura lineal, barreras) repercuten en la conectividad de los ecosistemas y la diversidad de especies"
+              ),
+              OneStep(
+                  step="Ejecutar una búsqueda web avanzada para localizar estudios contemporáneos, metaanálisis recientes y noticias científicas de última hora sobre IMPACTO DE CARRETERAS y CONECTIVIDAD ECOLÓGICA",
+                  agent="websearch",
+                  reasoning="El agente websearch aportará información FRESCA y ACTUAL, capturando publicaciones emergentes (preprints, conferencias, notas de prensa) que aún no figuran en la vectorstore, completando la panorámica con evidencias recientes"
+              )
+          ],
+          response="",
+          reasoning="La consulta exige un abordaje en dos fases: primero extraer evidencia estable de la base interna mediante RAG y luego complementar con hallazgos novísimos a través de la búsqueda web"
+      )
+  - human: "Explícame si hay vínculo, nexo o conexión entre la contaminación acústica y el comportamiento de la fauna silvestre."
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Consultar la vectorstore para rescatar información sobre RUIDO AMBIENTAL, CONTAMINACIÓN ACÚSTICA, y su efecto en el COMPORTAMIENTO ANIMAL y la FAUNA NATIVA",
+                  agent="rag",
+                  reasoning="Mediante RAG se accede rápidamente a literatura indexada que describe la influencia del ruido de origen antropogénico en los patrones de actividad y comunicación de la fauna"
+              ),
+              OneStep(
+                  step="Realizar una indagación en línea para detectar investigaciones punteras, ensayos de campo actuales y reportes divulgativos sobre BIOACÚSTICA y FAUNA SILVESTRE",
+                  agent="websearch",
+                  reasoning="El agente de búsqueda web ampliará la base de evidencia con publicaciones recientes (último año) procedentes de los dominios científicos autorizados"
+              )
+          ],
+          response="",
+          reasoning="Se emplea una doble estrategia (RAG + websearch) para articular una respuesta completa que combine investigación consagrada y hallazgos de vanguardia"
+      )
+  - human: "Quiero conocer qué relación, interacción o impacto tiene la calidad del agua sobre la riqueza de especies en un río."
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Buscar en la vectorstore literatura sobre CALIDAD DEL AGUA, CONTAMINANTES ACUÁTICOS y su repercusión en la BIODIVERSIDAD y RIQUEZA DE ESPECIES",
+                  agent="rag",
+                  reasoning="RAG permite recuperar rápidamente revisiones sistemáticas, estudios observacionales y ensayos que relacionan la calidad del agua con la estructura de las comunidades biológicas acuáticas"
+              ),
+              OneStep(
+                  step="Complementar con una exploración web para capturar artículos novedosos, recomendaciones de organismos de salud y tendencias actuales en ECOLOGÍA ACUÁTICA",
+                  agent="websearch",
+                  reasoning="El agente websearch proporcionará la perspectiva más reciente, incluyendo publicaciones en servidores de preprints y revistas de alto impacto que aún no están incorporadas al corpus interno"
+              )
+          ],
+          response="",
+          reasoning="La pregunta requiere articular una visión holística: evidencia consolidada (RAG) + información emergente (websearch) sobre la interacción entre calidad de agua y biodiversidad"
+      )
+  - human: "¿La reforestación con especies nativas puede mejorar la calidad del suelo?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Explorar en la vectorstore estudios e informes sobre REFORESTACIÓN, ESPECIES NATIVAS y su efecto en la CALIDAD DEL SUELO y PROPIEDADES EDAFICAS",
+                  agent="rag",
+                  reasoning="El agente RAG recupera literatura consolidada que relaciona la reforestación con la mejora de las propiedades físicas, químicas y biológicas del suelo"
+              ),
+              OneStep(
+                  step="Realizar una búsqueda web avanzada para encontrar estudios recientes, ensayos de campo y meta-análisis sobre RESTAURACIÓN ECOLÓGICA y SALUD DEL SUELO",
+                  agent="websearch",
+                  reasoning="El agente websearch complementa con evidencia actualizada publicada en los últimos meses"
+              )
+          ],
+          response="",
+          reasoning="Se requiere un plan de dos pasos: primero extraer evidencia de la base interna (RAG) y luego contrastar con hallazgos web actuales"
+      )
+  - human: "¿La presencia de vegetación influye en la calidad del aire urbano?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Recuperar artículos sobre VEGETACIÓN URBANA, INFRAESTRUCTURA VERDE y sus efectos en la CALIDAD DEL AIRE y CONTAMINANTES ATMOSFÉRICOS dentro de la vectorstore",
+                  agent="rag",
+                  reasoning="RAG extrae estudios que analizan cómo la vegetación modula la concentración de material particulado y otros contaminantes"
+              ),
+              OneStep(
+                  step="Buscar en la web investigaciones recientes y revisiones sistemáticas sobre BOSQUES URBANOS y CALIDAD DEL AIRE",
+                  agent="websearch",
+                  reasoning="websearch amplía con publicaciones de último año no incluidas en la base"
+              )
+          ],
+          response="",
+          reasoning="La pregunta requiere evidencia estable y actual, por lo que se emplean RAG y websearch en secuencia"
+      )
+  - human: "¿El cambio de uso de suelo acelera la erosión?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Consultar la vectorstore sobre CAMBIO DE USO DE SUELO, DEFORESTACIÓN y su relación con EROSIÓN HÍDRICA Y EÓLICA y DEGRADACIÓN DE SUELOS",
+                  agent="rag",
+                  reasoning="RAG provee estudios mecanísticos que vinculan el cambio de uso de suelo con la pérdida de suelo"
+              ),
+              OneStep(
+                  step="Buscar evidencia reciente en la web (meta-análisis, reviews) sobre LAND USE CHANGE y SOIL EROSION",
+                  agent="websearch",
+                  reasoning="websearch aporta la literatura más nueva y diversa"
+              )
+          ],
+          response="",
+          reasoning="Dos pasos garantizan una visión completa: corpus interno + literatura emergente"
+      )
+  - human: "¿La agricultura intensiva impacta la biodiversidad del suelo?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Buscar en la vectorstore estudios sobre AGRICULTURA INTENSIVA, MONOCULTIVOS y su impacto en la BIODIVERSIDAD DEL SUELO (ej. microorganismos, macrofauna)",
+                  agent="rag",
+                  reasoning="RAG entrega evidencia consolidada del efecto de la agricultura intensiva en la biota del suelo"
+              ),
+              OneStep(
+                  step="Investigar en la web publicaciones recientes sobre AGROECOSISTEMAS y BIODIVERSIDAD EDÁFICA, incluyendo datos de campo",
+                  agent="websearch",
+                  reasoning="websearch añade resultados actuales y estadísticas de campo"
+              )
+          ],
+          response="",
+          reasoning="Plan binario: RAG para base científica, websearch para actualidad"
+      )
+  - human: "¿Dónde se encuentran los ecosistemas con mayor riqueza de especies en Chile?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Revisar la vectorstore para identificar HOTSPOTS DE BIODIVERSIDAD, ecosistemas de ALTA RIQUEZA DE ESPECIES y factores asociados",
+                  agent="rag",
+                  reasoning="RAG proporciona estudios sobre patrones de biodiversidad y factores biogeográficos en Chile"
+              ),
+              OneStep(
+                  step="Ejecutar búsqueda web para obtener datos de inventarios de biodiversidad actualizados y reportes recientes sobre áreas de alto valor para la conservación",
+                  agent="websearch",
+                  reasoning="websearch actualiza la información con estadísticas y noticias recientes"
+              )
+          ],
+          response="",
+          reasoning="Se combinan datos de estudios (RAG) con cifras de inventarios actuales (websearch)"
+      )
+  - human: "¿La fragmentación del paisaje afecta la diversidad genética de las especies?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Consultar la vectorstore acerca de FRAGMENTACIÓN DEL PAISAJE, CONECTIVIDAD ECOLÓGICA y sus efectos en la DIVERSIDAD GENÉTICA y VIABILIDAD POBLACIONAL",
+                  agent="rag",
+                  reasoning="RAG recupera estudios que vinculan la fragmentación con la estructura genética de las poblaciones"
+              ),
+              OneStep(
+                  step="Buscar estudios recientes en la web sobre LANDSCAPE GENETICS y CONSERVATION",
+                  agent="websearch",
+                  reasoning="websearch complementa con hallazgos actuales y análisis genómicos"
+              )
+          ],
+          response="",
+          reasoning="El doble enfoque garantiza cobertura de literatura clásica y evidencia emergente"
+      )
+  - human: "¿Hay diferencia en el impacto ambiental de un parque eólico en la costa o en el interior?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Explorar en la vectorstore estudios comparativos de PARQUES EÓLICOS ONSHORE vs OFFSHORE relacionados con IMPACTO AMBIENTAL y FAUNA",
+                  agent="rag",
+                  reasoning="RAG ofrece investigaciones sobre cómo la localización de parques eólicos influye en sus impactos ambientales"
+              ),
+              OneStep(
+                  step="Realizar búsqueda web para hallar reportes y estudios recientes sobre IMPACTO DE ENERGÍAS RENOVABLES",
+                  agent="websearch",
+                  reasoning="websearch añade datos de monitoreo y casos de estudio actualizados"
+              )
+          ],
+          response="",
+          reasoning="Se necesitan datos internos y externos para comparar contextos de proyectos eólicos"
+      )
+  - human: "¿Qué rol tienen las comunidades locales en la evaluación ambiental de un proyecto?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Recuperar en la vectorstore literatura sobre PARTICIPACIÓN CIUDADANA, COMUNIDADES LOCALES y su rol en la EVALUACIÓN DE IMPACTO AMBIENTAL",
+                  agent="rag",
+                  reasoning="RAG muestra estudios que relacionan la participación ciudadana con la legitimidad y calidad de las evaluaciones ambientales"
+              ),
+              OneStep(
+                  step="Buscar en la web guías de participación y casos de estudio exitosos de involucramiento comunitario en proyectos",
+                  agent="websearch",
+                  reasoning="websearch provee ejemplos de políticas y casos de estudio actuales"
+              )
+          ],
+          response="",
+          reasoning="Plan en dos fases: evidencia científica (RAG) + casos recientes (websearch)"
+      )
+  - human: "¿La contaminación lumínica afecta a las especies nocturnas?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Investigar en la vectorstore estudios sobre EXPOSICIÓN A LUZ ARTIFICIAL, CONTAMINACIÓN LUMÍNICA y sus efectos en el COMPORTAMIENTO y FISIOLOGÍA de la FAUNA NOCTURNA",
+                  agent="rag",
+                  reasoning="RAG aporta la base mecanística del impacto de la contaminación lumínica en la fauna"
+              ),
+              OneStep(
+                  step="Ejecutar búsqueda web para recabar datos de monitoreo recientes y meta-análisis sobre LIGHT POLLUTION y WILDLIFE",
+                  agent="websearch",
+                  reasoning="websearch actualiza la visión con estadísticas y estudios recientes"
+              )
+          ],
+          response="",
+          reasoning="Se combinan referencias científicas internas con evidencia ambiental actual"
+      )
+
+  - human: "¿En qué me puedes ayudar?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="respond",
+          steps=[],
+          response: |
+            ¡Puedo asistirte de varias maneras dentro del ámbito de la evaluación de impacto ambiental!
+
+            • Búsqueda y síntesis de información en declaraciones y estudios de impacto ambiental
+            • Consultas web acotadas a fuentes científicas y gubernamentales confiables
+            • Análisis de datos tabulares para descubrir patrones y tendencias ambientales
+            • Creación de visualizaciones (gráficos, diagramas, mapas) que faciliten la interpretación
+            • Elaboración de reportes técnicos y resúmenes ejecutivos adaptados a tu audiencia
+
+            En conjunto, estas capacidades me permiten brindarte soporte integral para tus investigaciones y proyectos ambientales.
+          reasoning: "La pregunta solicita conocer cómo puedo ayudar; respondo directamente con un resumen de mis principales capacidades sin generar un plan."
+      )
+  - human: "¿Qué habilidades posees como asistente de impacto ambiental?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="respond",
+          steps=[],
+          response: |
+            Mis habilidades clave incluyen:
+
+            1. Recuperación de información especializada en impacto ambiental mediante RAG
+            2. Búsquedas web filtradas por dominios autoritativos (sea.gob.cl, sinia.mma.gob.cl, etc.)
+            3. Análisis estadístico y exploratorio de datos tabulares
+            4. Generación de visualizaciones claras para comunicar hallazgos
+            5. Redacción de informes y resúmenes bien estructurados
+            6. Explicación de conceptos técnicos y normativa ambiental
+
+            Estas habilidades combinadas me convierten en un asistente versátil para tus necesidades de evaluación ambiental.
+          reasoning: "El usuario pregunta por mis habilidades; contesto con una lista resumida de competencias, siguiendo la lógica respond."
+      )
+  - human: "¿Qué funciones ofreces dentro de esta plataforma?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="respond",
+          steps=[],
+          response: |
+            Dentro de la plataforma puedo ofrecer las siguientes funciones principales:
+
+            • Consulta y extracción de conocimiento de documentos de impacto ambiental
+            • Búsqueda de normativa y literatura científica actualizada en la web
+            • Análisis de datasets ambientales en formato tabular
+            • Diseño de gráficos y diagramas para visualizar resultados
+            • Generación de reportes detallados o resúmenes ejecutivos
+            • Asesoría conceptual sobre metodologías de evaluación ambiental
+
+            Gracias a estas funciones puedo ayudarte a responder preguntas, analizar datos y elaborar documentos de apoyo para tus proyectos.
+          reasoning: "La pregunta indaga sobre las funciones disponibles; respondo con un resumen de funcionalidades, manteniendo what_to_do='respond' y steps vacíos."
+      )
+  - human: "¿Cuál es la normativa ambiental vigente sobre emisiones de material particulado en Chile?"
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Buscar legislación, decretos y normativas chilenas actualizadas sobre límites de emisiones de material particulado (PM10, PM2.5)",
+                  agent="websearch",
+                  reasoning="Al tratarse de una consulta explícita sobre NORMATIVA AMBIENTAL, se utiliza exclusivamente la herramienta de búsqueda web para acceder a la información legal vigente"
+              )
+          ],
+          response="",
+          reasoning="La pregunta se centra en legislación y normativa vigente; corresponde un único paso con websearch sin RAG, siguiendo las reglas establecidas"
+      )

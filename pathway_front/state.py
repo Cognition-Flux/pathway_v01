@@ -20,6 +20,7 @@ serializarla correctamente al JSON que espera el componente `rx.plotly`.
 # ruff: noqa: RUF012
 """
 
+# %%
 import json
 import os
 import time
@@ -45,7 +46,7 @@ from starlette.websockets import WebSocketDisconnect
 
 _ORIGINAL_CWD = os.getcwd()
 
-from agentic_workflow.streamers.by_updates import (  # noqa: E402  module-level import
+from dev.tpp_agentic_graph_v4.streamers.by_updates import (  # noqa: E402  module-level import
     stream_updates_including_subgraphs,
 )
 

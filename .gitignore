@@ -23,6 +23,9 @@ __pycache__/
 # OS-specific
 .DS_Store
 
+# Ignore config files
+**/config.json
+
 # Log files
 *.log
 

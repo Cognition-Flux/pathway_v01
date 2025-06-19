@@ -42,3 +42,6 @@ agentic_workflow/agents/agent_for_forecast/forecast_model/forecast/figures/
 *.pth
 *.pkl
 *.model
+
+# Ignore pre-commit config
+.pre-commit-config.yaml

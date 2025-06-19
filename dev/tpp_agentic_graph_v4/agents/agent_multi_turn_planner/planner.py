@@ -279,13 +279,13 @@ def check_if_plan_is_done(
                 (
                     f"Quedan {len(state['steps'])} pasos por ejecutar."
                     if len(state["steps"]) > 0
-                    else "Plan completado!"
+                    else "Tareas completadas!"
                 )
             ],
             "reasoning": [
                 f"Quedan {len(state['steps'])} pasos por ejecutar."
                 if len(state["steps"]) > 0
-                else "Plan completado",
+                else "Tareas completadas",
                 *(
                     [f"proximo agente: {next_node.replace('_', ' ').title()}"]
                     if isinstance(next_node, str) and next_node != END
@@ -331,7 +331,7 @@ def response_after_plan(
     return Command(
         goto=next_node,
         update={
-            "messages": [response.response],
+            "messages": [response.response, "¿En que más puedo ayudarte?"],
             "forecast_generated_response": None,
             "executed_steps": "delete",
             "reasoning": [

@@ -31,7 +31,7 @@ os.chdir(package_root)
 
 from tpp_agentic_graph_v4.agents.agent_for_forecast.forecasting import (  # noqa: E402
     ask_if_another_forecast_is_needed,
-    extract_temporal_series_from_tables,
+    # extract_temporal_series_from_tables,
     forecast_information_checker,
     make_forecast,
 )
@@ -60,9 +60,9 @@ builder.add_node("response_after_plan", response_after_plan)
 
 ##### Agent for forecast
 builder.add_node("forecast_information_checker", forecast_information_checker)
-builder.add_node(
-    "extract_temporal_series_from_tables", extract_temporal_series_from_tables
-)
+# builder.add_node(
+#     "extract_temporal_series_from_tables", extract_temporal_series_from_tables
+# )
 builder.add_node("make_forecast", make_forecast)
 builder.add_node("ask_if_another_forecast_is_needed", ask_if_another_forecast_is_needed)
 

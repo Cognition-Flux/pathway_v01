@@ -100,8 +100,9 @@ multi_query_generator: |
 plan_response_generator: |
   Se finalizó el plan.
   Ya se han ejecutado las(la) tareas del plan.
-  Debes responder directamente y brevemente al usuario.
-  Esta es la pregunta del usuario:
+  Debes indicar que se concluyeron las tareas.
+  Debes responder señalando que se concluyeron las tareas incluyendo un resumen de los resultados.
+  Esta fue la pregunta del usuario:
   {question}
 
   Estos fueron los pasos que se ejecutaron para responder la pregunta del usuario:
@@ -173,29 +174,28 @@ forecast_input_generator: |
   Genera unica y exclusivamente el output estructurado
 
 temporal_info_series_checker: |
-    Tu tarea es extraer información específica de los últimos mensajes del usuario para un posible análisis de series temporales (forecast).
+    Tu tarea es extraer información específica de los últimos mensajes del usuario para generar un pronóstico de atenciones por oficina.
     Analiza cuidadosamente el mensaje y extrae los siguientes detalles SI ESTÁN PRESENTES explícitamente.
     Si alguna pieza de información no se menciona o no está clara, debes establecer el valor correspondiente como nulo (None) en la estructura de datos de salida. No inventes información.
 
     Información a extraer:
-    1.  **nombre_de_la_serie_temporal**: El nombre específico de la serie temporal mencionada (ej: "ventas_mensuales", "temperatura_diaria").
-    2.  **nombre_de_la_tabla**: El nombre de la tabla de datos donde se podría encontrar esta serie temporal.
-    3.  **ventana_contexto**: El número de puntos de datos históricos que se usarían para el análisis o predicción (un entero).
-    4.  **ventana_prediccion**: El número de puntos de datos futuros que se deben predecir (un entero).
+    1. **nombre_de_la_oficina**: El nombre de la sucursal u oficina. Ejemplos: "159 - Providencia", "160 - Ñuñoa".
+    2. **fecha_del_dia_de_hoy**: Fecha actual en formato YYYY-MM-DD. Ejemplo: "2025-05-08".
+    3. **fecha_inicio_de_la_proyeccion**: Fecha a partir de la cual comienza la proyección, en formato YYYY-MM-DD. Ejemplo: "2025-06-01".
+    4. **numero_de_dias_a_proyectar**: Cantidad de días que se desea proyectar (entero).
 
-    Asegúrate de que tu salida se adhiera estrictamente al esquema proporcionado. Para campos numéricos como ventana_contexto y ventana_prediccion, si no se especifican, deben ser nulos, no cero ni una cadena vacía.
+    Asegúrate de que tu salida se adhiera estrictamente al esquema proporcionado. Para campos numéricos como numero_de_dias_a_proyectar, si no se especifican, deben ser nulos, no cero ni una cadena vacía.
 ask_for_temporal_series_information: |
-  Debes recolectar toda la información necesaria para realizar el forecast de la serie temporal:
-  1. El nombre de la serie temporal
-  2. El nombre de la tabla donde se encuentra
-  3. El largo de la ventana de contexto (cuántos puntos históricos usar para la predicción)
-  4. El largo de la ventana de predicción (cuántos puntos predecir hacia el futuro)
+  Necesitas la siguiente información para generar el forecast de atenciones:
+  1. Nombre de la oficina (ej.: "160 - Ñuñoa").
+  2. Fecha del día de hoy (YYYY-MM-DD).
+  3. Fecha de inicio de la proyección (YYYY-MM-DD).
+  4. Número de días a proyectar (entero).
 
   Actualmente:
   {fields_state}
 
-  Considera el historial de mensajes del usuario para hacer las preguntas de manera conversacional y clara.
-  Explica brevemente qué significa cada parámetro para ayudar al usuario a entender qué información necesitas.
+  Solicita la información faltante al usuario.
 
 extraction_from_tables_prompt: |
   Extraer la serie temporal de la tabla.
@@ -248,7 +248,7 @@ if_sections_are_approved_prompt: |
   Debes determinar si el usuario aprueba las secciones propuestas,
   o si desea hacer modificaciones, eliminar o añadir secciones sobre lo que ya existe.
   Debes decidir entre: 'approved' o 'not_approved'.
-  Tambien debes generar una breve explicación sobré cual es el requerimiento del usuario/humano.
+  También debes generar una breve explicación sobré cual es el requerimiento del usuario/humano.
   Estas son las secciones propuestas: {report_sections}
   Esta es la respuesta del usuario/humano: {user_input}
 

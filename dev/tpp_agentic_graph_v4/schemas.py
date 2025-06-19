@@ -169,32 +169,40 @@ class PlanRespond(BaseModel):
 class TemporalSeriesChecker(BaseModel):
     """Temporal series checker."""
 
-    nombre_de_la_serie_temporal: str | None = Field(
-        default=None,
-        description="El nombre de la serie temporal, si no está explícita, "
-        "rellenar con None",
+    nombre_de_la_oficina: str | None = Field(
+        description=(
+            "El nombre de la oficina, por ejemplo: '159 - Providencia' o '160 - Ñuñoa', "
+            "si no está explícita, rellenar con None"
+        ),
     )
-    nombre_de_la_tabla: str | None = Field(
-        default=None,
-        description="El nombre de la tabla donde se encuentra la serie temporal, "
-        "si no está explícita, rellenar con None",
+    fecha_del_dia_de_hoy: str | None = Field(
+        description=(
+            "La fecha del día de hoy, en formato YYYY-MM-DD, por ejemplo: '2025-05-08'"
+        ),
     )
-    ventana_contexto: int | None = Field(
-        default=None,
-        description="El largo de la ventana de contexto de la serie temporal "
-        "(cuántos puntos históricos usar), si no está explícita, rellenar con None",
+    fecha_inicio_de_la_proyeccion: str | None = Field(
+        description=(
+            "La fecha de inicio de la proyección, en formato YYYY-MM-DD, por ejemplo: '2025-06-01'"
+        ),
     )
-    ventana_prediccion: int | None = Field(
-        default=None,
-        description="El largo de la ventana de predicción del forecast (cuántos puntos "
-        "predecir), si no está explícita, rellenar con None",
+    numero_de_dias_a_proyectar: int | None = Field(
+        description=("El número de días a proyectar, por ejemplo: 3"),
     )
 
     @field_validator("*", mode="before", check_fields=False)
     @classmethod
     def parse_none_string(cls, v: Any) -> Any:
-        """Parse 'none' string to None before validation."""
-        if isinstance(v, str) and v.strip().lower() == "none":
+        """Convert strings like 'none', 'unknown', etc. to actual None before validation."""
+        if isinstance(v, str) and v.strip().lower() in {
+            "none",
+            "null",
+            "n/a",
+            "na",
+            "desconocido",
+            "unknown",
+            "<unknown>",
+            "",
+        }:
             return None
         return v
 

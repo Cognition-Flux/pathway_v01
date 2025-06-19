@@ -47,6 +47,8 @@ if ALSO_MODULE:
 load_dotenv(override=True)
 
 # os.chdir(package_root)
+import re  # placed after other stdlib imports (pylint: disable=wrong-import-position)
+
 from tpp_agentic_graph_v4.workflow import graph  # noqa: E402
 
 
@@ -148,6 +150,83 @@ def format_reasoning_messages(
         return None
 
     return "\n\n###SPLIT###\n\n".join(result_parts)
+
+
+def _parse_forecast_output(raw_text: str) -> str:
+    """Convert the plain-text forecast output into nicely formatted Markdown.
+
+    The function expects the exact structure produced by
+    ``get_forecast_moving_avg``.  It detects the *forecast table*, the list of
+    *simulation sections* (one per date) and the *office configuration* block.
+
+    Args:
+        raw_text: Full text as produced by the tool.
+
+    Returns:
+        A Markdown-formatted string ready to display to the end user.
+    """
+
+    # --- Detect the header line ---
+    header_match = re.match(r"^(Pronóstico[^\n]+)\n", raw_text)
+    if not header_match:
+        # Fallback: return wrapped in a code block if unexpected format
+        return f"```text\n{raw_text}\n```"
+
+    header_line = header_match.group(1)
+
+    remaining = raw_text[len(header_line) + 1 :]
+
+    # Split forecast table vs. simulation results
+    split_token = "Resultados de la simulación a partir del forecast:"
+    if split_token in remaining:
+        forecast_table_txt, sim_part_full = remaining.split(split_token, 1)
+    else:
+        # Unexpected – just wrap entire remaining as block
+        forecast_table_txt, sim_part_full = remaining, ""
+
+    # Extract office configuration block (if present) before parsing simulation sections
+    config_block: str | None = None
+    if sim_part_full:
+        cfg_match = re.search(
+            r"configuración de oficina[\s\S]+$", sim_part_full, re.IGNORECASE
+        )
+        if cfg_match:
+            config_block = cfg_match.group(0).strip()
+            sim_part = sim_part_full[: cfg_match.start()]
+        else:
+            sim_part = sim_part_full
+    else:
+        sim_part = ""
+
+    # Clean forecast table → keep as code block (preformatted)
+    forecast_block = f"```text\n{forecast_table_txt.strip()}\n```"
+
+    md_parts = [f"### {header_line}", forecast_block]
+
+    # Parse simulation sections (delimited by === lines)
+    if sim_part.strip():
+        sections = re.split(r"={5,}[^\n]*={5,}", sim_part)
+        headers = re.findall(r"={5,}\s*([^=]+?)\s*=+", sim_part)
+
+        sim_md_parts = []
+        for hdr, body in zip(
+            headers, sections[1:]
+        ):  # sections[0] is before first delimiter
+            hdr_clean = hdr.strip().strip("=").strip()
+            body_clean = body.strip()
+            # Body may already contain markdown tables, keep as-is
+            sim_md_parts.append(f"#### {hdr_clean}\n\n{body_clean}")
+
+        if sim_md_parts:
+            md_parts.append("### Resultados de la simulación")
+            md_parts.extend(sim_md_parts)
+
+    # Append office configuration block once (if found)
+    if config_block:
+        md_parts.append("### Configuración de la oficina usada en la simulación")
+        md_parts.append(f"```text\n{config_block}\n```")
+
+    return "\n\n".join(md_parts)
 
 
 def stream_updates_including_subgraphs(
@@ -336,6 +415,12 @@ def stream_updates_including_subgraphs(
                 elif node_name_key == "make_forecast":
                     plot_data = node_data.get("plot")
                     default_message_for_node = "📈 Forecast generado con visualización"
+
+                    # Detect and prettify forecast text if present
+                    fcast_resp = node_data.get("forecast_generated_response")
+                    if fcast_resp:
+                        pretty_fcast = _parse_forecast_output(fcast_resp)
+                        messages_from_node = [pretty_fcast]
 
                 if isinstance(messages_from_node, str):
                     # Mensaje simple en forma de cadena — se envía tal cual.

@@ -53,10 +53,14 @@ def reasoner(
         }
     )
     next_node = "check_if_plan_is_done"
+    # ✨ Agrega el nuevo razonamiento al scratchpad sin perder historial
+    existing_pad = state.get("scratchpad", []) or []
+    new_pad = [*existing_pad, AIMessage(content=response.content)]
+
     return Command(
         goto=next_node,
         update={
-            "scratchpad": [AIMessage(content=response.content)],
+            "scratchpad": new_pad,
             "next_node": next_node,
         },
     )

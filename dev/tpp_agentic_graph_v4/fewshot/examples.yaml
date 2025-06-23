@@ -1,24 +1,5 @@
-examples:
-  - human: "Necesito hacer una proyección de atenciones."
-    ai-assistant: |
-      PlanRespond(
-          what_to_do="plan",
-          steps=[
-              OneStep(
-                  step="llamar al agente de forecast_information_checker",
-                  agent="forecast_information_checker",
-                  reasoning="El agente forecast_information_checker se encarga de verificar si hay información disponible para hacer una proyeccion de atenciones"
-              ),
-              OneStep(
-                  step="Resume los resultados del forecast",
-                  agent="reasoner",
-                  reasoning="Reasoner puede razonar sobre los resultados del forecast"
-              )
-          ],
-          response="",
-          reasoning="Es necesario llamar al agente de forecast_information_checker para verificar si hay información disponible para hacer una proyeccion de atenciones y luego resumir los resultados"
-      )
 
+examples:
   - human: "Hola, ¿En qué me puedes ayudar?"
     ai-assistant: |
       PlanRespond(
@@ -27,4 +8,77 @@ examples:
           response: |
             ¡Puedo asistirte para hacer proyecciones de atenciones!
 
+      )
+  - human: "Necesito hacer una proyección de atenciones."
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Proceder a validar la información necesaria para hacer una proyeccion de atenciones (fecha de hoy 2025-05-08)",
+                  agent="forecast_information_checker",
+                  reasoning="El agente forecast_information_checker se encarga de verificar si hay información disponible para hacer una proyeccion/forecast/prediccion de atenciones"
+              ),
+          ],
+          response="",
+          reasoning="Es necesario llamar al agente de forecast_information_checker para verificar si hay información disponible para hacer una proyeccion/forecast/prediccion de atenciones (fecha de hoy 2025-05-08)."
+      )
+  - human: "Considera la oficina 160 - Ñuñoa, dame una proyección para mañana."
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Proceder a validar la información necesaria para hacer una proyeccion de un dia para la fecha de mañana 2025-05-09 para la oficina 160 - Ñuñoa (la fecha de hoy es 2025-05-08)",
+                  agent="forecast_information_checker",
+                  reasoning="Es necesario usar forecast_information_checker ya se encarga de verificar si hay información disponible para hacer una proyeccion/forecast/prediccion de atenciones (fecha de hoy 2025-05-08)."
+              ),
+          ],
+          response="",
+          reasoning="Es necesario llamar al agente de forecast_information_checker para verificar si hay información disponible para hacer una proyeccion/forecast/prediccion de atenciones (fecha de hoy 2025-05-08)."
+      )
+
+  - human: "Considera la oficina 159 - Providencia, dame una proyección/forecast/prediccion para la próxima semana. Y analiza los resultados entregando recomendaciones."
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Proceder a validar la información necesaria para hacer una proyeccion de la próxima semana (7 días desde el 2025-12-08) para la oficina 161 - Providencia (la fecha de hoy es 2025-05-08)",
+                  agent="forecast_information_checker",
+                  reasoning="Es necesario usar forecast_information_checker ya se encarga de verificar si hay información disponible para hacer una proyeccion/forecast/prediccion de atenciones (fecha de hoy 2025-05-08)."
+              ),
+              OneStep(
+                  step="Proceder a analizar los resultados de la proyeccion de atenciones y entregar recomendaciones.",
+                  agent="reasoner",
+                  reasoning="Reasoner puede razonar sobre los resultados de la proyeccion/forecast/prediccion de atenciones"
+              )
+          ],
+          response="",
+          reasoning="Es necesario llamar al agente de forecast_information_checker para verificar si hay información disponible para hacer una proyeccion/forecast/prediccion de atenciones y luego analizar los resultados y entregar recomendaciones con reasoner."
+      )
+
+  - human: "Considera las oficinas ['159 - Providencia', '160 - Ñuñoa'], compara sus proyección para el primer día del próximo mes y dame recomendaciones."
+    ai-assistant: |
+      PlanRespond(
+          what_to_do="plan",
+          steps=[
+              OneStep(
+                  step="Para '159 - Providencia', proceder a validar la información necesaria para hacer una proyeccion de un dia para la fecha 2025-06-02 (primer día hábil de junio) para la oficina.",
+                  agent="forecast_information_checker",
+                  reasoning="Es necesario usar forecast_information_checker ya se encarga de verificar si hay información disponible para hacer una proyeccion/forecast/prediccion de atenciones."
+              ),
+              OneStep(
+                  step="Para '160 - Ñuñoa', proceder a validar la información necesaria para hacer una proyeccion de un dia para la fecha 2025-06-02 (primer día hábil de junio) para la oficina.",
+                  agent="reasoner",
+                  reasoning="Reasoner puede razonar sobre los resultados de la proyeccion/forecast/prediccion de atenciones"
+              ),
+              OneStep(
+                  step="Proceder a analizar comparativamente los resultados de las proyecciones entre '159 - Providencia' y '160 - Ñuñoa' y entregar recomendaciones.",
+                  agent="reasoner",
+                  reasoning="Reasoner puede razonar sobre los resultados de la proyeccion/forecast/prediccion de atenciones"
+              )
+          ],
+          response="",
+          reasoning="Es necesario llamar al agente de forecast_information_checker para verificar en cada oficina  por separado si hay información disponible para hacer una proyeccion/forecast/prediccion de atenciones y luego analizar los resultados y entregar recomendaciones con reasoner."
       )

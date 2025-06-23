@@ -15,10 +15,10 @@ from pydantic import BaseModel, Field, field_validator
 from agentic_workflow.reducers import (
     merge_reasoning,
     reduce_docs,
+    scratchpad_reducer,
     steps_reducer,
     web_results_reducer,
 )
-
 
 with Path("agentic_workflow/prompts/system_prompts.yaml").open("r") as f:
     system_prompts = yaml.safe_load(f)
@@ -199,7 +199,7 @@ class PathwayGraphState(MessagesState):
     tables_results: str  # Annotated[list[str], add]
     report: str
     plot: str | None = None
-    scratchpad: Annotated[Sequence[BaseMessage], add_messages]
+    scratchpad: Annotated[list[BaseMessage], scratchpad_reducer] | None = None
     # Modelo LLM usado por el nodo que realizó la última actualización. Permite
     # que el streamer muestre en el panel de razonamiento qué modelo se empleó.
     llm_model: str | None = None

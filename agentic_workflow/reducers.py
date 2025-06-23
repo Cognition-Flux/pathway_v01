@@ -7,7 +7,6 @@ from typing import Any, Literal
 from dotenv import load_dotenv
 from langchain_core.documents import Document
 
-
 load_dotenv(override=True)
 
 
@@ -250,6 +249,54 @@ def merge_reasoning(
 
     # Add a delimiter to separate different reasoning chunks
     return f"{existing}\n\n---\n\n{new}"
+
+
+# NEW: Reducer for scratchpad messages
+
+
+def scratchpad_reducer(
+    existing: list[Any] | None,
+    new: list[Any] | Any | Literal["delete"] | None,
+) -> list[Any]:
+    """Accumulate messages in ``scratchpad`` reliably.
+
+    * ``"delete"`` → clears the scratchpad.
+    * ``None``      → leaves the scratchpad untouched.
+    * single item   → wrapped in a list and appended.
+    * list          → appends every element.
+
+    Duplicates are removed across the *entire* scratchpad using the
+    ``content`` attribute when present (otherwise the item itself). Order is
+    preserved so the full conversational context grows predictably.
+    """
+
+    # Clear all when requested ---------------------------------------------
+    if new == "delete":
+        return []
+
+    # Normalise current / new ----------------------------------------------
+    existing_list: list[Any] = existing or []
+    if new is None:
+        new_list: list[Any] = []
+    elif isinstance(new, list):
+        new_list = new
+    else:
+        new_list = [new]
+
+    if not new_list:
+        return existing_list
+
+    # Avoid duplicates (by *content* when possible) -------------------------
+    existing_keys = {getattr(m, "content", m) for m in existing_list}
+
+    combined: list[Any] = existing_list.copy()
+    for msg in new_list:
+        key = getattr(msg, "content", msg)
+        if key not in existing_keys:
+            combined.append(msg)
+            existing_keys.add(key)
+
+    return combined
 
 
 # %%

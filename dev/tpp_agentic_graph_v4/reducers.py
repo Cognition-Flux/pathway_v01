@@ -315,39 +315,52 @@ def executed_steps_reducer(
 
 def scratchpad_reducer(
     existing: list[Any] | None,
-    new: list[Any] | Literal["delete"] | None,
+    new: list[Any] | Any | Literal["delete"] | None,
 ) -> list[Any]:
-    """Append new *BaseMessage* chunks to the existing scratchpad.
+    """Accumulate messages in ``scratchpad`` reliably.
 
-    * ``"delete"``  → borra todo el scratchpad.
-    * ``None``       → no modifica el scratchpad.
-    * lista          → añade los mensajes, evitando duplicados consecutivos
-      (según el atributo ``content`` si existe).
+    This reducer is intentionally forgiving with respect to the *new* payload:
+
+    * ``"delete"`` → clears the scratchpad.
+    * ``None``      → leaves the scratchpad untouched.
+    * *single item* → wraps it in a list and appends it.
+    * *list*        → appends every element of the list.
+
+    It removes duplicates across the *whole* scratchpad based on the
+    ``content`` attribute (when present) or falls back to the object itself
+    (useful when *msg* is a plain string). Order is preserved.
     """
+
+    # 1️⃣ Delete everything if explicitly requested
     if new == "delete":
         return []
 
+    # 2️⃣ Normalise current and incoming data
     existing_list: list[Any] = existing or []
-    new_list: list[Any] = new or []
 
+    if new is None:
+        new_list: list[Any] = []
+    elif isinstance(new, list):
+        new_list = new
+    else:  # Accept single BaseMessage / str / any object
+        new_list = [new]
+
+    # Early-exit when nothing to append
     if not new_list:
         return existing_list
 
-    # Evitar duplicados simples por igualdad de contenido (cuando exista).
-    existing_contents = {
-        getattr(m, "content", None) for m in existing_list if hasattr(m, "content")
-    }
+    # 3️⃣ Build a set with already present *contents* for fast look-ups
+    existing_contents = {getattr(msg, "content", msg) for msg in existing_list}
 
-    appended: list[Any] = []
+    # 4️⃣ Append unique items while preserving order
+    output: list[Any] = existing_list.copy()
     for msg in new_list:
-        content = getattr(msg, "content", None)
-        # Si no hay contenido o no está en el conjunto, lo añadimos.
-        if content is None or content not in existing_contents:
-            appended.append(msg)
-            if content is not None:
-                existing_contents.add(content)
+        content_key = getattr(msg, "content", msg)
+        if content_key not in existing_contents:
+            output.append(msg)
+            existing_contents.add(content_key)
 
-    return existing_list + appended
+    return output
 
 
 # %%

@@ -112,13 +112,12 @@ def approve_plan(
     steps = state["steps"]
     # Generate step list before the Command
     step_list = [f"- {s.step}" for idx, s in enumerate(steps)]
-    message_for_interrupt = (
-        "Voy a ejecutar el siguiente plan:\n"
-        + "\n".join(step_list)
-        + "\n\n\n\n¿Continuamos? (si/no)"
+    plan_message = (
+        "Se ejecutarán las siguientes tareas:\n" + "\n".join(step_list)
+        # + "\n\n\n\n¿Continuamos? (si/no)"
     )
 
-    if_conduct_plan = interrupt(message_for_interrupt)
+    if_conduct_plan = "si"  # interrupt(message_for_interrupt)
     affirmative_responses = [
         "si",
         "sí",
@@ -133,6 +132,7 @@ def approve_plan(
         return Command(
             goto=next_node,
             update={
+                "messages": [plan_message],
                 "llm_model": "logic",
                 "current_agent": "approve_plan",
                 "reasoning": [
@@ -167,6 +167,7 @@ def conduct_plan(
 ) -> Command[
     Literal[
         "forecast_information_checker",
+        "reasoner",
         END,
     ]
 ]:
@@ -198,63 +199,72 @@ def conduct_plan(
 
     if current_step.agent == "forecast_information_checker":
         next_node = "forecast_information_checker"
+    elif current_step.agent == "reasoner":
+        next_node = "reasoner"
     else:
         raise ValueError(f"conduct_plan: Expected agent, got '{current_step.agent}'")
 
-    # ------------------------------------------------------------------
-    # Build scratchpad updates *only* if there is new content to append.
-    # This prevents wiping the existing scratchpad with an empty list.
-    # ------------------------------------------------------------------
+    # --- INICIO: Lógica de Scratchpad Agresiva ---
+    # FORZAMOS la acumulación en scratchpad, evitando que se sobreescriba.
+    # El contenido nuevo (si existe) se añade al final del scratchpad actual.
+    _update_payload = {}
+    new_content_from_forecast = state.get("forecast_generated_response")
 
-    _new_scratchpad_msgs: list[AIMessage] = []
-    if state.get("forecast_generated_response"):
-        _new_scratchpad_msgs.append(
-            AIMessage(content=state["forecast_generated_response"])
+    if new_content_from_forecast:
+        current_scratchpad = state.get("scratchpad", []) or []
+        # Previene duplicados exactos en el scratchpad
+        is_duplicate = any(
+            getattr(msg, "content", None) == new_content_from_forecast
+            for msg in current_scratchpad
         )
-
-    # NEW: Print the scratchpad messages that will be appended so we can track growth.
-    info_print(
-        f"_new_scratchpad_msgs (len={len(_new_scratchpad_msgs)}): {_new_scratchpad_msgs}"
-    )
+        if not is_duplicate:
+            updated_scratchpad = [
+                *current_scratchpad,
+                AIMessage(content=new_content_from_forecast),
+            ]
+            _update_payload["scratchpad"] = updated_scratchpad
+    # --- FIN: Lógica de Scratchpad Agresiva ---
 
     # Base update payload
-    _update_payload = {
-        "messages": [f"Ejecutando: {current_step.step}"],
-        "steps": updated_steps
-        if state.get("executed_steps", None)
-        else state["steps"][1:],
-        "executed_steps": [
-            *(
-                [
-                    s
-                    for s in state.get("executed_steps", [])
-                    if getattr(s, "step", None) != current_step.step
-                ]
-                if state.get("executed_steps")
-                else []
-            ),
-            current_step,
-        ],
-        "current_step": current_step,
-        "reasoning": [
-            current_step.reasoning,
-            *(
-                [f"proximo agente: {next_node.replace('_', ' ').title()}"]
-                if isinstance(next_node, str) and next_node != END
-                else []
-            ),
-        ],
-        "current_agent": "conduct_plan",
-        "next_node": next_node,
-        "llm_model": "logic",
-        "user_parameters_for_forecast": state["messages"]
-        if next_node == "forecast_information_checker"
-        else None,
-    }
+    _update_payload.update(
+        {
+            "messages": [
+                f"Ejecutando: {current_step.step}",
+                "Un momento por favor...",
+            ],
+            "steps": updated_steps
+            if state.get("executed_steps", None)
+            else state["steps"][1:],
+            "executed_steps": [
+                *(
+                    [
+                        s
+                        for s in state.get("executed_steps", [])
+                        if getattr(s, "step", None) != current_step.step
+                    ]
+                    if state.get("executed_steps")
+                    else []
+                ),
+                current_step,
+            ],
+            "current_step": current_step,
+            "reasoning": [
+                current_step.reasoning,
+                *(
+                    [f"proximo agente: {next_node.replace('_', ' ').title()}"]
+                    if isinstance(next_node, str) and next_node != END
+                    else []
+                ),
+            ],
+            "current_agent": "conduct_plan",
+            "next_node": next_node,
+            "llm_model": "logic",
+            "user_parameters_for_forecast": [current_step.step]
+            if next_node == "forecast_information_checker" or next_node == "reasoner"
+            else None,
+        }
+    )
 
-    # Add scratchpad only if we have new content to avoid overwriting.
-    if _new_scratchpad_msgs:
-        _update_payload["scratchpad"] = _new_scratchpad_msgs
     info_print(
         f"Scratchpad: {state.get('scratchpad', 'Scratchpad está vacía!!!!!!!!!!!')}"
     )

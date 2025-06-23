@@ -52,6 +52,7 @@ agents:
     - Necesite representar datos de forma visual a partir de información o tablas existentes.
 
 planner: |
+  El presente año es 2025.
   Debes decidir si elaborar un plan o reponder directamente.
   Instrucciones:
     RESPONDER DIRECTAMENTE: *Cuando responder directamente:
@@ -256,6 +257,8 @@ replan_next_step_prompt: |
   Debes considerar actualizar/refinar/acotar/enfocar los proximos pasos del plan en base a los resultados parciales que se han obtenido.
   Debes tener en mente la pregunta original del usuario/humano para lograr los pasos necesarios para responder la pregunta.
   IMPORTANTE: puedes eliminar/remover pasos o acortar el plan si consideras que ya hay suficiente información para responder la pregunta.
+  IMPORTANTE: NUNCA REPITAS PASOS. 
+  IMPORTANTE: NUNCA AÑADAS PASOS.
   Pregunta del usuario/humano: {question}
   Los pasos que ya se han ejecutado son: {executed_steps}
   Los resultados de la ejecución de los pasos son (usalos para actualizar/refinar/acotar/enfocar los proximos pasos del plan): {scratchpad}

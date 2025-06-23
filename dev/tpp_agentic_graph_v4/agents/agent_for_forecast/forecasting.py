@@ -44,12 +44,14 @@ def forecast_information_checker(
 
     print(f"user_parameters_for_forecast: {state['user_parameters_for_forecast']}")
     print(f"temporal_series_info: {state.get('temporal_series_info', None)}")
+    FECHA_DE_HOY = "2025-05-08"
 
     # Paso 1 ─ Normalizar entrada usando la *chain* dedicada
     if state["user_parameters_for_forecast"]:
         temporal_series_parameters = chain_for_temporal_series_info.invoke(
             {
                 "input": state["user_parameters_for_forecast"]
+                + [f"el día de hoy es {FECHA_DE_HOY}"]
                 + [
                     "Si la siguiente información existe, úsala para completar los campos: "
                     f"{state.get('temporal_series_info', None)}",
@@ -58,7 +60,7 @@ def forecast_information_checker(
         )
     else:
         forecast_update = interrupt(
-            "Confirma qué parámetros del forecast deseas cambiar:\n"
+            "Especifica los cambios que deseas realizar, estos son los últimos parámetros usados:\n"
             f"{state.get('temporal_series_info', None)}"
         )
         temporal_series_parameters = chain_for_temporal_series_info.invoke(
@@ -72,11 +74,10 @@ def forecast_information_checker(
         )
 
     print(f"temporal_series_parameters: {temporal_series_parameters}")
-
+    temporal_series_parameters.fecha_del_dia_de_hoy: str = FECHA_DE_HOY
     # Paso 2 ─ Verificar completitud
     if (
         temporal_series_parameters.nombre_de_la_oficina
-        and temporal_series_parameters.fecha_del_dia_de_hoy
         and temporal_series_parameters.fecha_inicio_de_la_proyeccion
         and temporal_series_parameters.numero_de_dias_a_proyectar is not None
     ):
@@ -92,7 +93,10 @@ def forecast_information_checker(
             goto=next_node,
             update={
                 "temporal_series_info": temporal_series_parameters,
-                "messages": [confirmation_msg],
+                "messages": [
+                    confirmation_msg,
+                    "Realizando proyección y simulación, un momento por favor...",
+                ],
                 "user_parameters_for_forecast": [confirmation_msg],
                 "reasoning": [
                     "✅ Parámetros de forecast verificados:",
@@ -205,13 +209,20 @@ def make_forecast(
             }
         )
 
+        existing_pad = state.get("scratchpad", []) or []
+        # Evita duplicados exactos antes de añadir
+        if not any(getattr(m, "content", None) == forecast_txt for m in existing_pad):
+            new_pad = [*existing_pad, AIMessage(content=forecast_txt)]
+        else:
+            new_pad = existing_pad
+
         next_node = "ask_if_another_forecast_is_needed"
         return Command(
             goto=next_node,
             update={
                 "forecast_generated_response": forecast_txt,
                 "messages": [forecast_txt],
-                "scratchpad": [AIMessage(content=forecast_txt)],
+                "scratchpad": new_pad,
                 "reasoning": [
                     "🎯 Forecast generado correctamente usando media móvil y simulación.",
                     "proximo agente: Check If Plan Is Done",
@@ -242,7 +253,9 @@ def ask_if_another_forecast_is_needed(
     state: PathwayGraphState,
 ) -> Command[Literal["check_if_plan_is_done", "forecast_information_checker"]]:
     """Ask if forecast is needed."""
-    if_another_forecast_is_needed = interrupt("¿Necesitas hacer otro forecast?")
+    if_another_forecast_is_needed = interrupt(
+        "Antes de continuar, ¿Deseas repetir el forecast anterior?"
+    )
 
     if_another_forecast_is_needed_response = (
         chain_for_if_another_forecast_is_needed.invoke(if_another_forecast_is_needed)

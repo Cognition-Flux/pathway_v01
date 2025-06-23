@@ -715,7 +715,7 @@ def main(_n_events=1_800, _desks=15):
         desk.skills_priority.rotate(random.randint(0, len(desk.skills_priority)))
 
     logger.info(simulation)
-    simulation.run_simulation(debug=True)
+    simulation.run_simulation(debug=False)
     logger.info(simulation)
 
     # endregion SYSTEM: Run the simulation
@@ -727,7 +727,7 @@ def main(_n_events=1_800, _desks=15):
     logger.info("\n\n\n\n\n")
 
     total_overtime = simulation.run_overtime(
-        overtime_limit=timedelta(hours=5), debug=True
+        overtime_limit=timedelta(hours=5), debug=False
     )
     logger.info(simulation)
     logger.info(f"Total overtime: {total_overtime}")

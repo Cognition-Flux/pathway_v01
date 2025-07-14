@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "aiosqlite>=0.21.0",
     "azure-ai-documentintelligence>=1.0.2",
     "cairosvg>=2.8.2",
     "dotenv>=0.9.9",
@@ -21,6 +22,7 @@ dependencies = [
     "langchain-groq>=0.3.2",
     "langchain-openai>=0.3.16",
     "langchain-pinecone>=0.2.5",
+    "langchain-tavily>=0.2.7",
     "langgraph-checkpoint>=2.0.25",
     "langgraph-checkpoint-sqlite>=2.0.7",
     "langgraph-supervisor>=0.0.20",
@@ -46,6 +48,9 @@ dependencies = [
     "tavily-python>=0.7.2",
     "torch>=2.7.0",
     "uvicorn>=0.30.0",
+    "aiohttp",
+    "nest-asyncio",
+    "pinecone-text>=0.5.4",
 ]
 
 [project.optional-dependencies]

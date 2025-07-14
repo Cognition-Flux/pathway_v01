@@ -214,5 +214,3 @@ if __name__ == "__main__":
     for res in results:
         score = res.metadata.get("score", "N/A")
         print(f"* [score: {score:.3f}] {res.page_content} [{res.metadata}]")
-
-metada

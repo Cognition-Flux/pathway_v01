@@ -138,19 +138,20 @@ async def aget_next_state(compiled_graph: CompiledStateGraph, config: dict) -> S
 
 
 if __name__ == "__main__":
-    thread_config = {"configurable": {"thread_id": "123"}}
-    graph = get_graph()
+    pass
+    # thread_config = {"configurable": {"thread_id": "123"}}
+    # graph = get_graph()
 
-    next_state = aget_next_state(graph, thread_config)
-    print(f"graph state: {next_state}")
-    async for chunk in graph.astream(
-        {
-            "human_messages": [
-                HumanMessage(content="busca en internet que es el metabolismo?")
-            ]
-        },
-        config=thread_config,
-        stream_mode="updates",
-        subgraphs=True,
-    ):
-        print(chunk)
+    # next_state = aget_next_state(graph, thread_config)
+    # print(f"graph state: {next_state}")
+    # async for chunk in graph.astream(
+    #     {
+    #         "human_messages": [
+    #             HumanMessage(content="busca en internet que es el metabolismo?")
+    #         ]
+    #     },
+    #     config=thread_config,
+    #     stream_mode="updates",
+    #     subgraphs=True,
+    # ):
+    #     print(chunk)

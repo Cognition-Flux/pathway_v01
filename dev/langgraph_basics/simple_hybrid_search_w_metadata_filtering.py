@@ -203,11 +203,18 @@ retriever.add_texts(texts=texts, metadatas=metadatas, ids=uuids)
 if __name__ == "__main__":
     results = retriever.invoke(
         "biología",
+        # {
+        #     "$and": [
+        #         {"subsystem": "TCA"},
+        #         {"reversible": True},
+        #         {"$or": [{"substrates": "NADH"}, {"products": "NADH"}]},
+        #     ]
+        # },
         filter={
             "$and": [
-                {"subsystem": "TCA"},
-                {"reversible": True},
-                {"$or": [{"substrates": "NADH"}, {"products": "NADH"}]},
+                {"subsystem": {"$eq": "TCA"}},
+                {"substrates": {"$in": ["NAD+"]}},
+                {"reversible": {"$eq": True}},
             ]
         },
     )

@@ -57,7 +57,7 @@ async_retriever = RunnableLambda(_sync_retrieve, afunc=_async_retrieve)
 
 async def metadata_filtering_node(
     state: State,
-) -> Command[Literal["hybrid_async_retriever"]]:
+) -> Command[Literal["retrieve_in_parallel"]]:
     """Node that extracts fields and generates the final metadata filter.
 
     If the structured output from the LLM cannot be parsed (for example, the
@@ -83,7 +83,7 @@ async def metadata_filtering_node(
         return Command(goto="metadata_filtering_node")
 
     return Command(
-        goto="hybrid_async_retriever",
+        goto="retrieve_in_parallel",
         update={
             "human_last_question": HumanLastQuestion(
                 last_question=state["human_messages"][-1].content
@@ -98,24 +98,32 @@ async def metadata_filtering_node(
     )
 
 
-async def retrieve_in_parallel(state: State) -> list[Send]:
+async def retrieve_in_parallel(state: State) -> Command[list[Send]]:
     """Node that retrieves documents in parallel."""
     lista_de_queries = [
         # state["human_last_question"].last_question,
         # state["human_last_question"].last_question,
-        "enzimas",
-        "biología",
-        "metabolismo",
+        "Succinate semialdehyde",
+        "Isocitrate",
+        "Malate",
     ]
-    return [
+    sends = [
         Send(
             "hybrid_async_retriever",
             State(
                 human_last_question=HumanLastQuestion(last_question=query),
+                tool_messages=[
+                    ToolMessage(
+                        content=state["tool_messages"][-1].content,
+                        tool_call_id=str(uuid4()),
+                    )
+                ],
             ),
         )
         for query in lista_de_queries
     ]
+    return Command(goto=sends)
+    # return sends
 
 
 async def hybrid_async_retriever(
@@ -123,6 +131,7 @@ async def hybrid_async_retriever(
 ) -> Command[Literal[END, "metadata_filtering_node"]]:
     """Node that performs a hybrid search using the async retriever."""
     query_str = state["human_last_question"].last_question
+    print(f"filter_dict_str: {state['tool_messages'][-1].content}")
     filter_dict_str = state["tool_messages"][-1].content
     filter_dict = ast.literal_eval(filter_dict_str)  # ahora es un dict
     # Retrieve top documents asynchronously
@@ -131,14 +140,19 @@ async def hybrid_async_retriever(
     except PineconeApiException:
         # If Pinecone rejects the filter, retry without it.
         return Command(goto="metadata_filtering_node", update={})
-
-    print(f"docs: {docs}")
     if len(docs) == 0:
         return Command(goto="metadata_filtering_node", update={})
 
+    print(f"query_str: {query_str}")
+    for res in docs:
+        score = res.metadata.get("score", "N/A")
+        print(f"* [score: {score:.3f}] {res.page_content} [{res.metadata}]")
+    # Keeping the top score document
+    top_score_doc = docs[0]
+    print(f"top_score_doc: {top_score_doc}")
     return Command(
         goto=END,
-        update={"documents": docs},
+        update={"documents": [top_score_doc]},
     )
 
 

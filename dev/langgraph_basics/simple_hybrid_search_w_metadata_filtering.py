@@ -182,6 +182,39 @@ document_8 = Document(
     },
 )
 
+# New reversible NAD-dependent TCA cycle enzymes
+
+document_9 = Document(
+    page_content=(
+        "Malate dehydrogenase catalyzes the reversible oxidation of "
+        "malate to oxaloacetate in the TCA cycle, producing NADH."
+    ),
+    metadata={
+        "enzyme": "MDH",
+        "subsystem": "TCA",
+        "substrates": ["Mal", "NAD+"],
+        "products": ["OAA", "NADH"],
+        "reversible": True,
+        "flux": 0.5,  # assumed flux in μmol/min/g in human liver cell
+    },
+)
+
+document_10 = Document(
+    page_content=(
+        "Succinate semialdehyde dehydrogenase catalyzes the reversible "
+        "conversion of succinate semialdehyde to succinate, generating NADH "
+        "and integrating with the TCA cycle."
+    ),
+    metadata={
+        "enzyme": "SSADH",
+        "subsystem": "TCA",
+        "substrates": ["SSA", "NAD+"],
+        "products": ["Suc", "NADH"],
+        "reversible": True,
+        "flux": 0.4,  # assumed flux in μmol/min/g in human liver cell
+    },
+)
+
 
 documents = [
     document_1,
@@ -192,6 +225,8 @@ documents = [
     document_6,
     document_7,
     document_8,
+    document_9,
+    document_10,
 ]
 uuids = [str(uuid4()) for _ in range(len(documents))]
 texts = [doc.page_content for doc in documents]
@@ -202,7 +237,9 @@ retriever.add_texts(texts=texts, metadatas=metadatas, ids=uuids)
 
 if __name__ == "__main__":
     results = retriever.invoke(
-        "biología",
+        # " Succinate semialdehyde",
+        # "Isocitrate",
+        "Malate",
         # {
         #     "$and": [
         #         {"subsystem": "TCA"},

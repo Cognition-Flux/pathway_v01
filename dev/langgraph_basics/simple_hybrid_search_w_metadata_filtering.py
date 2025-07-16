@@ -4,7 +4,6 @@ Simple parallel retriever with metadata filtering using Hybrid Search.
 
 # %%
 import os
-import time
 from uuid import uuid4
 
 from dotenv import load_dotenv
@@ -24,20 +23,23 @@ index_list = pc.list_indexes()
 
 # Re-create the index if it already exists to ensure a clean slate
 names = [inx["name"] for inx in index_list]
-if INDEX_NAME in names:
-    pc.delete_index(INDEX_NAME)
-    # Wait for the index to be deleted
-    while INDEX_NAME in [inx["name"] for inx in pc.list_indexes()]:
-        time.sleep(1)
+# if INDEX_NAME in names:
+#     pc.delete_index(INDEX_NAME)
+#     # Wait for the index to be deleted
+#     while INDEX_NAME in [inx["name"] for inx in pc.list_indexes()]:
+#         time.sleep(1)
 
 
 # For single-index hybrid search, Pinecone requires the 'dotproduct' metric.
-pc.create_index(
-    name=INDEX_NAME,
-    dimension=3072,
-    metric="dotproduct",
-    spec=ServerlessSpec(cloud="aws", region="us-east-1"),
-)
+if INDEX_NAME not in names:
+    pc.create_index(
+        name=INDEX_NAME,
+        dimension=3072,
+        metric="dotproduct",
+        spec=ServerlessSpec(cloud="aws", region="us-east-1"),
+    )
+else:
+    print(f"Index {INDEX_NAME} already exists")
 
 index = pc.Index(INDEX_NAME)
 
@@ -231,11 +233,15 @@ documents = [
 uuids = [str(uuid4()) for _ in range(len(documents))]
 texts = [doc.page_content for doc in documents]
 metadatas = [doc.metadata for doc in documents]
-retriever.add_texts(texts=texts, metadatas=metadatas, ids=uuids)
+if INDEX_NAME not in names:
+    retriever.add_texts(texts=texts, metadatas=metadatas, ids=uuids)
+else:
+    print(f"Index {INDEX_NAME} already exists, not adding documents")
 
 # %%
 
 if __name__ == "__main__":
+    print(f"INDEX: {index}")
     results = retriever.invoke(
         # " Succinate semialdehyde",
         # "Isocitrate",
@@ -255,6 +261,7 @@ if __name__ == "__main__":
             ]
         },
     )
+    print(f"results: {results}")
     for res in results:
         score = res.metadata.get("score", "N/A")
         print(f"* [score: {score:.3f}] {res.page_content} [{res.metadata}]")

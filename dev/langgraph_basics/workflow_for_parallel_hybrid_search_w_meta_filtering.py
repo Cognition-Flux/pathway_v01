@@ -3,30 +3,35 @@ This workflow is a parallel workflow that uses the chains_for_hybrid_search_and_
 """
 
 # %%
-
-import ast
 import asyncio
-from typing import Literal
+import os
+from typing import Annotated, Literal
 from uuid import uuid4
 
 import aiosqlite
 from dotenv import load_dotenv
 from langchain_core.documents import Document
-from langchain_core.messages import HumanMessage, ToolMessage
+from langchain_core.messages import HumanMessage
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableLambda
+from langchain_openai import AzureChatOpenAI
 from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
-from langgraph.graph import END, START, StateGraph
+from langgraph.graph import END, START, MessagesState, StateGraph
+from langgraph.graph.message import add_messages
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.types import Command, Send
 from pinecone import PineconeApiException  # For catching filter errors
-from pydantic import ValidationError
+from pydantic import BaseModel, Field, ValidationError
 
 from dev.langgraph_basics.chains_for_hybrid_search_and_metadata_filtering import (
     chain_for_filter_fields,
     chain_for_filter_generation,
 )
 from dev.langgraph_basics.simple_hybrid_search_w_metadata_filtering import retriever
-from dev.langgraph_basics.simple_ReAct import HumanLastQuestion, State
+from dev.langgraph_basics.simple_ReAct import (
+    LastLLMResponse,
+    reduce_docs,
+)
 
 load_dotenv(override=True)
 
@@ -55,94 +60,122 @@ async def _async_retrieve(query: str, filter: dict | None = None) -> list[Docume
 async_retriever = RunnableLambda(_sync_retrieve, afunc=_async_retrieve)
 
 
-async def metadata_filtering_node(
-    state: State,
+class OneQuery(BaseModel):
+    """One query."""
+
+    query_str: str
+
+
+class GeneratedQueries(BaseModel):
+    """Generated queries."""
+
+    queries_list: list[OneQuery]
+
+
+class RetrievalGraphState(MessagesState):
+    """State of the graph."""
+
+    rag_input: Annotated[list[HumanMessage], add_messages] = Field(
+        default_factory=lambda: [HumanMessage(content="")]
+    )
+    ai_generated_response: LastLLMResponse = Field(
+        default_factory=lambda: LastLLMResponse(response="")
+    )
+    documents: Annotated[list[Document], reduce_docs] = Field(
+        default_factory=lambda: []
+    )
+    generated_queries: GeneratedQueries = Field(
+        default_factory=lambda: GeneratedQueries(queries_list=[])
+    )
+    query: str = Field(default_factory=lambda: "")
+
+
+llm = AzureChatOpenAI(
+    azure_deployment="gpt-4.1-mini",
+    api_version=os.getenv("AZURE_API_VERSION"),
+    temperature=0,
+    max_tokens=None,
+    timeout=1200,
+    max_retries=5,
+    streaming=True,
+    api_key=os.getenv("AZURE_API_KEY"),
+    azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+)
+PROMPT_FOR_GENERATE_QUERIES = """
+Based on the user question, return three (3) queries useful to retrieve documents in parallel.
+Queries should expand/enrich the semantic space of the user question.
+User question: {user_question}
+"""
+TEMPLATE_FOR_GENERATE_QUERIES = ChatPromptTemplate.from_template(
+    PROMPT_FOR_GENERATE_QUERIES
+)
+chain_for_generate_queries = TEMPLATE_FOR_GENERATE_QUERIES | llm.with_structured_output(
+    GeneratedQueries, method="function_calling"
+)
+
+
+async def generate_queries(
+    state: RetrievalGraphState,
 ) -> Command[Literal["retrieve_in_parallel"]]:
+    """Node that generates queries."""
+    generated_queries = chain_for_generate_queries.invoke(
+        {"user_question": state["rag_input"][-1].content}
+    )
+    return Command(
+        goto="retrieve_in_parallel",
+        update={"generated_queries": generated_queries},
+    )
+
+
+async def retrieve_in_parallel(state: RetrievalGraphState) -> Command[list[Send]]:
+    """Node that retrieves documents in parallel."""
+    lista_de_queries = [
+        query.query_str for query in state["generated_queries"].queries_list
+    ]
+    print(f"lista_de_queries: {lista_de_queries}")
+    sends = [
+        Send(
+            "metadata_filtering_and_hybrid_search_node",
+            {"query": query},
+        )
+        for query in lista_de_queries
+    ]
+    return Command(goto=sends)
+
+
+async def metadata_filtering_and_hybrid_search_node(
+    state: RetrievalGraphState,
+) -> Command[Literal["metadata_filtering_and_hybrid_search_node", END]]:
     """Node that extracts fields and generates the final metadata filter.
 
     If the structured output from the LLM cannot be parsed (for example, the
     returned JSON does not contain the required ``filter`` key), we gracefully
     fall back to an *empty* filter to avoid hard failures in the workflow.
     """
-    extracted_fields = await chain_for_filter_fields.ainvoke(
-        {"query": state["human_messages"][-1].content}
-    )
+
+    query_str = state["query"]
+
+    extracted_fields = await chain_for_filter_fields.ainvoke({"query": query_str})
     extracted_json = extracted_fields.model_dump_json(indent=2)
 
     # Try to generate the final filter with structured output.
     try:
         final_filter_obj = await chain_for_filter_generation.ainvoke(
             {
-                "query": state["human_messages"][-1].content,
+                "query": query_str,
                 "extracted_fields": extracted_json,
             }
         )
         filter_dict = final_filter_obj.filter  # type: ignore[attr-defined]
-    except ValidationError:
-        # If parsing fails, ask the workflow to retry this node.
-        return Command(goto="metadata_filtering_node")
 
-    return Command(
-        goto="retrieve_in_parallel",
-        update={
-            "human_last_question": HumanLastQuestion(
-                last_question=state["human_messages"][-1].content
-            ),
-            "tool_messages": [
-                ToolMessage(
-                    content=filter_dict,  # type: ignore[arg-type]
-                    tool_call_id=str(uuid4()),
-                )
-            ],
-        },
-    )
-
-
-async def retrieve_in_parallel(state: State) -> Command[list[Send]]:
-    """Node that retrieves documents in parallel."""
-    lista_de_queries = [
-        # state["human_last_question"].last_question,
-        # state["human_last_question"].last_question,
-        "Succinate semialdehyde",
-        "Isocitrate",
-        "Malate",
-    ]
-    sends = [
-        Send(
-            "hybrid_async_retriever",
-            State(
-                human_last_question=HumanLastQuestion(last_question=query),
-                tool_messages=[
-                    ToolMessage(
-                        content=state["tool_messages"][-1].content,
-                        tool_call_id=str(uuid4()),
-                    )
-                ],
-            ),
-        )
-        for query in lista_de_queries
-    ]
-    return Command(goto=sends)
-    # return sends
-
-
-async def hybrid_async_retriever(
-    state: State,
-) -> Command[Literal[END, "metadata_filtering_node"]]:
-    """Node that performs a hybrid search using the async retriever."""
-    query_str = state["human_last_question"].last_question
-    print(f"filter_dict_str: {state['tool_messages'][-1].content}")
-    filter_dict_str = state["tool_messages"][-1].content
-    filter_dict = ast.literal_eval(filter_dict_str)  # ahora es un dict
-    # Retrieve top documents asynchronously
-    try:
         docs = await async_retriever.ainvoke(query_str, filter=filter_dict)
-    except PineconeApiException:
-        # If Pinecone rejects the filter, retry without it.
-        return Command(goto="metadata_filtering_node", update={})
-    if len(docs) == 0:
-        return Command(goto="metadata_filtering_node", update={})
+        if len(docs) == 0:
+            # retry this node.
+            return Command(goto="metadata_filtering_and_hybrid_search_node")
 
+    except (ValidationError, PineconeApiException):
+        # retry this node.
+        return Command(goto="metadata_filtering_and_hybrid_search_node")
     print(f"query_str: {query_str}")
     for res in docs:
         score = res.metadata.get("score", "N/A")
@@ -156,11 +189,15 @@ async def hybrid_async_retriever(
     )
 
 
-builder = StateGraph(State)
-builder.add_node("metadata_filtering_node", metadata_filtering_node)
-builder.add_node("hybrid_async_retriever", hybrid_async_retriever)
+builder = StateGraph(RetrievalGraphState)
+builder.add_node(
+    "metadata_filtering_and_hybrid_search_node",
+    metadata_filtering_and_hybrid_search_node,
+)
+# builder.add_node("hybrid_async_retriever", hybrid_async_retriever)
 builder.add_node("retrieve_in_parallel", retrieve_in_parallel)
-builder.add_edge(START, "metadata_filtering_node")
+builder.add_node("generate_queries", generate_queries)
+builder.add_edge(START, "generate_queries")
 
 
 def get_memory():
@@ -175,7 +212,9 @@ def get_graph():
     return builder.compile(checkpointer=memory, debug=True)
 
 
-async def aget_next_state(compiled_graph: CompiledStateGraph, config: dict) -> State:
+async def aget_next_state(
+    compiled_graph: CompiledStateGraph, config: dict
+) -> RetrievalGraphState:
     """Get the next state of the graph."""
     latest_checkpoint = await compiled_graph.aget_state(config=config)
     return latest_checkpoint.next
@@ -189,7 +228,7 @@ if __name__ == "__main__":
     next_state = aget_next_state(graph, thread_config)
     print(f"graph state: {next_state}")
     async for chunk in graph.astream(
-        {"human_messages": [HumanMessage(content=USER_QUERY)]},
+        {"rag_input": [HumanMessage(content=USER_QUERY)]},
         config=thread_config,
         stream_mode="updates",
         subgraphs=True,

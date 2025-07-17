@@ -72,6 +72,10 @@ def multi_turn_planner(
         if response.what_to_do != "plan":
             user_input = interrupt(value=response.response)
             state["messages"] = add_messages(state["messages"], [user_input])
+            info_print(
+                "#########################################################################################",
+                f" if response.what_to_do != 'plan':-------------------state['messages']: {state['messages']}",
+            )
             continue
         elif response.what_to_do == "plan":
             next_node = "approve_plan"

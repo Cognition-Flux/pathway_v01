@@ -4,7 +4,7 @@ Simple parallel retriever with metadata filtering using Hybrid Search.
 
 # %%
 import os
-from typing import Dict, List, Literal, Optional
+from typing import Dict, Literal, Optional
 
 from dotenv import load_dotenv
 from langchain_core.prompts import ChatPromptTemplate
@@ -25,53 +25,80 @@ class MetadataFilterFields(BaseModel):
     """
 
     enzyme: Optional[
-        Literal["HK", "PFK1", "PK", "CS", "IDH", "AKGDH", "SDH", "GAPDH"]
-    ] = Field(default=None, description="The enzyme name.")
+        Literal[
+            "HK",
+            "PFK1",
+            "PK",
+            "CS",
+            "IDH",
+            "AKGDH",
+            "SDH",
+            "GAPDH",
+            "MDH",
+            "SSADH",
+        ]
+    ] = Field(
+        default=None,
+        description=(
+            "The enzyme name. The names are HK: hexokinase, "
+            "PFK1: phosphofructokinase-1, PK: pyruvate kinase, "
+            "CS: citrate synthase, IDH: isocitrate dehydrogenase, "
+            "AKGDH: alpha-ketoglutarate dehydrogenase, "
+            "SDH: succinate dehydrogenase, "
+            "GAPDH: glyceraldehyde-3-phosphate dehydrogenase, "
+            "MDH: malate dehydrogenase, "
+            "SSADH: succinate semialdehyde dehydrogenase."
+        ),
+    )
     subsystem: Optional[Literal["glycolysis", "TCA"]] = Field(
         default=None, description="The metabolic subsystem."
     )
-    substrates: Optional[
-        List[
-            Literal[
-                "Glc",
-                "ATP",
-                "F6P",
-                "PEP",
-                "ADP",
-                "AcCoA",
-                "OAA",
-                "IsoCit",
-                "NAD+",
-                "aKG",
-                "CoA",
-                "Suc",
-                "Q",
-                "G3P",
-                "Pi",
-                "NADH",
-            ]
-        ]
-    ] = Field(default=None, description="A list of substrates for the enzyme.")
-    products: Optional[
-        List[
-            Literal[
-                "G6P",
-                "ADP",
-                "F1,6BP",
-                "Pyr",
-                "ATP",
-                "Cit",
-                "aKG",
-                "CO2",
-                "NADH",
-                "SucCoA",
-                "Fum",
-                "QH2",
-                "1,3-BPG",
-                "NAD+",
-            ]
-        ]
-    ] = Field(default=None, description="A list of products for the enzyme.")
+    # substrates: Optional[
+    #     List[
+    #         Literal[
+    #             "Glc",
+    #             "ATP",
+    #             "F6P",
+    #             "PEP",
+    #             "ADP",
+    #             "AcCoA",
+    #             "OAA",
+    #             "IsoCit",
+    #             "NAD+",
+    #             "aKG",
+    #             "CoA",
+    #             "Suc",
+    #             "Q",
+    #             "G3P",
+    #             "Pi",
+    #             "NADH",
+    #             "Mal",
+    #             "SSA",
+    #         ]
+    #     ]
+    # ] = Field(default=None, description="A list of substrates for the enzyme.")
+    # products: Optional[
+    #     List[
+    #         Literal[
+    #             "G6P",
+    #             "ADP",
+    #             "F1,6BP",
+    #             "Pyr",
+    #             "ATP",
+    #             "Cit",
+    #             "aKG",
+    #             "CO2",
+    #             "NADH",
+    #             "SucCoA",
+    #             "Fum",
+    #             "QH2",
+    #             "1,3-BPG",
+    #             "NAD+",
+    #             "OAA",
+    #             "Suc",
+    #         ]
+    #     ]
+    # ] = Field(default=None, description="A list of products for the enzyme.")
     reversible: Optional[bool] = Field(
         default=None, description="Whether the reaction is reversible."
     )
@@ -101,13 +128,15 @@ llm = AzureChatOpenAI(
     azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
 )
 PROMPT_FOR_FILTER_FIELDS = """
-Based on the user question, return the fields that are relevant to the query.
+Based on the user's question, extract the relevant filtering criteria into a JSON object that conforms to the `MetadataFilterFields` schema.
 
-User question: {query}
+**Instructions:**
+- All fields in the schema are optional.
+- Only populate fields that are explicitly mentioned in the user's query.
+- If a field is not mentioned in the query, it MUST be omitted or set to `None`. Do not infer or guess values.
 
-Return the fields that are relevant to the query.
-
-
+**User Question:**
+{query}
 """
 TEMPLATE_FOR_FILTER_FIELDS = ChatPromptTemplate.from_template(PROMPT_FOR_FILTER_FIELDS)
 chain_for_filter_fields = TEMPLATE_FOR_FILTER_FIELDS | llm.with_structured_output(

@@ -59,8 +59,8 @@ retriever = PineconeHybridSearchRetriever(
 
 document_1 = Document(
     page_content=(
-        "Hexokinase catalyzes the phosphorylation of glucose to "
-        "glucose-6-phosphate, the first step in glycolysis."
+        "Hexokinase is a metabolic enzyme that catalyzes the phosphorylation of "
+        "glucose to glucose-6-phosphate, the first step in glycolysis."
     ),
     metadata={
         "enzyme": "HK",
@@ -74,9 +74,9 @@ document_1 = Document(
 
 document_2 = Document(
     page_content=(
-        "Phosphofructokinase-1 catalyzes the phosphorylation of "
-        "fructose-6-phosphate to fructose-1,6-bisphosphate, a key "
-        "regulatory step in glycolysis."
+        "Phosphofructokinase-1 is a metabolic enzyme that catalyzes the "
+        "phosphorylation of fructose-6-phosphate to fructose-1,6-bisphosphate, "
+        "a key regulatory step in glycolysis."
     ),
     metadata={
         "enzyme": "PFK1",
@@ -90,9 +90,9 @@ document_2 = Document(
 
 document_3 = Document(
     page_content=(
-        "Pyruvate kinase catalyzes the conversion of "
-        "phosphoenolpyruvate to pyruvate, generating ATP in the "
-        "final step of glycolysis."
+        "Pyruvate kinase is a metabolic enzyme that catalyzes the conversion of "
+        "phosphoenolpyruvate to pyruvate, generating ATP in the final step of "
+        "glycolysis."
     ),
     metadata={
         "enzyme": "PK",
@@ -106,9 +106,9 @@ document_3 = Document(
 
 document_4 = Document(
     page_content=(
-        "Citrate synthase catalyzes the condensation of acetyl-CoA "
-        "and oxaloacetate to form citrate in the first step of the "
-        "TCA cycle."
+        "Citrate synthase is a metabolic enzyme that catalyzes the condensation "
+        "of acetyl-CoA and oxaloacetate to form citrate in the first step of "
+        "the TCA cycle."
     ),
     metadata={
         "enzyme": "CS",
@@ -122,8 +122,8 @@ document_4 = Document(
 
 document_5 = Document(
     page_content=(
-        "Isocitrate dehydrogenase catalyzes the oxidative "
-        "decarboxylation of isocitrate to alpha-ketoglutarate, "
+        "Isocitrate dehydrogenase is a metabolic enzyme that catalyzes the "
+        "oxidative decarboxylation of isocitrate to alpha-ketoglutarate, "
         "producing NADH."
     ),
     metadata={
@@ -138,8 +138,8 @@ document_5 = Document(
 
 document_6 = Document(
     page_content=(
-        "Alpha-ketoglutarate dehydrogenase complex catalyzes the "
-        "conversion of alpha-ketoglutarate to succinyl-CoA, "
+        "Alpha-ketoglutarate dehydrogenase complex is a metabolic enzyme "
+        "that catalyzes the conversion of alpha-ketoglutarate to succinyl-CoA, "
         "producing NADH and CO2."
     ),
     metadata={
@@ -147,15 +147,15 @@ document_6 = Document(
         "subsystem": "TCA",
         "substrates": ["aKG", "CoA", "NAD+"],
         "products": ["SucCoA", "CO2", "NADH"],
-        "reversible": False,
+        "reversible": True,
         "flux": 0.6,  # assumed flux in μmol/min/g in human liver cell
     },
 )
 
 document_7 = Document(
     page_content=(
-        "Succinate dehydrogenase catalyzes the oxidation of "
-        "succinate to fumarate, coupled to the reduction of "
+        "Succinate dehydrogenase is a metabolic enzyme that catalyzes the "
+        "oxidation of succinate to fumarate, coupled to the reduction of "
         "ubiquinone in the TCA cycle."
     ),
     metadata={
@@ -170,9 +170,9 @@ document_7 = Document(
 
 document_8 = Document(
     page_content=(
-        "Glyceraldehyde-3-phosphate dehydrogenase (GAPDH) catalyzes "
-        "the conversion of glyceraldehyde 3-phosphate to "
-        "1,3-bisphosphoglycerate, producing NADH in glycolysis."
+        "Glyceraldehyde-3-phosphate dehydrogenase (GAPDH) is a metabolic "
+        "enzyme that catalyzes the conversion of glyceraldehyde 3-phosphate "
+        "to 1,3-bisphosphoglycerate, producing NADH in glycolysis."
     ),
     metadata={
         "enzyme": "GAPDH",
@@ -188,8 +188,9 @@ document_8 = Document(
 
 document_9 = Document(
     page_content=(
-        "Malate dehydrogenase catalyzes the reversible oxidation of "
-        "malate to oxaloacetate in the TCA cycle, producing NADH."
+        "Malate dehydrogenase is a metabolic enzyme that catalyzes the "
+        "reversible oxidation of malate to oxaloacetate in the TCA cycle, "
+        "producing NADH."
     ),
     metadata={
         "enzyme": "MDH",
@@ -203,9 +204,9 @@ document_9 = Document(
 
 document_10 = Document(
     page_content=(
-        "Succinate semialdehyde dehydrogenase catalyzes the reversible "
-        "conversion of succinate semialdehyde to succinate, generating NADH "
-        "and integrating with the TCA cycle."
+        "Succinate semialdehyde dehydrogenase is a metabolic enzyme that "
+        "catalyzes the reversible conversion of succinate semialdehyde to "
+        "succinate, generating NADH and integrating with the TCA cycle."
     ),
     metadata={
         "enzyme": "SSADH",
@@ -230,8 +231,17 @@ documents = [
     document_9,
     document_10,
 ]
+
+# ---------------------------------------------------------------------------
+# Ensure each page_content includes its metadata string representation.
+# This makes the metadata searchable in the text content itself.
+# ---------------------------------------------------------------------------
+
+for _doc in documents:
+    _doc.page_content += f"\n\nMETADATA: {_doc.metadata}"  # type: ignore[attr-defined]
+
 uuids = [str(uuid4()) for _ in range(len(documents))]
-texts = [doc.page_content for doc in documents]
+texts = [doc.page_content for doc in documents]  # type: ignore[attr-defined]
 metadatas = [doc.metadata for doc in documents]
 if INDEX_NAME not in names:
     retriever.add_texts(texts=texts, metadatas=metadatas, ids=uuids)

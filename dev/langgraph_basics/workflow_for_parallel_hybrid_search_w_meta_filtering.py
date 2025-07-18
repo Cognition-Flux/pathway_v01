@@ -108,7 +108,7 @@ llm = AzureChatOpenAI(
     azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
 )
 PROMPT_FOR_GENERATE_QUERIES = """
-Based on the user question, return seven (7) queries useful to retrieve documents in parallel.
+Based on the user question, return ten (10) queries useful to retrieve documents in parallel.
 Queries should expand/enrich the semantic space of the user question.
 User question: {user_question}
 """
@@ -175,13 +175,11 @@ async def metadata_filtering_and_hybrid_search_node(
         filter_dict = final_filter_obj.filter  # type: ignore[attr-defined]
 
         docs = await async_retriever.ainvoke(query_str, filter=filter_dict)
-        if len(docs) == 0:
-            # retry this node.
-            return Command(goto="metadata_filtering_and_hybrid_search_node")
 
-    except (ValidationError, PineconeApiException):
-        # retry this node.
-        return Command(goto="metadata_filtering_and_hybrid_search_node")
+    except (ValidationError, PineconeApiException, AttributeError):
+        # If filter generation fails, or filter is invalid for Pinecone,
+        # fall back to a search with no filter.
+        docs = await async_retriever.ainvoke(query_str, filter=None)
 
     for doc in docs:
         doc.metadata["query"] = query_str
@@ -258,37 +256,46 @@ async def generate_clustergram(state: RetrievalGraphState):
     df = pd.DataFrame(scores_matrix).set_index("query").fillna(0)
 
     # --- Identify high-score enzyme group (to be highlighted) ---
-    col_means = df.mean(axis=0, skipna=True)
+    high_cols = []
+    if df.shape[1] >= 2:
+        col_means = df.mean(axis=0, skipna=True)
+        try:
+            from scipy.cluster.hierarchy import fcluster, linkage
+            from scipy.spatial.distance import pdist
+
+            col_linkage_global = linkage(
+                pdist(df.values.T, metric="euclidean"), method="average"
+            )
+            cluster_labels = fcluster(col_linkage_global, t=2, criterion="maxclust")
+
+            # Determine high-score cluster
+            clusters = set(cluster_labels)
+            avg_per_cluster = {
+                cl: col_means[np.array(cluster_labels) == cl].mean() for cl in clusters
+            }
+            high_cluster = max(avg_per_cluster, key=avg_per_cluster.get)
+
+            high_cols = [
+                enzyme
+                for idx, enzyme in enumerate(df.columns)
+                if cluster_labels[idx] == high_cluster
+            ]
+
+        except ModuleNotFoundError:
+            # Fallback: threshold by median
+            threshold = col_means.median()
+            high_cols = [
+                enzyme for enzyme, score in col_means.items() if score >= threshold
+            ]
+    elif df.shape[1] == 1:
+        high_cols = df.columns.tolist()
+
     try:
-        from scipy.cluster.hierarchy import fcluster, linkage
-        from scipy.spatial.distance import pdist
-
-        col_linkage_global = linkage(
-            pdist(df.values.T, metric="euclidean"), method="average"
-        )
-        cluster_labels = fcluster(col_linkage_global, t=2, criterion="maxclust")
-
-        # Determine high-score cluster
-        clusters = set(cluster_labels)
-        avg_per_cluster = {
-            cl: col_means[np.array(cluster_labels) == cl].mean() for cl in clusters
-        }
-        high_cluster = max(avg_per_cluster, key=avg_per_cluster.get)
-
-        high_cols = [
-            enzyme
-            for idx, enzyme in enumerate(df.columns)
-            if cluster_labels[idx] == high_cluster
-        ]
-
-    except ModuleNotFoundError:
-        # Fallback: threshold by median
-        threshold = col_means.median()
-        high_cols = [
-            enzyme for enzyme, score in col_means.items() if score >= threshold
-        ]
-
-    try:
+        # Do not attempt to use dash_bio's clustergram if we can't cluster.
+        if df.shape[1] < 2:
+            raise ModuleNotFoundError(
+                "Skipping dash_bio.Clustergram for single-column data."
+            )
         import dash_bio as dashbio  # type: ignore
 
         # Dash Bio's Clustergram automatically computes hierarchical
@@ -393,24 +400,27 @@ async def generate_clustergram(state: RetrievalGraphState):
     except ModuleNotFoundError:
         # Graceful fallback: perform clustering manually and display a heatmap.
         try:
-            from scipy.cluster.hierarchy import leaves_list, linkage
-            from scipy.spatial.distance import pdist
+            if df.shape[1] >= 2:
+                from scipy.cluster.hierarchy import leaves_list, linkage
+                from scipy.spatial.distance import pdist
 
-            # Compute linkage for rows and columns
-            row_linkage = linkage(
-                pdist(df.values, metric="euclidean"), method="average"
-            )
-            col_linkage = linkage(
-                pdist(df.values.T, metric="euclidean"), method="average"
-            )
+                # Compute linkage for rows and columns only if we have ≥2 columns
+                row_linkage = linkage(
+                    pdist(df.values, metric="euclidean"), method="average"
+                )
+                col_linkage = linkage(
+                    pdist(df.values.T, metric="euclidean"), method="average"
+                )
 
-            # Obtain order of leaves
-            row_order = leaves_list(row_linkage)
-            col_order = leaves_list(col_linkage)
+                # Obtain order of leaves
+                row_order = leaves_list(row_linkage)
+                col_order = leaves_list(col_linkage)
 
-            # Reorder dataframe
-            df_clustered = df.iloc[row_order, :].iloc[:, col_order]
-
+                # Reorder dataframe
+                df_clustered = df.iloc[row_order, :].iloc[:, col_order]
+            else:
+                # Single-column dataframe; skip clustering
+                df_clustered = df
         except ModuleNotFoundError:
             # SciPy not installed; proceed without clustering
             df_clustered = df
@@ -418,6 +428,9 @@ async def generate_clustergram(state: RetrievalGraphState):
                 "SciPy no está instalado; se mostrará el heatmap sin reordenar. "
                 "Instala scipy para activar la clusterización."
             )
+        except ValueError:
+            # pdist/ linkage errors on insufficient data
+            df_clustered = df
 
         import plotly.express as px
 
@@ -545,7 +558,9 @@ async def aget_next_state(
 
 
 if __name__ == "__main__":
-    USER_QUERY = "enzimas del ciclo de Krebs que usan NAD y son reversibles"
+    # USER_QUERY = "enzimas del ciclo de Krebs que usan NAD y son reversibles"
+    USER_QUERY = "enzimas"
+
     thread_config = {"configurable": {"thread_id": str(uuid4())}}
     graph = get_graph()
 

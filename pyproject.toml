@@ -51,6 +51,10 @@ dependencies = [
     "aiohttp",
     "nest-asyncio",
     "pinecone-text>=0.5.4",
+    "neo4j>=5.28.1",
+    "neo4j-graphrag[cohere,google]>=1.8.0",
+    "google>=3.0.0",
+    "google-genai>=1.26.0",
 ]
 
 [project.optional-dependencies]

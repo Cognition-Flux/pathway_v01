@@ -1,67 +1,66 @@
 # %%
 """knowledge_graph_builder.py
 ====================================================================
-Este script demuestra **paso a paso** cómo generar un *Knowledge Graph*
-en Neo4j a partir de texto plano empleando la versión experimental de
-`SimpleKGPipeline` incluida en la librería **neo4j-graphrag**.
+Construye un *Knowledge Graph* en Neo4j que representa enzimas de los
+sub-sistemas **glucólisis** y **ciclo TCA**.  Para cada enzima se
+capturan propiedades clave (subsystem, substrates, products,
+reversibility, flux) y se generan relaciones:
 
-Guías oficiales consultadas
----------------------------
-* User Guide – KG Builder  <https://neo4j.com/docs/neo4j-graphrag-python/current/user_guide_kg_builder.html>
-* API Reference – SimpleKGPipeline  <https://neo4j.com/docs/neo4j-graphrag-python/current/api.html>
+• (Metabolito)-[:CONSUMIDO_POR]->(Enzyme)
+• (Metabolito)-[:GENERADO_POR]->(Enzyme)
+• (Enzyme)-[:EN]->(Subsystem)
 
-Estructura del flujo
-+--------------------
-1. **Carga de entorno**: se leen credenciales y endpoints desde el fichero
-   `.env`, manteniendo buenas prácticas de seguridad.
-2. **Conexión a Neo4j**: se verifica conectividad antes de avanzar.
-3. **Preparación de componentes**: LLM (Azure OpenAI), embedder (Cohere) y
-   *text splitter*.
-4. **Definición de documentos**: tres fragmentos clásicos de
-   física con metadatos *author* y *year*.
-5. **Diseño del *schema***: tipos de nodos, relaciones y patrones que sirven
-   de guía para la extracción.
-6. **Ejecución del pipeline**: para cada documento se crean los nodos y
-   relaciones correspondientes.
-7. **Limpieza y pos-proceso**: se eliminan nodos de personas que no forman
-   parte de la lista blanca `ALLOWED_PHYSICISTS`.
+El flujo de trabajo sigue estos pasos:
+  1. Carga de credenciales desde `.env` y verificación de conectividad.
+  2. Definición de documentos – un `Document` por enzima con metadatos
+     estructurados.
+  3. Configuración de componentes (LLM, embedder, splitter).
+  4. Ejecución de `SimpleKGPipeline` guiado por *schema* y *patterns*.
+  5. Limpieza previa de la base y lanzamiento asíncrono del pipeline.
 
-El código incluye comentarios exhaustivos en español pensados para ayudar
-a entender *qué* hace cada línea y *por qué* se hace así, siempre en
-alineación con la documentación oficial de Neo4j.
+Para ejecutar el script:
+$ uv run python dev/langgraph_basics/Neo4jGraphRAG/knowledge_graph_builder.py
 """
 
-import os
+from __future__ import annotations
 
-import dotenv
+import os
+from typing import List
+
+from dotenv import load_dotenv
 from langchain_core.documents import Document
-from neo4j import Driver, GraphDatabase
+from neo4j import GraphDatabase
 from neo4j_graphrag.embeddings.cohere import CohereEmbeddings
 from neo4j_graphrag.experimental.components.text_splitters.fixed_size_splitter import (
     FixedSizeSplitter,
 )
 from neo4j_graphrag.experimental.pipeline.kg_builder import SimpleKGPipeline
+from neo4j_graphrag.indexes import create_fulltext_index, create_vector_index
 from neo4j_graphrag.llm import AzureOpenAILLM
 
-dotenv.load_dotenv(override=True)
-# Cargamos las variables definidas en `.env`. Usamos *override=True* para
-# que los valores del archivo sobrescriban posibles variables ya presentes
-# en el entorno de la sesión.
-NEO4J_USERNAME = os.getenv("NEO4J_USERNAME_UPGRADED")  # Usuario administrado
-NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD_UPGRADED")  # Contraseña segura
-URI = os.getenv("NEO4J_CONNECTION_URI_UPGRADED")  # bolt:// o neo4j+s://
-AUTH = (NEO4J_USERNAME, NEO4J_PASSWORD)
-# Abrimos un *driver* temporal para verificar que el servidor responde.
-# `verify_connectivity()` lanza excepción si las credenciales o la URI
-# son inválidas, evitando fallos más adelante en tiempo de ejecución.
-with GraphDatabase.driver(URI, auth=AUTH) as driver:
-    driver.verify_connectivity()
-neo4j_driver = GraphDatabase.driver(URI, auth=AUTH)
+# --------------------------------------------------------------------------- #
+# 1) Entorno y conexión a Neo4j
+# --------------------------------------------------------------------------- #
 
+load_dotenv(override=True)
 
-# -------------------------------------------------------------------
-# 1) LLM: Azure OpenAI – será usado por el KG Builder para *parsing*
-# -------------------------------------------------------------------
+NEO4J_USERNAME: str | None = os.getenv("NEO4J_USERNAME_UPGRADED")
+NEO4J_PASSWORD: str | None = os.getenv("NEO4J_PASSWORD_UPGRADED")
+NEO4J_URI: str | None = os.getenv("NEO4J_CONNECTION_URI_UPGRADED")
+
+if not (NEO4J_USERNAME and NEO4J_PASSWORD and NEO4J_URI):
+    raise EnvironmentError(
+        "⚠️  Variables de entorno de Neo4j incompletas. Revisa `.env`."
+    )
+
+driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USERNAME, NEO4J_PASSWORD))
+# Verificamos conectividad antes de proseguir.
+with driver as _tmp_driver:
+    _tmp_driver.verify_connectivity()
+
+# --------------------------------------------------------------------------- #
+# 2) Componentes auxiliares: LLM, Embeddings, Splitter
+# --------------------------------------------------------------------------- #
 
 llm = AzureOpenAILLM(
     model_name="gpt-4.1-mini",
@@ -70,162 +69,290 @@ llm = AzureOpenAILLM(
     api_key=os.getenv("AZURE_OPENAI_API_KEY"),
 )
 
-# *Embedder* basado en Cohere. Se utiliza internamente por SimpleKGPipeline
-# para calcular embeddings de cada *Chunk* y almacenarlos en Neo4j (si se
-# desea un flujo RAG posterior).
-embedder = CohereEmbeddings(
-    model="embed-v4.0",
-    api_key=os.getenv("COHERE_API_KEY"),
-)
+embedder = CohereEmbeddings(model="embed-v4.0", api_key=os.getenv("COHERE_API_KEY"))
+
+# Chunks de 400 tokens con 50 de solapamiento – suficiente para los textos
+# descriptivos de cada enzima.
+text_splitter = FixedSizeSplitter(chunk_size=400, chunk_overlap=50)
 
 # --------------------------------------------------------------------------- #
-# Text splitter to ensure chunks fit within the LLM context window
+# 2.1) Crear índices vectoriales y full-text para los nodos Chunk
 # --------------------------------------------------------------------------- #
 
+VECTOR_INDEX_NAME = "chunkEmbedding"
+FULLTEXT_INDEX_NAME = "chunkFulltext"
 
-# Divisor de texto fijo: 500 tokens por trozo con 100 de solapamiento.
-# Estos valores aseguran que cada *chunk* cabe con holgura en modelos GPT-4
-# (contexto de 8 k tokens) y mejoran la calidad de extracción.
-text_splitter = FixedSizeSplitter(chunk_size=500, chunk_overlap=100)
+# Intentamos inferir la dimensión automáticamente.
+try:
+    VECTOR_DIM = len(embedder.embed_query("test"))
+except Exception:
+    VECTOR_DIM = 1024  # fallback razonable
+
+# Crear índices si no existen (idempotente)
+try:
+    create_vector_index(
+        driver,
+        name=VECTOR_INDEX_NAME,
+        label="Chunk",
+        embedding_property="embedding",
+        dimensions=VECTOR_DIM,
+        similarity_fn="cosine",
+        fail_if_exists=False,
+    )
+except Exception:
+    pass  # ya existe o no es crítico
+
+try:
+    create_fulltext_index(
+        driver,
+        name=FULLTEXT_INDEX_NAME,
+        label="Chunk",
+        node_properties=["text"],
+        fail_if_exists=False,
+    )
+except Exception:
+    pass
 
 # --------------------------------------------------------------------------- #
-# Example input texts to be transformed into a Knowledge Graph
+# 3) Documentos: enzimas + metadatos
 # --------------------------------------------------------------------------- #
-TEXT_EINSTEIN = (
-    "It is known that Maxwell’s electrodynamics—as usually understood at the present time—"  # noqa: E501
-    "when applied to moving bodies, leads to asymmetries that do not seem to agree with observed phenomena. "
-    "We shall raise and discuss this apparent conflict in the following."
-)
 
-TEXT_NEWTON = (
-    "Every body perseveres in its state of rest or of uniform motion in a straight line, "
-    "except insofar as it is compelled to change its state by force impressed. "
-    "This law is foundational for the motion of bodies."
-)
+# Utilizamos la carpeta actual para leer, por simplicidad los definimos aquí.
+# Cada párrafo describe la enzima y añade las claves de su metadata.
 
-TEXT_BOHR = (
-    "The spectrum of hydrogen is found to consist of a series of lines whose wavelengths "
-    "can be represented very accurately by Balmer’s formula. "
-    "The present paper seeks to show that this spectrum may be explained on the basis of Planck’s quantum theory."
-)
-
-# Lista de documentos de entrada junto con metadatos. `langchain_core`
-# modela un documento como (`page_content`, `metadata`).
-DOCS: list[Document] = [
+documents: List[Document] = [
+    # ------------------- Glucólisis -------------------
     Document(
-        page_content=TEXT_EINSTEIN, metadata={"author": "Albert Einstein", "year": 1905}
+        page_content=(
+            "Hexokinase (HK) catalyzes the phosphorylation of glucose to "
+            "glucose-6-phosphate — first committed step of glycolysis."
+        ),
+        metadata={
+            "enzyme": "HK",
+            "subsystem": "glycolysis",
+            "substrates": ["Glc", "ATP"],
+            "products": ["G6P", "ADP"],
+            "reversible": False,
+            "flux": 1.5,
+        },
     ),
     Document(
-        page_content=TEXT_NEWTON, metadata={"author": "Isaac Newton", "year": 1687}
+        page_content=(
+            "Phosphofructokinase-1 (PFK-1) is the main rate-limiting enzyme of "
+            "glycolysis, converting F6P to F1,6BP in an ATP-dependent reaction."
+        ),
+        metadata={
+            "enzyme": "PFK1",
+            "subsystem": "glycolysis",
+            "substrates": ["F6P", "ATP"],
+            "products": ["F1,6BP", "ADP"],
+            "reversible": False,
+            "flux": 1.2,
+        },
     ),
-    Document(page_content=TEXT_BOHR, metadata={"author": "Niels Bohr", "year": 1913}),
-]
-
-# Lista blanca de personas que deseamos conservar en el grafo. Facilita
-# la demostración sin ruido de entidades irrelevantes.
-ALLOWED_PHYSICISTS = [
-    "Albert Einstein",
-    "Isaac Newton",
-    "Niels Bohr",
+    Document(
+        page_content=(
+            "Pyruvate kinase (PK) transfers the phosphate from PEP to ADP, "
+            "yielding ATP and pyruvate — final step of glycolysis."
+        ),
+        metadata={
+            "enzyme": "PK",
+            "subsystem": "glycolysis",
+            "substrates": ["PEP", "ADP"],
+            "products": ["Pyr", "ATP"],
+            "reversible": False,
+            "flux": 2.0,
+        },
+    ),
+    Document(
+        page_content=(
+            "Glyceraldehyde-3-phosphate dehydrogenase (GAPDH) produces 1,3-BPG "
+            "and NADH from G3P, connecting glycolysis with redox balance."
+        ),
+        metadata={
+            "enzyme": "GAPDH",
+            "subsystem": "glycolysis",
+            "substrates": ["G3P", "NAD+", "Pi"],
+            "products": ["1,3-BPG", "NADH"],
+            "reversible": True,
+            "flux": 1.8,
+        },
+    ),
+    # ------------------- Ciclo TCA -------------------
+    Document(
+        page_content=(
+            "Citrate synthase (CS) condenses acetyl-CoA and oxaloacetate to "
+            "form citrate, imposing directionality on the TCA cycle."
+        ),
+        metadata={
+            "enzyme": "CS",
+            "subsystem": "TCA",
+            "substrates": ["AcCoA", "OAA"],
+            "products": ["Cit"],
+            "reversible": False,
+            "flux": 0.8,
+        },
+    ),
+    Document(
+        page_content=(
+            "Isocitrate dehydrogenase (IDH) converts isocitrate to α-ketoglutarate "
+            "with NADH production; mutations generate 2-hydroxyglutarate."
+        ),
+        metadata={
+            "enzyme": "IDH",
+            "subsystem": "TCA",
+            "substrates": ["IsoCit", "NAD+"],
+            "products": ["aKG", "CO2", "NADH"],
+            "reversible": True,
+            "flux": 0.7,
+        },
+    ),
+    Document(
+        page_content=(
+            "α-Ketoglutarate dehydrogenase (AKGDH) transforms aKG to succinyl-CoA, "
+            "linking carbon flux to oxidative phosphorylation."
+        ),
+        metadata={
+            "enzyme": "AKGDH",
+            "subsystem": "TCA",
+            "substrates": ["aKG", "CoA", "NAD+"],
+            "products": ["SucCoA", "CO2", "NADH"],
+            "reversible": True,
+            "flux": 0.6,
+        },
+    ),
+    Document(
+        page_content=(
+            "Succinate dehydrogenase (SDH) participates in both the TCA cycle "
+            "and the electron transport chain, oxidising succinate to fumarate."
+        ),
+        metadata={
+            "enzyme": "SDH",
+            "subsystem": "TCA",
+            "substrates": ["Suc", "Q"],
+            "products": ["Fum", "QH2"],
+            "reversible": True,
+            "flux": 0.9,
+        },
+    ),
+    Document(
+        page_content=(
+            "Malate dehydrogenase (MDH) interconverts malate and oxaloacetate "
+            "with concomitant NAD+/NADH cycling."
+        ),
+        metadata={
+            "enzyme": "MDH",
+            "subsystem": "TCA",
+            "substrates": ["Mal", "NAD+"],
+            "products": ["OAA", "NADH"],
+            "reversible": True,
+            "flux": 0.5,
+        },
+    ),
 ]
 
 # --------------------------------------------------------------------------- #
-# Guided schema for the extraction process
+# 4) Schema dirigido (enzimas, metabolitos, subsistema)
 # --------------------------------------------------------------------------- #
-# ---------------------------
-# *Schema* que guía la extracción
-# ---------------------------
 
 NODE_TYPES = [
-    "Person",
-    {"label": "Concept", "description": "Scientific concept or theory."},
-    {"label": "University", "description": "Academic institution."},
+    {
+        "label": "Enzyme",
+        "description": "Metabolic enzyme with key biochemical properties.",
+        "properties": [
+            {"name": "name", "type": "STRING"},
+            {"name": "subsystem", "type": "STRING"},
+            {"name": "substrates", "type": "STRING"},
+            {"name": "products", "type": "STRING"},
+            {"name": "reversible", "type": "BOOLEAN"},
+            {"name": "flux", "type": "FLOAT"},
+        ],
+    },
+    "Metabolite",  # metabolite names captured from substrates/products
+    "Subsystem",  # e.g. glycolysis, TCA
 ]
 
 RELATIONSHIP_TYPES = [
-    "PROPOSED_BY",
-    "WORKS_AT",
+    "PRODUCE",  # (Enzyme)-[:PRODUCE]->(Metabolite)
+    "SUBSTRATO_DE",  # (Metabolite)-[:SUBSTRATO_DE]->(Enzyme)
+    "PERTENECE_A",  # (Enzyme)-[:PERTENECE_A]->(Subsystem)
 ]
 
+# Aseguramos que los patrones usen EXACTAMENTE los mismos labels.
 PATTERNS = [
-    ("Concept", "PROPOSED_BY", "Person"),
-    ("Person", "WORKS_AT", "University"),
+    ("Enzyme", "PRODUCE", "Metabolite"),
+    ("Metabolite", "SUBSTRATO_DE", "Enzyme"),
+    ("Enzyme", "PERTENECE_A", "Subsystem"),
 ]
 
+# --------------------------------------------------------------------------- #
+# 5) Funciones utilitarias
+# --------------------------------------------------------------------------- #
 
-# ---------------------------------------------------------------------------
-# Funciones utilitarias
-# ---------------------------------------------------------------------------
 
-
-def clear_graph(driver: Driver) -> None:
-    """Vacía por completo el grafo.
-
-    Eliminamos nodos y relaciones para garantizar un entorno limpio antes de
-    cada ejecución. Esta estrategia simplifica la reproducibilidad del
-    ejemplo sin preocuparnos de residuos de ejecuciones previas.
-    """
-    with driver.session() as session:
+def clear_graph(_driver: GraphDatabase.driver) -> None:
+    """Vacía completamente la base antes de cada corrida."""
+    with _driver.session() as session:
         session.run("MATCH (n) DETACH DELETE n")
-    print("🧹 Graph cleared — starting from an empty database.")
+    print("🧹  Graph cleared.")
 
 
-# noqa: D401 – mantener frase en infinitivo por consistencia
-def prune_non_physicists(driver: Driver, allowed_names: list[str]) -> None:
-    """Elimina nodos *Person* cuyo atributo `name` no está en `allowed_names`."""
-    cypher = """
-        MATCH (p:Person)
-        WHERE NOT p.name IN $names
-        DETACH DELETE p
-    """
-    with driver.session() as session:
-        session.run(cypher, names=allowed_names)
-    print("🗑️  Removed non-physicist Person nodes from the graph.")
+async def build_kg_from_docs(docs: List[Document]) -> None:  # noqa: D401
+    """Construye el KG a partir de la lista de documentos proporcionada."""
 
+    clear_graph(driver)
 
-# noqa: D401
-async def build_kg_from_docs(docs: list[Document]) -> None:
-    """Construir el KG desde `docs` siguiendo el flujo descrito arriba."""
-
-    # Start from a clean slate
-    clear_graph(neo4j_driver)
-
-    # Instanciamos **SimpleKGPipeline** con todos sus componentes. Esta clase
-    # orquesta internamente: división del texto → extracción de entidades ↔
-    # relaciones → (opcional) embeddings → inserción en Neo4j.
     kg_builder = SimpleKGPipeline(
         llm=llm,
-        driver=neo4j_driver,
+        driver=driver,
         embedder=embedder,
         text_splitter=text_splitter,
         schema={
             "node_types": NODE_TYPES,
             "relationship_types": RELATIONSHIP_TYPES,
             "patterns": PATTERNS,
-            "additional_node_types": False,
+            "additional_node_types": True,  # Metabolite y Subsystem surgirán dinámicamente
         },
         from_pdf=False,
     )
 
     for doc in docs:
-        # Añadimos una línea que menciona explícitamente al autor y el año para
-        # facilitar que el extractor identifique la entidad *Person* y la propiedad
-        # `year` como dato contextual.
-        augmented_text = (
-            f"{doc.page_content}\n\n"
-            f"Author: {doc.metadata['author']} ({doc.metadata['year']}) wrote this piece."
+        # Creamos una representación textual enriquecida con los metadatos para
+        # facilitar la extracción por parte del LLM.
+        meta = doc.metadata  # type: ignore[attr-defined]
+        # Sentencias adicionales para guiar al LLM y crear correctamente las
+        # relaciones definidas en PATTERNS.
+        substrates_str = ", ".join(meta["substrates"])
+        products_str = ", ".join(meta["products"])
+        reversibility_text = (
+            "La reacción es reversible."
+            if meta["reversible"]
+            else "La reacción es irreversible."
         )
 
+        augmented_text = (
+            f"{doc.page_content}\n\n"  # texto original
+            "---\n"
+            f"Nombre de la enzima: {meta['enzyme']}.\n"
+            f"Subsistema metabólico: {meta['subsystem']}.\n"
+            # Relaciones con metabolitos (sustratos ↔ productos)
+            f"Los sustratos {substrates_str} son SUBSTRATO_DE la enzima {meta['enzyme']}.\n"
+            f"La enzima {meta['enzyme']} PRODUCE los metabolitos {products_str}.\n"
+            f"La enzima {meta['enzyme']} PERTENECE_A {meta['subsystem']}.\n"
+            f"{reversibility_text}\n"
+            f"Flujo relativo: {meta['flux']}.\n"
+        )
         await kg_builder.run_async(text=augmented_text)
-        print(f"✅ Processed {doc.metadata['author']} paragraph → KG updated.")
+        print(f"✅  Processed {meta['enzyme']} → KG updated.")
 
-    # Eliminamos los nodos *Person* que no estén en `ALLOWED_PHYSICISTS` para
-    # mantener la claridad del ejemplo.
-    prune_non_physicists(neo4j_driver, ALLOWED_PHYSICISTS)
-    print("🎉 Knowledge Graph creation completed and pruned!")
+    print("🎉  Knowledge graph creation finished!")
 
 
-# Punto de entrada del script: se invoca la corrutina `build_kg_from_docs`.
-# `asyncio.run` gestiona el *event loop* automáticamente.
+# --------------------------------------------------------------------------- #
+# 6) Punto de entrada
+# --------------------------------------------------------------------------- #
+
 if __name__ == "__main__":
-    _ = await build_kg_from_docs(DOCS)
+    import asyncio
+
+    asyncio.run(build_kg_from_docs(documents))

@@ -1,101 +1,82 @@
 # %%
 """hybrid_cypher_retrieving.py
 +-----------------------------------------------------------
-Ejemplo **auto-contenible** que demuestra cómo combinar búsqueda
-semántica y búsqueda por texto completo (Hybrid Search) con
-consultas Cypher en un grafo Neo4j para implementar un flujo RAG
-(*Retrieval-Augmented Generation*).
+Ejemplo de RAG híbrido (vector + full-text) para consultar el
+**Knowledge Graph de enzimas metabólicas** creado con
+`knowledge_graph_builder.py`.
 
-Basado en la documentación oficial de Neo4j GraphRAG:
+El grafo contiene nodos:
+  • Enzyme  (prop: name, subsystem, substrates, products, reversible, flux)
+  • Metabolite (prop: name)
+  • Subsystem (prop: name)
 
-* Construcción del KG –
-  https://neo4j.com/docs/neo4j-graphrag-python/current/user_guide_kg_builder.html
-* Configuración del retriever –
-  https://neo4j.com/docs/neo4j-graphrag-python/current/user_guide_rag.html#retriever-configuration
-* Opciones de búsqueda GraphRAG –
-  https://neo4j.com/docs/neo4j-graphrag-python/current/user_guide_rag.html#graphrag-search-options
+Relaciones principales:
+  • (Metabolite)-[:CONSUMIDO_POR]->(Enzyme)
+  • (Metabolite)-[:GENERADO_POR]->(Enzyme)
+  • (Enzyme)-[:EN]->(Subsystem)
 
-El guion se divide en 4 secciones principales:
+El script prepara índices vectoriales y de texto completo sobre los nodos
+`Chunk` creados automáticamente por *SimpleKGPipeline* y define un
+`HybridCypherRetriever` que, tras recuperar los `Chunk`s relevantes,
+traversa hasta las enzimas, metabolitos y subsistemas asociados para
+construir un contexto rico.
 
-1. Conexión a Neo4j y carga de variables de entorno.
-2. Creación (si faltan) de índices vectoriales y de texto completo.
-3. Definición del *retrieval_query* Cypher para traer contexto rico.
-4. Ejecución de GraphRAG con un LLM de Azure OpenAI.
+Preguntas de ejemplo (se pueden personalizar):
+  • "¿Cuántas enzimas hay en total?"
+  • "¿Cuántas enzimas tiene la glucólisis?"
+  • "¿Cuántas enzimas tiene el TCA?"
+  • "Dame las enzimas que producen ATP"
+  • "¿Cuáles enzimas producen NADH?"
+  • "¿Cuántas enzimas son reversibles en el TCA?"
+  • "¿Cuáles son los pasos irreversibles de la glucólisis?"
+  • "Dame los nombres de las enzimas que están asociadas a piruvato"
+  • "Dame un resumen de las funciones de las deshidrogenasas"
 
-Cada línea está comentada en español para facilitar el aprendizaje.
+Para lanzar una consulta rápida, ejecuta este archivo y edita la variable
+`USER_QUESTION` al final.
 """
 
-# ---------------------------
-# 1) Importaciones y entorno
-# ---------------------------
+from __future__ import annotations
 
-import os  # Acceso a variables de entorno
+import os
 
-# Carga el archivo .env para traer credenciales y endpoints
 from dotenv import load_dotenv
-from neo4j import GraphDatabase  # Driver oficial de Neo4j
-
-# Componentes GraphRAG ↴
+from neo4j import GraphDatabase
 from neo4j_graphrag.embeddings.cohere import CohereEmbeddings
 from neo4j_graphrag.generation import GraphRAG, RagTemplate
 from neo4j_graphrag.indexes import create_fulltext_index, create_vector_index
 from neo4j_graphrag.llm import AzureOpenAILLM
 from neo4j_graphrag.retrievers import HybridCypherRetriever
 
-# Cargar variables de entorno (sobrescribe si ya existen en el proceso)
+# --------------------------------------------------------------------------- #
+# 1) Entorno e índices
+# --------------------------------------------------------------------------- #
+
 load_dotenv(override=True)
 
-# # Demo database credentials
-# URI = "neo4j+s://demo.neo4jlabs.com"
-# AUTH = ("recommendations", "recommendations")
-# # Connect to Neo4j database
-# driver = GraphDatabase.driver(URI, auth=AUTH)
+NEO4J_USERNAME = os.getenv("NEO4J_USERNAME_UPGRADED")
+NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD_UPGRADED")
+NEO4J_URI = os.getenv("NEO4J_CONNECTION_URI_UPGRADED")
 
-# ---------------------------
-# 2) Conexión a Neo4j
-# ---------------------------
+driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USERNAME, NEO4J_PASSWORD))
+# Verificamos conectividad para evitar sorpresas.
+with driver as _drv:
+    _drv.verify_connectivity()
 
-# Credenciales obtenidas de variables de entorno.
-# Mantenerlas fuera del código respeta las buenas prácticas de seguridad.
-NEO4J_USERNAME: str | None = os.getenv("NEO4J_USERNAME_UPGRADED")  # Usuario Neo4j
-NEO4J_PASSWORD: str | None = os.getenv("NEO4J_PASSWORD_UPGRADED")  # Contraseña
-URI: str | None = os.getenv(
-    "NEO4J_CONNECTION_URI_UPGRADED"
-)  # bolt://... o neo4j+s://...
+# Embeddings Cohere (mismo modelo que en la construcción del KG)
+embedder = CohereEmbeddings(model="embed-v4.0", api_key=os.getenv("COHERE_API_KEY"))
 
-# Tuple con credenciales → requerido por el driver
-AUTH = (NEO4J_USERNAME, NEO4J_PASSWORD)
-
-# Verificamos la conectividad antes de seguir — lanza excepción si el servidor no responde.
-with GraphDatabase.driver(URI, auth=AUTH) as driver:
-    driver.verify_connectivity()
-
-# Se mantiene un segundo driver para uso posterior (fuera del *with*).
-driver = GraphDatabase.driver(URI, auth=AUTH)
-
-# ---------------------------
-# 3) Embeddings: Cohere
-# ---------------------------
-
-embedder = CohereEmbeddings(
-    model="embed-v4.0",  # Modelo recomendado por Neo4j para Cohere
-    api_key=os.getenv("COHERE_API_KEY"),  # Clave leída de variables de entorno
-)
-
-# --------------------------------------------------------------------------- #
-# Ensure required indexes exist
-# --------------------------------------------------------------------------- #
-# Nombres de índices usados en el ejemplo (pueden cambiarse libremente)
+# Nombre de índices usados para nodos :Chunk creados por SimpleKGPipeline
 vector_index_name = "chunkEmbedding"
 fulltext_index_name = "chunkFulltext"
 
-# Se infiere dimensionalidad de los embeddings de manera dinámica (solo una vez)
+# Dimensionalidad inferida dinámicamente (solo una vez)
 try:
     VECTOR_DIM = len(embedder.embed_query("test"))
 except Exception:
-    VECTOR_DIM = 1024  # fallback for Cohere v4.0
+    VECTOR_DIM = 1024
 
-# Create indexes if they don’t already exist
+# Crear índices si faltan ----------------------------------------------------
 try:
     create_vector_index(
         driver,
@@ -106,8 +87,7 @@ try:
         similarity_fn="cosine",
     )
 except Exception:
-    # Si ya existe, se ignora la excepción para mantener idempotencia
-    pass
+    pass  # Puede existir
 
 try:
     create_fulltext_index(
@@ -117,48 +97,49 @@ try:
         node_properties=["text"],
     )
 except Exception:
-    pass  # Índice fulltext ya existe
+    pass  # Puede existir
 
 # --------------------------------------------------------------------------- #
-# 4) Consulta Cypher con enriquecimiento de contexto
+# 2) Cypher Retrieval Query
 # --------------------------------------------------------------------------- #
-#
-# La siguiente cadena es una consulta Cypher multilinea que Neo4j ejecutará
-# *después* de recuperar los nodos `Chunk` más relevantes (por vector o texto
-# completo). Sirve para navegar el grafo y recopilar información complementaria
-# (personas, universidades, etc.).
 
 RETRIEVAL_QUERY = """
-// From the retrieved Chunk node, traverse to concepts and related scientists.
-OPTIONAL MATCH (node)<-[:FROM_CHUNK]-(concept:Concept)
-OPTIONAL MATCH (concept)-[:PROPOSED_BY]->(person:Person)
-// Also capture Person nodes that are directly linked to the Chunk (e.g. when the author is mentioned)
-OPTIONAL MATCH (node)<-[:FROM_CHUNK]-(direct_person:Person)
-OPTIONAL MATCH (person)-[:WORKS_AT]->(university:University)
+// Starting from retrieved Chunk node → traverse to Enzyme and related info
+OPTIONAL MATCH (node)<-[:FROM_CHUNK]-(enzyme:Enzyme)
+OPTIONAL MATCH (enzyme)-[:PERTENECE_A]->(subsystem:Subsystem)
+OPTIONAL MATCH (met_c:Metabolite)-[:SUBSTRATO_DE]->(enzyme)
+OPTIONAL MATCH (enzyme)-[:PRODUCE]->(met_p:Metabolite)
+
+// Global stats per query execution
+CALL () {
+  MATCH (ss:Subsystem)<-[:PERTENECE_A]-(e2:Enzyme)
+  WITH ss, collect(DISTINCT e2.name) AS enz_list
+  RETURN collect({subsystem:ss.name, enzymes:enz_list, enzyme_count: size(enz_list)}) AS subsystems_stats
+}
+
 WITH
   node,
-  collect(DISTINCT person.name) + collect(DISTINCT direct_person.name) AS people_names,
-  collect(DISTINCT university.name) AS universities,
-  coalesce(concept.name, node.text, concept.id) AS main_entity,
-  labels(concept) AS entity_labels
-RETURN
-  main_entity                                  AS entity_name,
-  entity_labels                                AS entity_labels,
-  people_names                                 AS scientists,
-  size(people_names)                           AS person_count,
-  universities                                 AS universities,
-  node.text                                    AS chunk_text;
+  enzyme,
+  subsystem,
+  collect(DISTINCT met_c.name)        AS substrates,
+  collect(DISTINCT met_p.name)        AS products,
+  subsystems_stats,
+  size(subsystems_stats)              AS total_subsystems
+ RETURN
+   enzyme.name            AS enzyme_name,
+   subsystem.name         AS subsystem,
+   enzyme.reversible      AS reversible,
+   enzyme.flux            AS flux,
+   substrates             AS substrates,
+   products               AS products,
+   node.text              AS chunk_text,
+   subsystems_stats       AS subsystems_stats,
+   total_subsystems       AS total_subsystems;
 """
 
-############################
-# 5) Configuración Retriever
-############################
-
-# El `HybridCypherRetriever` combina
-#  • búsqueda vectorial (aprox. semántica)    → índice `vector_index_name`
-#  • búsqueda full-text (sparce BM25)         → índice `fulltext_index_name`
-# y posteriormente ejecuta la consulta Cypher anterior para regresar un
-# `RetrievalResult` con nodos/propiedades listos para el LLM.
+# --------------------------------------------------------------------------- #
+# 3) Configuración HybridCypherRetriever
+# --------------------------------------------------------------------------- #
 
 retriever = HybridCypherRetriever(
     driver=driver,
@@ -168,57 +149,61 @@ retriever = HybridCypherRetriever(
     embedder=embedder,
 )
 
-# Pregunta de ejemplo. Descomente la línea que desee probar.
-# query_text = "how many people are in the db, and how are they?"
-QUERY_TEXT = "dame las fechas en que se publicaron los papers"
-
-# Ejecutamos la búsqueda con un `top_k` pequeño para acelerar la demo
-retriever_result = retriever.search(query_text=QUERY_TEXT, top_k=3)
-# Imprimimos el resultado crudo para depuración
-print(retriever_result.items)
-# %%
-
-############################################
-# 6) Modelo LLM (Azure OpenAI)
-############################################
+# --------------------------------------------------------------------------- #
+# 4) LLM y plantilla
+# --------------------------------------------------------------------------- #
 
 llm = AzureOpenAILLM(
-    model_name="gpt-4.1-mini",
+    model_name="gpt-4.1",
     azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
     api_version=os.getenv("AZURE_API_VERSION"),
     api_key=os.getenv("AZURE_OPENAI_API_KEY"),
 )
 
-############################################
-# 7) Plantilla (prompt) RAG
-############################################
-
 rag_template = RagTemplate(
-    template="""Answer the Question using ONLY the information in the Context. NEVER INJECT ANY SPECULATIVE INFORMATION NOT IN THE CONTEXT.
-If the question asks "how many" people are present, use the `person_count` value provided in the Context (if available) or count the unique names yourself and list their names.
-If the question asks for publication dates (e.g. "fechas" / "dates"), extract every year or full date mentioned in the Context and present them in ascending order, avoiding duplicates.
-
-# Question:
-{query_text}
-
-# Context:
-{context}
-
-# Answer:
-""",
+    template="""You are a metabolic pathway expert. Answer the **Question** ONLY
+ using the **Context** provided.
+ 
+ Counting rules:
+ • When asked "¿Cuántas enzimas ...?" count ONLY unique `enzyme_name` entries.
+ • If the question specifies a subsystem (e.g. TCA, ciclo TCA, (glyco)lisis, glucólisis), count only those rows where `subsystem` matches that subsystem.
+ • Provide the count as an integer with no additional text.
+ 
+ Listing rules:
+ • If a list is requested, reply with a comma-separated list of unique names.
+ 
+ NEVER add information that is not in the context.
+ 
+ # Question:
+ {query_text}
+ 
+ # Context:
+ {context}
+ 
+ # Answer:
+ """,
     expected_inputs=["query_text", "context"],
 )
 
-############################################
-# 8) Ejecución de GraphRAG
-############################################
+# --------------------------------------------------------------------------- #
+# 5) GraphRAG pipeline
+# --------------------------------------------------------------------------- #
 
-graph_rag = GraphRAG(
-    llm=llm,  # LLM configurado arriba
-    retriever=retriever,  # Recuperador híbrido + Cypher
-    prompt_template=rag_template,  # Plantilla de sistema
-)
+graph_rag = GraphRAG(retriever=retriever, llm=llm, prompt_template=rag_template)
 
-# La respuesta final del LLM se imprime en consola.
-print(graph_rag.search(QUERY_TEXT, retriever_config={"top_k": 5}).answer)
+# --------------------------------------------------------------------------- #
+# 5) Ejecución de ejemplo
+# --------------------------------------------------------------------------- #
 # %%
+if __name__ == "__main__":
+    # USER_QUESTION = "¿Cuántas enzimas tiene la glucólisis?"
+    USER_QUESTION = "cuantos  subsistemas hay"
+
+    response = graph_rag.search(
+        USER_QUESTION,
+        retriever_config={"top_k": 1},
+        return_context=False,
+    )
+
+    print("\nPregunta:", USER_QUESTION)
+    print("Respuesta:", response.answer)

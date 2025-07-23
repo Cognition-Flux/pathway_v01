@@ -59,9 +59,8 @@ NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD_UPGRADED")
 NEO4J_URI = os.getenv("NEO4J_CONNECTION_URI_UPGRADED")
 
 driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USERNAME, NEO4J_PASSWORD))
-# Verificamos conectividad para evitar sorpresas.
-with driver as _drv:
-    _drv.verify_connectivity()
+# Verificamos conectividad sin cerrar el driver prematuramente.
+driver.verify_connectivity()
 
 # Embeddings Cohere (mismo modelo que en la construcción del KG)
 embedder = CohereEmbeddings(model="embed-v4.0", api_key=os.getenv("COHERE_API_KEY"))
@@ -99,42 +98,46 @@ try:
 except Exception:
     pass  # Puede existir
 
+# Índices de propiedades para acelerar búsquedas por nombre ------------------
+with driver.session() as _idx_sess:
+    _idx_sess.run("CREATE INDEX enzyme_name IF NOT EXISTS FOR (e:Enzyme) ON (e.name)")
+    _idx_sess.run(
+        "CREATE INDEX metabolite_name IF NOT EXISTS FOR (m:Metabolite) ON (m.name)"
+    )
+
 # --------------------------------------------------------------------------- #
 # 2) Cypher Retrieval Query
 # --------------------------------------------------------------------------- #
 
 RETRIEVAL_QUERY = """
-// Starting from retrieved Chunk node → traverse to Enzyme and related info
-OPTIONAL MATCH (node)<-[:FROM_CHUNK]-(enzyme:Enzyme)
-OPTIONAL MATCH (enzyme)-[:PERTENECE_A]->(subsystem:Subsystem)
-OPTIONAL MATCH (met_c:Metabolite)-[:SUBSTRATO_DE]->(enzyme)
-OPTIONAL MATCH (enzyme)-[:PRODUCE]->(met_p:Metabolite)
+// --- 1) Traverse from retrieved Chunk to enzyme and subsystem ----------------
+MATCH (node)<-[:FROM_CHUNK]-(enzyme:Enzyme)                                      // Each Chunk must belong to an Enzyme
+MATCH (enzyme)-[:PERTENECE_A]->(subsystem:Subsystem)                             // Enzyme must belong to a Subsystem
+OPTIONAL MATCH (met_c:Metabolite)-[:SUBSTRATO_DE]->(enzyme)                      // Metabolites that are substrates of the enzyme
+OPTIONAL MATCH (enzyme)-[:PRODUCE]->(met_p:Metabolite)                           // Metabolites that are products of the enzyme
 
-// Global stats per query execution
-CALL () {
-  MATCH (ss:Subsystem)<-[:PERTENECE_A]-(e2:Enzyme)
-  WITH ss, collect(DISTINCT e2.name) AS enz_list
-  RETURN collect({subsystem:ss.name, enzymes:enz_list, enzyme_count: size(enz_list)}) AS subsystems_stats
-}
+// --- 2) Identify neighbouring enzymes sharing any metabolite -----------------
+OPTIONAL MATCH (enzyme)-[:PRODUCE|SUBSTRATO_DE]-(shared_met:Metabolite)
+            -[:PRODUCE|SUBSTRATO_DE]-(neighbor:Enzyme)                           // Any enzyme connected to the same metabolite (excluding pure cofactors) is considered a neighbour
+WHERE neighbor <> enzyme                                                         // Exclude the enzyme itself
+  AND NOT shared_met.name IN ['NAD+', 'NADH', 'ATP', 'ADP']                     // Ignore matches via cofactors only
 
+// --- 3) Aggregate lists and project desired fields ---------------------------
 WITH
-  node,
-  enzyme,
-  subsystem,
-  collect(DISTINCT met_c.name)        AS substrates,
-  collect(DISTINCT met_p.name)        AS products,
-  subsystems_stats,
-  size(subsystems_stats)              AS total_subsystems
- RETURN
-   enzyme.name            AS enzyme_name,
-   subsystem.name         AS subsystem,
-   enzyme.reversible      AS reversible,
-   enzyme.flux            AS flux,
-   substrates             AS substrates,
-   products               AS products,
-   node.text              AS chunk_text,
-   subsystems_stats       AS subsystems_stats,
-   total_subsystems       AS total_subsystems;
+  enzyme,                                                                        // Current enzyme node
+  subsystem,                                                                     // Subsystem node linked to the enzyme
+  collect(DISTINCT met_c.name) AS substrates,                                    // Unique substrate names
+  collect(DISTINCT met_p.name) AS products,                                      // Unique product names
+  collect(DISTINCT neighbor.name) AS neighbor_enzymes                            // Unique neighbour enzyme names
+ORDER BY enzyme.name                                                             // Deterministic ordering of result rows
+RETURN
+  enzyme.name       AS enzyme_name,                                              // Enzyme identifier
+  coalesce(products, [])   AS products,                                          // List of products (empty list if none)
+  coalesce(substrates, []) AS substrates,                                        // List of substrates (empty list if none)
+  subsystem.name    AS subsystem,                                                // Name of the subsystem
+  enzyme.reversible AS reversible,                                               // Boolean: reaction reversibility
+  enzyme.flux       AS flux,                                                     // Relative flux value
+  coalesce(neighbor_enzymes, []) AS neighbor_enzymes;                            // Enzymes sharing metabolites (empty if none)
 """
 
 # --------------------------------------------------------------------------- #
@@ -164,15 +167,7 @@ rag_template = RagTemplate(
     template="""You are a metabolic pathway expert. Answer the **Question** ONLY
  using the **Context** provided.
  
- Counting rules:
- • When asked "¿Cuántas enzimas ...?" count ONLY unique `enzyme_name` entries.
- • If the question specifies a subsystem (e.g. TCA, ciclo TCA, (glyco)lisis, glucólisis), count only those rows where `subsystem` matches that subsystem.
- • Provide the count as an integer with no additional text.
- 
- Listing rules:
- • If a list is requested, reply with a comma-separated list of unique names.
- 
- NEVER add information that is not in the context.
+ NEVER add NOR inject information or data that is not in the context.
  
  # Question:
  {query_text}
@@ -197,11 +192,14 @@ graph_rag = GraphRAG(retriever=retriever, llm=llm, prompt_template=rag_template)
 # %%
 if __name__ == "__main__":
     # USER_QUESTION = "¿Cuántas enzimas tiene la glucólisis?"
-    USER_QUESTION = "cuantos  subsistemas hay"
+    # USER_QUESTION = "cuantas dehydrogenase enzimas hay, y dame sus nombres"
+    # USER_QUESTION = "Ketoglutarate en cual subsistema está?"
+    # USER_QUESTION = "como funciona la glucolisis?"
+    USER_QUESTION = "cuales son las enzimas vecinos de HK?"
 
     response = graph_rag.search(
         USER_QUESTION,
-        retriever_config={"top_k": 1},
+        retriever_config={"top_k": 10},
         return_context=False,
     )
 

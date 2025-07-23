@@ -250,7 +250,16 @@ documents: List[Document] = [
         },
     ),
 ]
-
+num_enzymes, num_subsystems, num_substrates, num_products = (
+    len({d.metadata["enzyme"] for d in documents}),
+    len({d.metadata["subsystem"] for d in documents}),
+    len({s for d in documents for s in d.metadata["substrates"]}),
+    len({p for d in documents for p in d.metadata["products"]}),
+)
+print(
+    f"Enzymes: {num_enzymes}, Subsystems: {num_subsystems}, Substrates: {num_substrates}, Products: {num_products}"
+)
+# %%
 # --------------------------------------------------------------------------- #
 # 4) Schema dirigido (enzimas, metabolitos, subsistema)
 # --------------------------------------------------------------------------- #

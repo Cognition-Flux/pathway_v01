@@ -1,0 +1,87 @@
+- pregunta: "Todos los nombres de las enzimas, y el número total de enzimas"
+  cypher_query: |
+    MATCH (e:Enzyme)
+    WITH collect(DISTINCT e.name) AS names, count(DISTINCT e) AS total
+    UNWIND names AS enzyme_name
+    RETURN enzyme_name, total
+    ORDER BY enzyme_name
+- pregunta: "Todos los nombres de los metabolitos, y el número total de metabolitos"
+  cypher_query: |
+    MATCH (m:Metabolite)
+    WITH collect(DISTINCT m.name) AS names, count(DISTINCT m) AS total
+    UNWIND names AS metabolite
+    RETURN metabolite, total
+    ORDER BY metabolite
+- pregunta: "Vecinos por enzima (nombres y número, excluyendo cofactores)"
+  cypher_query: |
+    MATCH (e:Enzyme)
+    WITH collect(e) AS enzymes,
+         ['NAD+', 'NAD⁺', 'NADH', 'NADP+', 'NADP⁺', 'NADPH', 'ATP', 'ADP', 'AMP'] AS cof
+    UNWIND enzymes AS e
+    OPTIONAL MATCH (e)-[:PRODUCE|SUBSTRATO_DE]-(m:Metabolite)
+                      -[:PRODUCE|SUBSTRATO_DE]-(neighbor:Enzyme)
+    WHERE neighbor IS NOT NULL
+      AND neighbor <> e
+      AND NOT m.name IN cof
+    WITH e.name AS enzyme_name,
+         collect(DISTINCT neighbor.name) AS neighbor_names,
+         count(DISTINCT neighbor) AS neighbor_count,
+         size(enzymes) AS total
+    RETURN enzyme_name, neighbor_count, neighbor_names, total
+    ORDER BY enzyme_name
+- pregunta: "Enzimas relacionadas con NAD+ (sustrato o producto), y el número total de enzimas relacionadas con NAD+"
+  cypher_query: |
+    MATCH (nad:Metabolite {name:'NAD+'})
+    MATCH (e:Enzyme)
+    WHERE (e)-[:PRODUCE]->(nad) OR (nad)-[:SUBSTRATO_DE]->(e)
+    WITH collect(DISTINCT e.name) AS names,
+         count(DISTINCT e) AS total
+    UNWIND names AS enzyme_name
+    RETURN enzyme_name, total
+    ORDER BY enzyme_name
+- pregunta: "Enzima con más enzimas vecinas (excluyendo cofactores)"
+  cypher_query: |
+    WITH ['NAD+', 'NAD⁺', 'NADH', 'NADP+', 'NADP⁺', 'NADPH', 'ATP', 'ADP', 'AMP'] AS cof
+    MATCH (e:Enzyme)
+    OPTIONAL MATCH (e)-[:PRODUCE|SUBSTRATO_DE]-(m:Metabolite)
+                      -[:PRODUCE|SUBSTRATO_DE]-(neighbor:Enzyme)
+    WHERE neighbor <> e AND NOT m.name IN cof
+    WITH e.name AS enzyme_name,
+         collect(DISTINCT neighbor.name) AS neighbor_names,
+         count(DISTINCT neighbor) AS neighbor_count
+    ORDER BY neighbor_count DESC, enzyme_name
+    LIMIT 1
+    RETURN enzyme_name, neighbor_count, neighbor_names
+- pregunta: "Enzima con más metabolitos como sustrato"
+  cypher_query: |
+    WITH ['NAD+', 'NAD⁺', 'NADH', 'NADP+', 'NADP⁺', 'NADPH', 'ATP', 'ADP', 'AMP'] AS cof
+    MATCH (e:Enzyme)<-[:SUBSTRATO_DE]-(m:Metabolite)
+    WHERE NOT m.name IN cof
+    WITH e.name AS enzyme_name,
+         collect(DISTINCT m.name) AS substrate_names,
+         count(DISTINCT m) AS substrate_count
+    ORDER BY substrate_count DESC
+    LIMIT 1
+    RETURN enzyme_name, substrate_count, substrate_names
+- pregunta: "Enzima con más metabolitos como producto"
+  cypher_query: |
+    WITH ['NAD+', 'NAD⁺', 'NADH', 'NADP+', 'NADP⁺', 'NADPH', 'ATP', 'ADP', 'AMP'] AS cof
+    MATCH (e:Enzyme)-[:PRODUCE]->(m:Metabolite)
+    WHERE NOT m.name IN cof
+    WITH e.name AS enzyme_name,
+         collect(DISTINCT m.name) AS product_names,
+         count(DISTINCT m) AS product_count
+    ORDER BY product_count DESC
+    LIMIT 1
+    RETURN enzyme_name, product_count, product_names
+- pregunta: "Metabolito con más enzimas asociadas (excluyendo cofactores)"
+  cypher_query: |
+    WITH ['NAD+', 'NAD⁺', 'NADH', 'NADP+', 'NADP⁺', 'NADPH', 'ATP', 'ADP', 'AMP'] AS cof
+    MATCH (m:Metabolite)<-[:PRODUCE|SUBSTRATO_DE]-(e:Enzyme)
+    WHERE NOT m.name IN cof
+    WITH m.name AS metabolite_name,
+         collect(DISTINCT e.name) AS enzyme_names,
+         count(DISTINCT e) AS enzyme_count
+    ORDER BY enzyme_count DESC, metabolite_name
+    LIMIT 1
+    RETURN metabolite_name, enzyme_count, enzyme_names

@@ -116,140 +116,15 @@ except Exception:
 # --------------------------------------------------------------------------- #
 # 3) Documentos: enzimas + metadatos
 # --------------------------------------------------------------------------- #
+# Para evitar duplicar definiciones, reutilizamos los `Document` ya creados
+# en el ejemplo de búsqueda híbrida con filtrado de metadatos.
+# De este modo mantenemos una única fuente de verdad y simplificamos el
+# mantenimiento de los textos y metadatos de cada enzima.
 
-# Utilizamos la carpeta actual para leer, por simplicidad los definimos aquí.
-# Cada párrafo describe la enzima y añade las claves de su metadata.
+from dev.langgraph_basics.simple_hybrid_search_w_metadata_filtering import (
+    documents,  # noqa: E402
+)
 
-documents: List[Document] = [
-    # ------------------- Glucólisis -------------------
-    Document(
-        page_content=(
-            "Hexokinase (HK) catalyzes the phosphorylation of glucose to "
-            "glucose-6-phosphate — first committed step of glycolysis."
-        ),
-        metadata={
-            "enzyme": "HK",
-            "subsystem": "glycolysis",
-            "substrates": ["Glc", "ATP"],
-            "products": ["G6P", "ADP"],
-            "reversible": False,
-            "flux": 1.5,
-        },
-    ),
-    Document(
-        page_content=(
-            "Phosphofructokinase-1 (PFK-1) is the main rate-limiting enzyme of "
-            "glycolysis, converting F6P to F1,6BP in an ATP-dependent reaction."
-        ),
-        metadata={
-            "enzyme": "PFK1",
-            "subsystem": "glycolysis",
-            "substrates": ["F6P", "ATP"],
-            "products": ["F1,6BP", "ADP"],
-            "reversible": False,
-            "flux": 1.2,
-        },
-    ),
-    Document(
-        page_content=(
-            "Pyruvate kinase (PK) transfers the phosphate from PEP to ADP, "
-            "yielding ATP and pyruvate — final step of glycolysis."
-        ),
-        metadata={
-            "enzyme": "PK",
-            "subsystem": "glycolysis",
-            "substrates": ["PEP", "ADP"],
-            "products": ["Pyr", "ATP"],
-            "reversible": False,
-            "flux": 2.0,
-        },
-    ),
-    Document(
-        page_content=(
-            "Glyceraldehyde-3-phosphate dehydrogenase (GAPDH) produces 1,3-BPG "
-            "and NADH from G3P, connecting glycolysis with redox balance."
-        ),
-        metadata={
-            "enzyme": "GAPDH",
-            "subsystem": "glycolysis",
-            "substrates": ["G3P", "NAD+", "Pi"],
-            "products": ["1,3-BPG", "NADH"],
-            "reversible": True,
-            "flux": 1.8,
-        },
-    ),
-    # ------------------- Ciclo TCA -------------------
-    Document(
-        page_content=(
-            "Citrate synthase (CS) condenses acetyl-CoA and oxaloacetate to "
-            "form citrate, imposing directionality on the TCA cycle."
-        ),
-        metadata={
-            "enzyme": "CS",
-            "subsystem": "TCA",
-            "substrates": ["AcCoA", "OAA"],
-            "products": ["Cit"],
-            "reversible": False,
-            "flux": 0.8,
-        },
-    ),
-    Document(
-        page_content=(
-            "Isocitrate dehydrogenase (IDH) converts isocitrate to α-ketoglutarate "
-            "with NADH production; mutations generate 2-hydroxyglutarate."
-        ),
-        metadata={
-            "enzyme": "IDH",
-            "subsystem": "TCA",
-            "substrates": ["IsoCit", "NAD+"],
-            "products": ["aKG", "CO2", "NADH"],
-            "reversible": True,
-            "flux": 0.7,
-        },
-    ),
-    Document(
-        page_content=(
-            "α-Ketoglutarate dehydrogenase (AKGDH) transforms aKG to succinyl-CoA, "
-            "linking carbon flux to oxidative phosphorylation."
-        ),
-        metadata={
-            "enzyme": "AKGDH",
-            "subsystem": "TCA",
-            "substrates": ["aKG", "CoA", "NAD+"],
-            "products": ["SucCoA", "CO2", "NADH"],
-            "reversible": True,
-            "flux": 0.6,
-        },
-    ),
-    Document(
-        page_content=(
-            "Succinate dehydrogenase (SDH) participates in both the TCA cycle "
-            "and the electron transport chain, oxidising succinate to fumarate."
-        ),
-        metadata={
-            "enzyme": "SDH",
-            "subsystem": "TCA",
-            "substrates": ["Suc", "Q"],
-            "products": ["Fum", "QH2"],
-            "reversible": True,
-            "flux": 0.9,
-        },
-    ),
-    Document(
-        page_content=(
-            "Malate dehydrogenase (MDH) interconverts malate and oxaloacetate "
-            "with concomitant NAD+/NADH cycling."
-        ),
-        metadata={
-            "enzyme": "MDH",
-            "subsystem": "TCA",
-            "substrates": ["Mal", "NAD+"],
-            "products": ["OAA", "NADH"],
-            "reversible": True,
-            "flux": 0.5,
-        },
-    ),
-]
 num_enzymes, num_subsystems, num_substrates, num_products = (
     len({d.metadata["enzyme"] for d in documents}),
     len({d.metadata["subsystem"] for d in documents}),
@@ -259,7 +134,6 @@ num_enzymes, num_subsystems, num_substrates, num_products = (
 print(
     f"Enzymes: {num_enzymes}, Subsystems: {num_subsystems}, Substrates: {num_substrates}, Products: {num_products}"
 )
-# %%
 # --------------------------------------------------------------------------- #
 # 4) Schema dirigido (enzimas, metabolitos, subsistema)
 # --------------------------------------------------------------------------- #
@@ -362,6 +236,5 @@ async def build_kg_from_docs(docs: List[Document]) -> None:  # noqa: D401
 # --------------------------------------------------------------------------- #
 
 if __name__ == "__main__":
-    import asyncio
-
-    asyncio.run(build_kg_from_docs(documents))
+    r = await build_kg_from_docs(documents)
+    print(r)

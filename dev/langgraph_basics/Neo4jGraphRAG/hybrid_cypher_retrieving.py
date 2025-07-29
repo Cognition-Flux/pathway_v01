@@ -186,11 +186,12 @@ rag_template = RagTemplate(
 
 graph_rag = GraphRAG(retriever=retriever, llm=llm, prompt_template=rag_template)
 
-# --------------------------------------------------------------------------- #
-# 5) Ejecución de ejemplo
-# --------------------------------------------------------------------------- #
+
 # %%
 if __name__ == "__main__":
+    # --------------------------------------------------------------------------- #
+    # 5) Ejecución de ejemplo
+    # --------------------------------------------------------------------------- #
     # USER_QUESTION = "¿Cuántas enzimas tiene la glucólisis?"
     # USER_QUESTION = "cuantas dehydrogenase enzimas hay, y dame sus nombres"
     # USER_QUESTION = "Ketoglutarate en cual subsistema está?"

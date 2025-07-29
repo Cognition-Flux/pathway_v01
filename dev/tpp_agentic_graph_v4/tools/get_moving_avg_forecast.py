@@ -425,10 +425,10 @@ if __name__ == "__main__":
     t0 = perf_counter()
     result = get_forecast_moving_avg.invoke(
         {
-            "office_name": "160 - Ñuñoa",
-            # "office_name": "159 - Providencia",
-            "today_date_str": "2025-05-08",
-            "start_date": "2025-06-01",
+            # "office_name": "160 - Ñuñoa",
+            "office_name": "169 - Moneda",
+            "today_date_str": "2025-07-22",
+            "start_date": "2025-12-31",
             "num_days": 1,
         }
     )

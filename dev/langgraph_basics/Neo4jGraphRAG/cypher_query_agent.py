@@ -10,7 +10,7 @@ from langchain_core.example_selectors import SemanticSimilarityExampleSelector
 from langchain_core.prompts import ChatPromptTemplate, FewShotChatMessagePromptTemplate
 from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_openai import AzureChatOpenAI, AzureOpenAIEmbeddings
-from langgraph.graph import MessagesState
+from langgraph.graph import END, START, MessagesState, StateGraph
 from langgraph.types import Command, Send
 from pydantic import BaseModel, Field
 
@@ -167,14 +167,16 @@ class Neo4jQueryState(MessagesState):
         default_factory=lambda: GeneratedQueries(queries_list=[])
     )
     query: str = Field(default_factory=lambda: "")
-    cypher_query: CypherQuery = Field(
-        default_factory=lambda: CypherQuery(cypher_query="")
-    )
+    # cypher_query: CypherQuery = Field(
+    #     default_factory=lambda: CypherQuery(cypher_query="")
+    # )
+    cypher_query: str = Field(default_factory=lambda: "")
+    cypher_queries: Annotated[list[str], reduce_lists] = Field(default_factory=list)
     results: Annotated[list[str], reduce_lists] = Field(default_factory=list)
 
 
 PROMPT_FOR_GENERATE_QUERIES = """
-Based on the user question, return ten (10) queries useful to retrieve documents in parallel.
+Based on the user question, return three (3) queries useful to retrieve documents in parallel.
 Queries should expand/enrich the semantic space of the user question.
 User question: {user_question}
 """
@@ -199,18 +201,91 @@ async def generate_questions(
     )
 
 
-generated_questions = [
-    "Todos los nombres de las enzimas",
-    "Todos los nombres de los metabolitos",
-]
-chain_for_cypher_query = system_prompt | llm.with_structured_output(CypherQuery)
+async def generate_cypher_queries_in_parallel(
+    state: Neo4jQueryState,
+) -> Command[list[Send]]:
+    """Node that generates Cypher queries in parallel."""
+    lista_de_queries = [
+        query.query_str for query in state["generated_questions"].queries_list
+    ]
+
+    # lista_de_queries = [
+    #     "Todos los nombres de las enzimas",
+    #     "Todos los nombres de los metabolitos",
+    # ]
+    print(f"lista_de_queries: {lista_de_queries}")
+    sends = [
+        Send(
+            "generate_cypher_query",
+            {"query": query},
+        )
+        for query in lista_de_queries
+    ]
+    return Command(goto=sends)
 
 
-# response = chain_for_cypher_query.invoke({"input": "Todos los nombres de los enzimas"})
+async def generate_cypher_query(
+    state: Neo4jQueryState,
+) -> Command[Literal["run_cypher_query_in_parallel"]]:
+    """Node that generates a Cypher query."""
+    query_str = state["query"]
 
-# raw_query = response.cypher_query.strip()
+    chain_for_cypher_query = system_prompt | llm.with_structured_output(CypherQuery)
+    response = await chain_for_cypher_query.ainvoke({"input": query_str})
+    raw_query = response.cypher_query.strip()
 
-# cypher_query = sanitise_query(raw_query)
+    cypher_query = sanitise_query(raw_query)
+
+    return Command(
+        goto="run_cypher_query_in_parallel", update={"cypher_queries": [cypher_query]}
+    )
+
+
+async def run_cypher_query_in_parallel(
+    state: Neo4jQueryState,
+) -> Command[list[Send]]:
+    """Node that runs a Cypher query."""
+    lista_de_cypher_queries = [cypher_query for cypher_query in state["cypher_queries"]]
+    print(f"lista_de_cypher_queries: {lista_de_cypher_queries}")
+    sends = [
+        Send(
+            "run_cypher_query",
+            {"cypher_query": query},
+        )
+        for query in lista_de_cypher_queries
+    ]
+    return Command(goto=sends)
+
+
+async def run_cypher_query(state: Neo4jQueryState) -> Command[Literal[END]]:
+    """Node that runs a Cypher query."""
+    cypher_query = state["cypher_query"]
+    print(f"################## cypher_query: {cypher_query}")
+    results = str(safe_run_cypher(cypher_query))
+    print(f"################## results: {results}")
+
+    return Command(goto=END, update={"results": [results]})
+
+
+builder = StateGraph(Neo4jQueryState)
+
+builder.add_node("generate_questions", generate_questions)
+builder.add_node(
+    "generate_cypher_queries_in_parallel", generate_cypher_queries_in_parallel
+)
+builder.add_node("generate_cypher_query", generate_cypher_query)
+builder.add_node("run_cypher_query_in_parallel", run_cypher_query_in_parallel)
+builder.add_node("run_cypher_query", run_cypher_query)
+builder.add_edge(START, "generate_questions")
+graph = builder.compile()
+
+async for chunk in graph.astream(
+    {"question": "Todos los nombres de los enzimas"},
+    stream_mode="updates",
+    subgraphs=True,
+    debug=True,
+):
+    pass
 
 
 # %%

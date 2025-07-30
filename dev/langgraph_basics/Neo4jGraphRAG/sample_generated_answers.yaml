@@ -1,0 +1,9 @@
+- pregunta: "dame las enzimas que hay y cuantas son."
+  generated_queries: |
+    - nombres de las enzimas y el número total de enzimas.
+    - Obtener los nombres de las enzimas y su conteo total.
+
+- pregunta: "busca todas las enzimas que producen NADH"
+  generated_queries: |
+    - Nombres de las enzimas que tienen NADH como producto.
+    - Nombres y conteo total de enzimas que tiene el producto NADH.
